@@ -47,7 +47,7 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
+cp ${images}/atb-imx8mp-som-voskhod1.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
