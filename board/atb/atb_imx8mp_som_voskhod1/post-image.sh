@@ -7,7 +7,7 @@ img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
 img_utils=${buildroot_home}/output/imx-mkimage/
 output=${buildroot_home}/output
 images=${output}/images
-board="atb-var-som"
+board="atb-imx8mp-som"
 soc=iMX8MP
 
 BUILD_DIR=${output}/build
@@ -33,10 +33,10 @@ cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem_202006.bin ${img_uti
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem_202006.bin ${img_utils}/iMX8M
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem_202006.bin ${img_utils}/iMX8M
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/atb-imx8mp-som-symphony.dtb ${img_utils}/iMX8M/imx8mp-evk.dtb
+cp ${buildroot_home}/output/images/atb-imx8mp-som-voskhod1.dtb ${img_utils}/iMX8M/imx8mp-evk.dtb
 cp ${buildroot_home}/output/images/bl31.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-som/u-boot-nodtb.bin	${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-som/tools/mkimage	${img_utils}/iMX8M/mkimage_uboot
+cp ${buildroot_home}/output/build/uboot-${board}/u-boot-nodtb.bin	${img_utils}/iMX8M
+cp ${buildroot_home}/output/build/uboot-${board}/tools/mkimage	${img_utils}/iMX8M/mkimage_uboot
 
 # Building bootloader usd_flash.bin
 echo MAKING usd_flash.bin
@@ -47,7 +47,7 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
+cp ${images}/atb-imx8mp-som-voskhod1.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
