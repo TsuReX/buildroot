@@ -7,7 +7,7 @@ img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
 img_utils=${buildroot_home}/output/imx-mkimage/
 output=${buildroot_home}/output
 images=${output}/images
-board="atb-imx8m-smarc"
+board="atb-imx8m-smarc-congasmc1"
 soc=iMX8MQ
 
 BUILD_DIR=${output}/build
@@ -33,10 +33,10 @@ cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem.bin ${img_utils}/iMX
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem.bin ${img_utils}/iMX8M
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem.bin ${img_utils}/iMX8M
 cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/imx8mm-evk.dtb ${img_utils}/iMX8M/imx8mq-evk.dtb
+cp ${buildroot_home}/output/build/uboot-${board}/arch/arm/dts/imx8mq-evk.dtb ${img_utils}/iMX8M/imx8mq-evk.dtb
 cp ${buildroot_home}/output/images/bl31.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-imx8m-smarc/u-boot-nodtb.bin	${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-imx8m-smarc/tools/mkimage		${img_utils}/iMX8M/mkimage_uboot
+cp ${buildroot_home}/output/build/uboot-${board}/u-boot-nodtb.bin	${img_utils}/iMX8M
+cp ${buildroot_home}/output/build/uboot-${board}/tools/mkimage		${img_utils}/iMX8M/mkimage_uboot
 cp ${output}/build/firmware-imx-8.12/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${img_utils}/iMX8M
 
 # Building bootloader usd_flash.bin
@@ -48,7 +48,7 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${images}/imx8mm-evk.dtb ${images}/dtb
+cp ${output}/build/linux-lf-5.10.y_var03/arch/arm64/boot/dts/freescale//imx8mq-evk.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
