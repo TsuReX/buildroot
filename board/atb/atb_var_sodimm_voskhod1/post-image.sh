@@ -47,7 +47,8 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
+cp /home/user//drive/workspace/buildroot_atb/output/build/linux-lf-5.10.y_var03/arch/arm64/boot/dts/freescale/imx8mp-var-som-symphony.dtb ${images}/dtb
+#cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
