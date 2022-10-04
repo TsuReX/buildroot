@@ -4,10 +4,10 @@
  * Copyright 2020-2021 Variscite Ltd.
  */
 
-#include "atb-imx8mp-som.dtsi"
+#include "atb-imx8mp-sodimm.dtsi"
 
 / {
-	model = "Variscite VAR-SOM-MX8M-PLUS on Symphony-Board";
+	model = "Variscite VAR-SOM-MX8M-PLUS on Voskhod1-Board";
 
 	chosen {
 		stdout-path = &uart2;
