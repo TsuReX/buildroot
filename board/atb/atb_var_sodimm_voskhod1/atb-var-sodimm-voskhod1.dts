@@ -4,7 +4,7 @@
  * Copyright 2020-2021 Variscite Ltd.
  */
 
-#include "atb-imx8mp-som.dtsi"
+#include "atb-var-sodimm.dtsi"
 
 / {
 	model = "Variscite VAR-SOM-MX8M-PLUS on Symphony-Board";
