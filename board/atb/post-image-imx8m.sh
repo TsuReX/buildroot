@@ -76,4 +76,16 @@ ${output}/host/bin/genimage \
 	--outputpath "${BINARIES_DIR}" \
 	--config "${GENIMAGE_CFG}"
 
+if [ $? -eq 0 ]; then
+	echo
+	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
+	echo "command to your terminal:"
+	echo
+	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress"
+	echo
+	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
+	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
+	echo
+fi
+
 exit $?
