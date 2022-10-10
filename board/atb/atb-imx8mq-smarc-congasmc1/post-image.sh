@@ -7,15 +7,15 @@ img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
 img_utils=${buildroot_home}/output/imx-mkimage/
 output=${buildroot_home}/output
 images=${output}/images
-board="atb-var-som"
-soc=iMX8MP
+board="atb-imx8m-smarc-congasmc1"
+soc=iMX8MQ
 
 BUILD_DIR=${output}/build
 BINARIES_DIR=${output}/images
 
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
-GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
+GENIMAGE_CFG="${BOARD_DIR}/genimage-atb.cfg"
 GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 
 #
@@ -29,14 +29,15 @@ cp -Rp $img_utils_src $img_utils
 
 # Copying necessary files into imx-mkimage/iMX8M directory
 cp ${buildroot_home}/output/images/u-boot-spl.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/atb-imx8mp-som-symphony.dtb ${img_utils}/iMX8M/imx8mp-evk.dtb
+cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem.bin ${img_utils}/iMX8M
+cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem.bin ${img_utils}/iMX8M
+cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem.bin ${img_utils}/iMX8M
+cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem.bin ${img_utils}/iMX8M
+cp ${buildroot_home}/output/build/uboot-${board}/arch/arm/dts/imx8mq-evk.dtb ${img_utils}/iMX8M/imx8mq-evk.dtb
 cp ${buildroot_home}/output/images/bl31.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-som/u-boot-nodtb.bin	${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-som/tools/mkimage	${img_utils}/iMX8M/mkimage_uboot
+cp ${buildroot_home}/output/build/uboot-${board}/u-boot-nodtb.bin	${img_utils}/iMX8M
+cp ${buildroot_home}/output/build/uboot-${board}/tools/mkimage		${img_utils}/iMX8M/mkimage_uboot
+cp ${output}/build/firmware-imx-8.12/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${img_utils}/iMX8M
 
 # Building bootloader usd_flash.bin
 echo MAKING usd_flash.bin
@@ -47,7 +48,7 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
+cp ${output}/build/linux-lf-5.10.y_var03/arch/arm64/boot/dts/freescale/imx8mq-evk.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
@@ -74,5 +75,17 @@ ${output}/host/bin/genimage \
 	--inputpath "${BINARIES_DIR}"  \
 	--outputpath "${BINARIES_DIR}" \
 	--config "${GENIMAGE_CFG}"
+
+if [ $? -eq 0 ]; then
+	echo
+	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
+	echo "command to your terminal:"
+	echo
+	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress"
+	echo
+	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
+	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
+	echo
+fi
 
 exit $?
