@@ -7,7 +7,8 @@ img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
 img_utils=${buildroot_home}/output/imx-mkimage/
 output=${buildroot_home}/output
 images=${output}/images
-board="atb-imx8m-smarc-congasmc1"
+target_host=atb-imx8m-smarc-congasmc1
+board=atb-imx8mq-smarc-congasmc1
 soc=iMX8MQ
 
 BUILD_DIR=${output}/build
@@ -28,15 +29,15 @@ fi
 cp -Rp $img_utils_src $img_utils
 
 # Copying necessary files into imx-mkimage/iMX8M directory
-cp ${buildroot_home}/output/images/u-boot-spl.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-${board}/arch/arm/dts/imx8mq-evk.dtb ${img_utils}/iMX8M/imx8mq-evk.dtb
-cp ${buildroot_home}/output/images/bl31.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-${board}/u-boot-nodtb.bin	${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-${board}/tools/mkimage		${img_utils}/iMX8M/mkimage_uboot
+cp ${output}/images/u-boot-spl.bin ${img_utils}/iMX8M
+cp ${output}/images/lpddr4_pmu_train_1d_imem.bin ${img_utils}/iMX8M
+cp ${output}/images/lpddr4_pmu_train_1d_dmem.bin ${img_utils}/iMX8M
+cp ${output}/images/lpddr4_pmu_train_2d_imem.bin ${img_utils}/iMX8M
+cp ${output}/images/lpddr4_pmu_train_2d_dmem.bin ${img_utils}/iMX8M
+cp ${output}/images/u-boot.dtb ${img_utils}/iMX8M/imx8mq-evk.dtb
+cp ${output}/images/bl31.bin ${img_utils}/iMX8M
+cp ${output}/build/uboot-${target_host}/u-boot-nodtb.bin		${img_utils}/iMX8M
+cp ${output}/build/uboot-${target_host}/tools/mkimage		${img_utils}/iMX8M/mkimage_uboot
 cp ${output}/build/firmware-imx-8.12/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${img_utils}/iMX8M
 
 # Building bootloader usd_flash.bin
@@ -48,9 +49,14 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp ${output}/build/linux-lf-5.10.y_var03/arch/arm64/boot/dts/freescale/imx8mq-evk.dtb ${images}/dtb
+#cp ${output}/images/${board}.dtb ${images}/imx8mq-evk.dtb
+cp ${output}/images/${board}.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
+
+# Prepare 3-rd partition
+dd if=/dev/zero of=${output}/images/home.ext2 bs=1M count=100 status=progress
+/sbin/mkfs.ext2 ${output}/images/home.ext2 -L "home"
 
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
