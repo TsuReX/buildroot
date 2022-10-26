@@ -47,8 +47,8 @@ cd ${buildroot_home}
 # Prepare all files for genimage
 cp ${img_utils}/iMX8M/usd_flash.bin ${images}
 cp ${images}/Image ${images}/linux
-cp /home/user//drive/workspace/buildroot_atb/output/build/linux-lf-5.10.y_var03/arch/arm64/boot/dts/freescale/imx8mp-var-som-symphony.dtb ${images}/dtb
-#cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
+#cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
+cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
 cp ${images}/rootfs.cpio.gz ${images}/rootfs
 ${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
 
@@ -75,5 +75,17 @@ ${output}/host/bin/genimage \
 	--inputpath "${BINARIES_DIR}"  \
 	--outputpath "${BINARIES_DIR}" \
 	--config "${GENIMAGE_CFG}"
+
+if [ $? -eq 0 ]; then
+	echo
+	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
+	echo "command to your terminal:"
+	echo
+	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress"
+	echo
+	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
+	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
+	echo
+fi
 
 exit $?
