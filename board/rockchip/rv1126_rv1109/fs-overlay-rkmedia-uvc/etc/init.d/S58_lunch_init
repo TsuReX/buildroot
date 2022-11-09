@@ -1,0 +1,26 @@
+source /etc/profile.d/RkEnv.sh
+
+case "$1" in
+	start)
+		if (cat /proc/device-tree/model | grep CAM-CRV > /dev/null)
+		then
+			echo "/oem/usb_config.sh don't need to modify"
+			/oem/usb_config.sh rndis
+			sed -i '$d' /oem/usr/share/rtsp-nn.cfg
+			sed -i '$a\path=/live/main_stream video_type=7 width=1920 height=1080 image_type=4 video_path=rkispp_scale1' /oem/usr/share/rtsp-nn.cfg
+			/usr/bin/firefly_rkmedia_vi_uvc_double_cameras_test -a /oem/etc/iqfiles/ -c /oem/usr/share/rtsp-nn.cfg -p /oem/usr/share/rknn_model/ssd_inception_v2_rv1109_rv1126.rknn -l /oem/usr/share/rknn_model/coco_labels_list.txt -b /oem/usr/share/rknn_model/box_priors.txt &
+		else
+			sed -i s/eth0/eth2/g /oem/usb_config.sh
+			/oem/usb_config.sh rndis
+			/usr/bin/firefly_rkmedia_vi_uvc_test -a /oem/etc/iqfiles/ -c /oem/usr/share/rtsp-nn.cfg -p /oem/usr/share/rknn_model/ssd_inception_v2_rv1109_rv1126.rknn -l /oem/usr/share/rknn_model/coco_labels_list.txt -b /oem/usr/share/rknn_model/box_priors.txt &
+		fi
+		;;
+	stop)
+		killall firefly_rkmedia_vi_uvc_test
+		;;
+	*)
+		echo "Usage: $0 {start|stop}"
+		exit 1
+		;;
+esac
+exit 0
