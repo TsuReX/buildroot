@@ -2,52 +2,61 @@
 
 set -e
 
-buildroot_home=$(pwd)
-img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
-img_utils=${buildroot_home}/output/imx-mkimage/
-output=${buildroot_home}/output
-images=${output}/images
-board="atb-var-sodimm-voskhod1"
-soc=RK3568J
-
-BUILD_DIR=${output}/build
-BINARIES_DIR=${output}/images
-
+BUILDROOT_HOME=$(pwd)
+IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
+IMG_UTILS=${BUILDROOT_HOME}/output/imx-mkimage/
+OUTPUT=${BUILDROOT_HOME}/output
+IMAGES=${OUTPUT}/images
+SOC=RK3568J
+BUILD=${OUTPUT}/build
+BINARIES_DIR=${OUTPUT}/images
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
-GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+GENIMAGE_TMP="${BUILD}/genimage.tmp"
+#BOARD=`echo $BOARD_NAME | sed 's/_/-/g'`
+BOARD=atb-rk3568-smarc-aio
 
-# Copying necessary files into imx-mkimage/iMX8M directory
-git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${images}/rkbin
-PLAT="rk3568"
-SPL_BIN="rkbin/bin/rk35/rk356x_spl_v1.12.bin"
-TPL_BIN="rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin"
+if ! [ -f ${BUILD}/rkbin ]; then
+	# Copying necessary files into output/images/rkbin form git repository
+	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
+fi
 
-${BUILD_DIR}/u-boot/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${images}/idblock.bin
+PLAT=rk3568
+SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
+TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
 
+# Create idblock.bin
+${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
 
 REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
-UBOOT_BIN=${BUILD_DIR}/u-boot.bin
-#UBOOT_DTB=${BUILD_DIR}/arch/arm/dts/rk3568-firefly.dtb
+UBOOT_BIN=${BUILD}/u-boot.bin
+#UBOOT_DTB=${BUILD}/arch/arm/dts/rk3568-firefly.dtb
 # or
-UBOOT_DTB=${BUILD_DIR}/u-boot.dtb
-${BUILD_DIR}/u-boot/tools/mkimage -f auto -A arm -T firmware -C none -O u-boot -a 0x00a00000 -e 0 -n ${REVISION} -E -b ${UBOOT_DTB} -d ${UBOOT_BIN} u-boot.img
 
+#rsync -avPt --delete-after ${IMAGES}/rkbin/ ${BUILD}/rkbin/
+cp board/atb/${BOARD_NAME}/make-atb.sh	${BUILD}/uboot-${BOARD}/
 
+# Create proper uboot.img
+cd ${OUTPUT}/build/uboot-${BOARD}
+./make-atb.sh	atb_rk3568_smarc
+cp uboot.img ${IMAGES}
+cd ${BUILDROOT_HOME}
+
+#${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -f auto -A arm -T firmware -C none -O u-boot -a 0x00a00000 -e 0 -n ${REVISION} -E -b ${IMAGES}/u-boot.dtb -d ${IMAGES}/u-boot.bin ${IMAGES}/u-boot.img
 
 # 1. idblock.bin
 # 2. u-boot-dtb.bin = u-boot.bin = u-boot-nodtb.bin + u-boot.dtb
 # 3. Linux kernel
-cp ${images}/Image ${images}/linux
+cp ${IMAGES}/Image ${IMAGES}/linux
 
 # 4. Linux device tree blob
-#cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
-cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
+#cp ${IMAGES}/atb-imx8mp-som-symphony.dtb ${IMAGES}/dtb
+cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
 
 # 5. Rootfs
-cp ${images}/rootfs.cpio.gz ${images}/rootfs
-${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
+cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
+${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
@@ -66,7 +75,7 @@ echo GENIMAGE_CFG=${GENIMAGE_CFG}
 
 export PATH=$PATH:/sbin
 
-${output}/host/bin/genimage \
+${OUTPUT}/host/bin/genimage \
 	--rootpath "${ROOTPATH_TMP}"   \
 	--tmppath "${GENIMAGE_TMP}"    \
 	--inputpath "${BINARIES_DIR}"  \
