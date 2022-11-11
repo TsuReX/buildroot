@@ -17,7 +17,7 @@ GENIMAGE_TMP="${BUILD}/genimage.tmp"
 #BOARD=`echo $BOARD_NAME | sed 's/_/-/g'`
 BOARD=atb-rk3568-smarc-aio
 
-if ! [ -f ${BUILD}/rkbin ]; then
+if ! [ -d ${BUILD}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
 	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
 fi
@@ -26,32 +26,24 @@ PLAT=rk3568
 SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
 TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
 
-# Create idblock.bin
+# 1. Create idblock.bin
 ${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
 
+# 2. Create uboot.img
 REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
 UBOOT_BIN=${BUILD}/u-boot.bin
-#UBOOT_DTB=${BUILD}/arch/arm/dts/rk3568-firefly.dtb
-# or
-
-#rsync -avPt --delete-after ${IMAGES}/rkbin/ ${BUILD}/rkbin/
-cp board/atb/${BOARD_NAME}/make-atb.sh	${BUILD}/uboot-${BOARD}/
-
-# Create proper uboot.img
+cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${BOARD}/bl31.elf
+cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${BOARD}/tee.bin
 cd ${OUTPUT}/build/uboot-${BOARD}
-./make-atb.sh	atb_rk3568_smarc
-cp uboot.img ${IMAGES}
-cd ${BUILDROOT_HOME}
+./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
+./tools/mkimage -f u-boot.its -E u-boot.itb
+cp u-boot.itb ${IMAGES}/uboot.img
+cd -
 
-#${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -f auto -A arm -T firmware -C none -O u-boot -a 0x00a00000 -e 0 -n ${REVISION} -E -b ${IMAGES}/u-boot.dtb -d ${IMAGES}/u-boot.bin ${IMAGES}/u-boot.img
-
-# 1. idblock.bin
-# 2. u-boot-dtb.bin = u-boot.bin = u-boot-nodtb.bin + u-boot.dtb
 # 3. Linux kernel
 cp ${IMAGES}/Image ${IMAGES}/linux
 
 # 4. Linux device tree blob
-#cp ${IMAGES}/atb-imx8mp-som-symphony.dtb ${IMAGES}/dtb
 cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
 
 # 5. Rootfs
