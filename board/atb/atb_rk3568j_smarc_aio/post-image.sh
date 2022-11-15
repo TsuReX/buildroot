@@ -35,7 +35,18 @@ UBOOT_BIN=${BUILD}/u-boot.bin
 cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${BOARD}/bl31.elf
 cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${BOARD}/tee.bin
 cd ${OUTPUT}/build/uboot-${BOARD}
+
 ./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
+#
+# Check if make_fit_atf.sh done his job Ok.
+# It will fail to create bl31_0x*.bin files if there
+# is no python2 in a system or because of another reason.
+#
+ls bl31_0x*.bin
+if ! [ $? ]; then
+	exit -1
+fi
+
 ./tools/mkimage -f u-boot.its -E u-boot.itb
 cp u-boot.itb ${IMAGES}/uboot.img
 cd -
@@ -44,7 +55,8 @@ cd -
 cp ${IMAGES}/Image ${IMAGES}/linux
 
 # 4. Linux device tree blob
-cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
+#cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
+cp ${IMAGES}/rk3568-firefly-aioj.dtb ${IMAGES}/dtb
 
 # 5. Rootfs
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
