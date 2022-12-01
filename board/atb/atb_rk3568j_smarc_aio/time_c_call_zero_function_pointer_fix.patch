@@ -1,0 +1,13 @@
+--- a/kernel/time/timer.c	2022-11-28 15:38:38.668037713 +0300
++++ b/kernel/time/timer.c	2022-11-29 15:33:06.243709391 +0300
+@@ -1509,6 +1509,10 @@
+ 
+ 		fn = timer->function;
+ 
++		// FIXME:
++		// If an empty function just exit don't do anything
++		if (fn == 0) break ;
++
+ 		if (timer->flags & TIMER_IRQSAFE) {
+ 			raw_spin_unlock(&base->lock);
+ 			call_timer_fn(timer, fn, baseclk);

@@ -3,9 +3,9 @@
 set -e
 
 BUILDROOT_HOME=$(pwd)
-IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
-IMG_UTILS=${BUILDROOT_HOME}/output/imx-mkimage/
+#OUTPUT=`dirname ${1}`
 OUTPUT=${BUILDROOT_HOME}/output
+#IMAGES=${1}
 IMAGES=${OUTPUT}/images
 SOC=RK3568J
 BUILD=${OUTPUT}/build
@@ -16,6 +16,21 @@ GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
 GENIMAGE_TMP="${BUILD}/genimage.tmp"
 #BOARD=`echo $BOARD_NAME | sed 's/_/-/g'`
 BOARD=atb-rk3568-smarc-aio
+
+echo "---> $0 $1 $2 $3 $4"
+echo "---> $#"
+
+if ! [ $#==2 ]; then
+    echo "Invalid argument"
+    echo "The script requres the following arguments: post-image.sh path_to_images linux_dtb_file_name.dtb"
+    exit 1
+fi
+
+if ! [ -f "${IMAGES}/${2}" ]; then
+    echo "DTB: ${IMAGES}/${2} can't be found. Error."
+    exit 1
+fi
+DTB=${2}
 
 if ! [ -d ${BUILD}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
@@ -56,7 +71,8 @@ cp ${IMAGES}/Image ${IMAGES}/linux
 
 # 4. Linux device tree blob
 #cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
-cp ${IMAGES}/rk3568-firefly-aioj.dtb ${IMAGES}/dtb
+#cp ${IMAGES}/rk3568-firefly-aioj.dtb ${IMAGES}/dtb
+cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 
 # 5. Rootfs
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
