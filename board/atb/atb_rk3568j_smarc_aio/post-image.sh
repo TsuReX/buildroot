@@ -1,36 +1,48 @@
 #!/bin/bash
 
-set -e
+set -x
 
 BUILDROOT_HOME=$(pwd)
 #OUTPUT=`dirname ${1}`
-OUTPUT=${BUILDROOT_HOME}/output
+#OUTPUT=${BUILDROOT_HOME}/output
 #IMAGES=${1}
-IMAGES=${OUTPUT}/images
+#IMAGES=${OUTPUT}/images
 SOC=RK3568J
-BUILD=${OUTPUT}/build
-BINARIES_DIR=${OUTPUT}/images
+#BUILD=${OUTPUT}/build
+#BINARIES_DIR=${OUTPUT}/images
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
-GENIMAGE_TMP="${BUILD}/genimage.tmp"
-#BOARD=`echo $BOARD_NAME | sed 's/_/-/g'`
-BOARD=atb-rk3568-smarc-aio
 
-echo "---> $0 $1 $2 $3 $4"
-echo "---> $#"
+echo "argc = $#"
+echo "arg0 = $0"
+echo "arg1 = $1"
+echo "arg2 = $2"
 
-if ! [ $#==2 ]; then
-    echo "Invalid argument"
-    echo "The script requres the following arguments: post-image.sh path_to_images linux_dtb_file_name.dtb"
-    exit 1
+UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
+
+if ! [ $# == 2 ]; then
+    echo "Invalid arguments"
+    echo "The script requres the following arguments: path_to_images_folder linux_dtb_file_name.dtb"
+    exit -1
 fi
 
-if ! [ -f "${IMAGES}/${2}" ]; then
-    echo "DTB: ${IMAGES}/${2} can't be found. Error."
-    exit 1
-fi
-DTB=${2}
+#if [ -z "$1" ] ; then
+#	echo "ERROR: path to output directory isn't specified"
+#fi
+
+#if [ -z "$2" ]; then
+#    echo "ERROR: $2 DTB file isn't specified"
+#    exit -1
+#fi
+
+IMAGES=$1
+OUTPUT=${IMAGES}/..
+BUILD=${OUTPUT}/build
+GENIMAGE_TMP="${IMAGES}/genimage.tmp"
+BINARIES_DIR=${OUTPUT}/images
+
+DTB=$2
 
 if ! [ -d ${BUILD}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
@@ -42,14 +54,14 @@ SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
 TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
 
 # 1. Create idblock.bin
-${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
+${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
 
 # 2. Create uboot.img
 REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
 UBOOT_BIN=${BUILD}/u-boot.bin
-cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${BOARD}/bl31.elf
-cp ${OUTPUT}/build/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${BOARD}/tee.bin
-cd ${OUTPUT}/build/uboot-${BOARD}
+cp ${BUILD}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${UBOOT_REPO}/bl31.elf
+cp ${BUILD}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${UBOOT_REPO}/tee.bin
+cd ${BUILD}/uboot-${UBOOT_REPO}
 
 ./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
 #
@@ -76,7 +88,7 @@ cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 
 # 5. Rootfs
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
-${OUTPUT}/build/uboot-${BOARD}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
+${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
