@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 
 #
 # Common variables
@@ -10,13 +10,6 @@ BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-atb.cfg"
 SOC=iMX8MQ
-
-#
-# mkimage variaables
-#
-IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
-IMG_UTILS=${BUILDROOT_HOME}/output/imx-mkimage/
-
 
 echo "argc = $#"
 echo "arg0 = $0"
@@ -41,6 +34,12 @@ BUILD=${OUTPUT}/build
 GENIMAGE_TMP="${BUILD}/genimage.tmp"
 
 #
+# mkimage variaables
+#
+IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
+IMG_UTILS=${OUTPUT}/imx-mkimage/
+
+#
 #prepare imx-mkimage
 #
 echo PREPARE imx-mkimage
@@ -57,9 +56,9 @@ cp ${IMAGES}/lpddr4_pmu_train_2d_imem.bin ${IMG_UTILS}/iMX8M
 cp ${IMAGES}/lpddr4_pmu_train_2d_dmem.bin ${IMG_UTILS}/iMX8M
 cp ${IMAGES}/u-boot.dtb ${IMG_UTILS}/iMX8M/imx8mq-evk.dtb
 cp ${IMAGES}/bl31.bin ${IMG_UTILS}/iMX8M
-cp ${IMAGES}/uboot-${UBOOT_REPO}/u-boot-nodtb.bin		${IMG_UTILS}/iMX8M
-cp ${IMAGES}/uboot-${UBOOT_REPO}/tools/mkimage		${IMG_UTILS}/iMX8M/mkimage_uboot
-cp ${IMAGES}/firmware-imx-8.12/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${IMG_UTILS}/iMX8M
+cp ${BUILD}/uboot-${UBOOT_REPO}/u-boot-nodtb.bin		${IMG_UTILS}/iMX8M
+cp ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage		${IMG_UTILS}/iMX8M/mkimage_uboot
+cp ${BUILD}/firmware-imx-8.15/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${IMG_UTILS}/iMX8M
 
 # Building bootloader usd_flash.bin
 echo MAKING usd_flash.bin
