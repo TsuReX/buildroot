@@ -58,7 +58,7 @@ cp ${IMAGES}/u-boot.dtb ${IMG_UTILS}/iMX8M/imx8mq-evk.dtb
 cp ${IMAGES}/bl31.bin ${IMG_UTILS}/iMX8M
 cp ${BUILD}/uboot-${UBOOT_REPO}/u-boot-nodtb.bin		${IMG_UTILS}/iMX8M
 cp ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage		${IMG_UTILS}/iMX8M/mkimage_uboot
-cp ${BUILD}/firmware-imx-8.15/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${IMG_UTILS}/iMX8M
+cp ${BUILD}/firmware-imx-*/firmware/hdmi/cadence/signed_hdmi_imx8m.bin	${IMG_UTILS}/iMX8M
 
 # Building bootloader usd_flash.bin
 echo MAKING usd_flash.bin
