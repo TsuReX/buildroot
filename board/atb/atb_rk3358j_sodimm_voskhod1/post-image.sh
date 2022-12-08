@@ -50,8 +50,8 @@ if ! [ -d ${BUILD}/rkbin ]; then
 fi
 
 PLAT=rk3568
-SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
-TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
+SPL_BIN=${BUILD}/rkbin/bin/rk33/px30_loader_v2.07.135.bin
+TPL_BIN=${BUILD}/rkbin/bin/rk33/px30_ddr_333MHz_v2.07.bin
 
 # 1. Create idblock.bin
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
@@ -59,8 +59,8 @@ ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SP
 # 2. Create uboot.img
 REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
 UBOOT_BIN=${BUILD}/u-boot.bin
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${UBOOT_REPO}/bl31.elf
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${UBOOT_REPO}/tee.bin
+cp ${BUILD}/rkbin/bin/rk33/px30_bl31_v1.31.elf ${OUTPUT}/build/uboot-${UBOOT_REPO}/bl31.elf
+cp ${BUILD}/rkbin/bin/rk33/px30_bl32_v2.12.bin ${OUTPUT}/build/uboot-${UBOOT_REPO}/tee.bin
 cd ${BUILD}/uboot-${UBOOT_REPO}
 
 ./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
