@@ -8,7 +8,7 @@ cd ${buildroot_home}/output/target
 mkdir -p var/run
 mkdir -p var/lock
 mkdir -p var/log
-mkdir -a home
+mkdir -p home
 
 #cp ${buildroot_home}/board/atb/${board}/inittab ${buildroot_home}/output/target/etc/
 cp ${buildroot_home}/board/atb/${board}/fstab ${buildroot_home}/output/target/etc/
