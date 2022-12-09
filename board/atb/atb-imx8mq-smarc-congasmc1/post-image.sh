@@ -16,7 +16,7 @@ echo "arg0 = $0"
 echo "arg1 = $1"
 echo "arg2 = $2"
 
-if ! [ $# == 2 ]; then
+if ! [ $# -eq 2 ]; then
     echo "Invalid arguments"
     echo "The script requres the following arguments: path_to_images_folder linux_dtb_file_name.dtb"
     exit -1
