@@ -1,0 +1,13 @@
+#!/bin/sh
+
+timeo=0
+
+#
+# Wait /dev/mmcblk1p2 appear but not more than 10 seconds
+#
+while ! [ -e /dev/mmcblk1p2 ] && [ $timeo -le 10 ] ; do
+    sleep 1
+    let timeo=$timeo+1
+done
+
+mount -a

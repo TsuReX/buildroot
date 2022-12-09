@@ -1,0 +1,163 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2019 NXP
+ * Copyright 2020-2021 Variscite Ltd.
+ * Copyright 2022 ATB Electronics.
+ */
+
+/dts-v1/;
+
+#include "atb-imx8mp-sodimm.dtsi"
+
+
+/ {
+		model = "ATB atb-imx8mp-sodimm on Voskhod1 Board";
+
+		chosen {
+			stdout-path = &uart2;
+		};
+};
+
+&i2c3 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c3>;
+	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	/* MAX31342 RTC module */
+	rtc@69 {
+		compatible = "maxim,max31342";
+		reg = <0x69>;
+		status = "okay";
+	};
+};
+
+&hdmiphy {
+	status = "okay";
+};
+
+/* Header */
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+/* Console */
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+/* Header */
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	status = "okay";
+};
+
+&usdhc2 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
+	pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
+	pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
+	/* SDHC_CD */
+	cd-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
+	bus-width = <4>;
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl-names = "default";
+	
+	pinctrl_i2c3: i2c3grp {
+		fsl,pins = <
+			/* I2C3_SCL */
+			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL			 (0x40000000 + PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP | PAD_DSE_X4) /*0x400001c2*/
+			/* I2C3_SDA */
+			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA			 (0x40000000 + PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP | PAD_DSE_X4)
+		>;
+	};
+
+	pinctrl_i2c3_gpio: i2c3gpiogrp {
+		fsl,pins = <
+			/* I2C3_SCL */
+			MX8MP_IOMUXC_I2C3_SCL__GPIO5_IO18			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP | PAD_DSE_X4) /* 0x1c2 */
+			/* I2C3_SDA */
+			MX8MP_IOMUXC_I2C3_SDA__GPIO5_IO19			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP | PAD_DSE_X4)
+		>;
+	};
+
+	pinctrl_uart1: uart1grp {
+		fsl,pins = <
+			/* UART1_RX */
+			MX8MP_IOMUXC_UART1_RXD__UART1_DCE_RX			 (0x0)
+			/* UART1_TX */
+			MX8MP_IOMUXC_UART1_TXD__UART1_DCE_TX			 (0x0)
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			/* UART2_RX */
+			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX			 (0x0)
+			/* UART2_TX */
+			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX			 (0x0)
+		>;
+	};
+
+	pinctrl_uart4: uart4grp {
+		fsl,pins = <
+			/* UART4_RX */
+			MX8MP_IOMUXC_UART4_RXD__UART4_DCE_RX			 (0x0)
+			/* UART4_TX */
+			MX8MP_IOMUXC_UART4_TXD__UART4_DCE_TX			 (0x0)
+		>;
+	};
+
+	pinctrl_usdhc2_gpio: usdhc2grp-gpio {
+		fsl,pins = <
+			/* SDHC_CD */
+			MX8MP_IOMUXC_GPIO1_IO14__GPIO1_IO14			 (PAD_PULL_ENABLE | PAD_WEAK_PULL_DOWN | PAD_SLOW_SLEW_RATE | PAD_DSE_X1)
+			/* SD_EN */
+			MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22			 (PAD_PULL_ENABLE | PAD_WEAK_PULL_DOWN | PAD_SLOW_SLEW_RATE | PAD_DSE_X1)
+		>;
+	};
+
+	pinctrl_usdhc2: usdhc2grp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SD2_CLK__USDHC2_CLK			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_FAST_SLEW_RATE) /* 0x190 */
+			MX8MP_IOMUXC_SD2_CMD__USDHC2_CMD			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE) /* 0x1d0 */
+			MX8MP_IOMUXC_SD2_DATA0__USDHC2_DATA0			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE)
+			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE)
+			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE)
+			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE)
+		>;
+	};
+
+	pinctrl_usdhc2_100mhz: usdhc2grp-100mhz {
+		fsl,pins = <
+			MX8MP_IOMUXC_SD2_CLK__USDHC2_CLK			  (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_FAST_SLEW_RATE | PAD_DSE_X2) /* 0x194 */
+			MX8MP_IOMUXC_SD2_CMD__USDHC2_CMD			  (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X2) /* 0x1d4 */
+			MX8MP_IOMUXC_SD2_DATA0__USDHC2_DATA0			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X2)
+			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X2)
+			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X2)
+			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X2)
+		>;
+	};
+
+	pinctrl_usdhc2_200mhz: usdhc2grp-200mhz {
+		fsl,pins = <
+			MX8MP_IOMUXC_SD2_CLK__USDHC2_CLK			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_FAST_SLEW_RATE | PAD_DSE_X6) /* 0x196 */
+			MX8MP_IOMUXC_SD2_CMD__USDHC2_CMD			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X6) /* 0x1d6 */
+			MX8MP_IOMUXC_SD2_DATA0__USDHC2_DATA0			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X6)
+			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X6)
+			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X6)
+			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3			 (PAD_PULL_ENABLE | PAD_INPUT_SCHMITT | PAD_WEAK_PULL_UP |PAD_FAST_SLEW_RATE | PAD_DSE_X6)
+		>;
+	};
+};
