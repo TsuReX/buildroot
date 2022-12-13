@@ -37,7 +37,7 @@ GENIMAGE_TMP="${BUILD}/genimage.tmp"
 # mkimage variaables
 #
 IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
-IMG_UTILS=${OUTPUT}/imx-mkimage/
+IMG_UTILS=${BUILD}/imx-mkimage/
 
 #
 #prepare imx-mkimage
@@ -106,7 +106,7 @@ if [ $? -eq 0 ]; then
 	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
 	echo "command to your terminal:"
 	echo
-	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX bs=1M status=progress"
+	echo "		sudo dd if=${IMAGES}/sdcard.img of=/dev/sdX bs=1M status=progress"
 	echo
 	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
