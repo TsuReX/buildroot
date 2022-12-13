@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 
 #
 # Common variables
@@ -11,25 +11,18 @@ BOARD_NAME="$(basename ${BOARD_DIR})"
 SOC=iMX8MP
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
 
-#
-# mkimage variaables
-#
-IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
-IMG_UTILS=${BUILDROOT_HOME}/output/imx-mkimage/
-
-
 echo "argc = $#"
 echo "arg0 = $0"
 echo "arg1 = $1"
 echo "arg2 = $2"
-
-UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
 
 if ! [ $# == 2 ]; then
     echo "Invalid arguments"
     echo "The script requres the following arguments: path_to_images_folder linux_dtb_file_name.dtb"
     exit -1
 fi
+
+UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
 
 #
 # Variables depends on build
@@ -39,6 +32,12 @@ OUTPUT=${IMAGES}/..
 BUILD=${OUTPUT}/build
 GENIMAGE_TMP="${IMAGES}/genimage.tmp"
 BINARIES_DIR=${OUTPUT}/images
+
+#
+# mkimage variaables
+#
+IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
+IMG_UTILS=${BUILD}/imx-mkimage/
 
 #
 #prepare imx-mkimage
@@ -102,7 +101,7 @@ if [ $? -eq 0 ]; then
 	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
 	echo "command to your terminal:"
 	echo
-	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress bs=1M"
+	echo "		sudo dd if=${IMAGES}/sdcard.img of=/dev/sdX status=progress bs=1M"
 	echo
 	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
