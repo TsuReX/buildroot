@@ -1,56 +1,76 @@
 #!/bin/bash
 
-set -e
+set -xe
 
-buildroot_home=$(pwd)
-img_utils_src=${buildroot_home}/dl/imx-mkimage/git/
-img_utils=${buildroot_home}/output/imx-mkimage/
-output=${buildroot_home}/output
-images=${output}/images
-board="atb-var-sodimm-voskhod1"
-soc=iMX8MP
-
-BUILD_DIR=${output}/build
-BINARIES_DIR=${output}/images
-
+#
+# Common variables
+#
+BUILDROOT_HOME=$(pwd)
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
+SOC=iMX8MP
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
-GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+
+echo "argc = $#"
+echo "arg0 = $0"
+echo "arg1 = $1"
+echo "arg2 = $2"
+
+if ! [ $# == 2 ]; then
+    echo "Invalid arguments"
+    echo "The script requres the following arguments: path_to_images_folder linux_dtb_file_name.dtb"
+    exit -1
+fi
+
+UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
+
+#
+# Variables depends on build
+#
+IMAGES=$1
+OUTPUT=${IMAGES}/..
+BUILD=${OUTPUT}/build
+GENIMAGE_TMP="${IMAGES}/genimage.tmp"
+BINARIES_DIR=${OUTPUT}/images
+
+#
+# mkimage variaables
+#
+IMG_UTILS_SRC=${BUILDROOT_HOME}/dl/imx-mkimage/git/
+IMG_UTILS=${BUILD}/imx-mkimage/
 
 #
 #prepare imx-mkimage
 #
 echo PREPARE imx-mkimage
-if [ -d ${img_utils} ]; then
-	rm -rf ${img_utils}
+if [ -d ${IMG_UTILS} ]; then
+	rm -rf ${IMG_UTILS}
 fi
-cp -Rp $img_utils_src $img_utils
+cp -Rp $IMG_UTILS_SRC $IMG_UTILS
 
 # Copying necessary files into imx-mkimage/iMX8M directory
-cp ${buildroot_home}/output/images/u-boot-spl.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_imem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_1d_dmem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_imem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/lpddr4_pmu_train_2d_dmem_202006.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/images/atb-var-sodimm-voskhod1.dtb ${img_utils}/iMX8M/imx8mp-evk.dtb
-cp ${buildroot_home}/output/images/bl31.bin ${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-sodimm-voskhod1/u-boot-nodtb.bin	${img_utils}/iMX8M
-cp ${buildroot_home}/output/build/uboot-atb-var-sodimm-voskhod1/tools/mkimage	${img_utils}/iMX8M/mkimage_uboot
+cp ${IMAGES}/u-boot-spl.bin ${IMG_UTILS}/iMX8M
+cp ${IMAGES}/lpddr4_pmu_train_1d_imem_202006.bin ${IMG_UTILS}/iMX8M
+cp ${IMAGES}/lpddr4_pmu_train_1d_dmem_202006.bin ${IMG_UTILS}/iMX8M
+cp ${IMAGES}/lpddr4_pmu_train_2d_imem_202006.bin ${IMG_UTILS}/iMX8M
+cp ${IMAGES}/lpddr4_pmu_train_2d_dmem_202006.bin ${IMG_UTILS}/iMX8M
+cp ${IMAGES}/${UBOOT_REPO}.dtb ${IMG_UTILS}/iMX8M/imx8mp-evk.dtb
+cp ${IMAGES}/bl31.bin ${IMG_UTILS}/iMX8M
+cp ${BUILD}/uboot-${UBOOT_REPO}/u-boot-nodtb.bin	${IMG_UTILS}/iMX8M
+cp ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage	${IMG_UTILS}/iMX8M/mkimage_uboot
 
 # Building bootloader usd_flash.bin
 echo MAKING usd_flash.bin
-cd ${img_utils}
-make SOC=${soc} BOARD=${board} OUTIMG=usd_flash.bin flash_evk
-cd ${buildroot_home}
+cd ${IMG_UTILS}
+make SOC=${SOC} BOARD=${BOARD} OUTIMG=usd_flash.bin flash_evk
+cd ${BUILDROOT_HOME}
 
 # Prepare all files for genimage
-cp ${img_utils}/iMX8M/usd_flash.bin ${images}
-cp ${images}/Image ${images}/linux
-#cp ${images}/atb-imx8mp-som-symphony.dtb ${images}/dtb
-cp ${images}/atb-var-sodimm-voskhod1.dtb ${images}/dtb
-cp ${images}/rootfs.cpio.gz ${images}/rootfs
-${output}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${output}/images/rootfs.cpio.gz ${output}/images/rootfs
+cp ${IMG_UTILS}/iMX8M/usd_flash.bin ${IMAGES}
+cp ${IMAGES}/Image ${IMAGES}/linux
+cp ${IMAGES}/${2} ${IMAGES}/dtb
+cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
+${OUTPUT}/host/bin/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
@@ -69,7 +89,7 @@ echo GENIMAGE_CFG=${GENIMAGE_CFG}
 
 export PATH=$PATH:/sbin
 
-${output}/host/bin/genimage \
+${OUTPUT}/host/bin/genimage \
 	--rootpath "${ROOTPATH_TMP}"   \
 	--tmppath "${GENIMAGE_TMP}"    \
 	--inputpath "${BINARIES_DIR}"  \
@@ -81,7 +101,7 @@ if [ $? -eq 0 ]; then
 	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
 	echo "command to your terminal:"
 	echo
-	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress"
+	echo "		sudo dd if=${IMAGES}/sdcard.img of=/dev/sdX bs=1M status=progress"
 	echo
 	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
