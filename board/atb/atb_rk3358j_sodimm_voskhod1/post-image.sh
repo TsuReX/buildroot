@@ -55,7 +55,7 @@ cp trust.img ${IMAGES}
 cd -
 
 # 2.1 Create uboot.img
-${BUILD}/rkbin/tools/loaderimage --pack --uboot ${IMAGES}/u-boot.bin uboot.img 0x00200000 --size 2048 2
+${BUILD}/rkbin/tools/loaderimage --pack --uboot ${IMAGES}/u-boot.bin ${IMAGES}/uboot.img 0x00200000 --size 2048 2
 
 
 # 3. Linux kernel
