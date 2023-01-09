@@ -1,0 +1,3 @@
+#!/bin/sh
+
+modprobe g_mass_storage file=/var/run/mass_storage
