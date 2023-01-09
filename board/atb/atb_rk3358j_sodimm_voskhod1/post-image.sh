@@ -1,15 +1,9 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 BUILDROOT_HOME=$(pwd)
-#OUTPUT=`dirname ${1}`
-#OUTPUT=${BUILDROOT_HOME}/output
-#IMAGES=${1}
-#IMAGES=${OUTPUT}/images
-SOC=RK3568J
-#BUILD=${OUTPUT}/build
-#BINARIES_DIR=${OUTPUT}/images
+SOC=RK3358J
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
@@ -27,15 +21,6 @@ if ! [ $# == 2 ]; then
     exit -1
 fi
 
-#if [ -z "$1" ] ; then
-#	echo "ERROR: path to output directory isn't specified"
-#fi
-
-#if [ -z "$2" ]; then
-#    echo "ERROR: $2 DTB file isn't specified"
-#    exit -1
-#fi
-
 IMAGES=$1
 OUTPUT=${IMAGES}/..
 BUILD=${OUTPUT}/build
@@ -46,37 +31,32 @@ DTB=$2
 
 if ! [ -d ${BUILD}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
-	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
+	git clone --single-branch --branch px30/firefly https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
 fi
 
-PLAT=rk3568
-SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
-TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
+PLAT=px30
+
+SPL_BIN=${BUILD}/rkbin/bin/rk33/px30_miniloader_v1.35.bin
+TPL_BIN=${BUILD}/rkbin/bin/rk33/px30_ddr_333MHz_uart2_m1_v2.02.bin
+
 
 # 1. Create idblock.bin
+echo "---> ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin"
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
 
-# 2. Create uboot.img
-REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
-UBOOT_BIN=${BUILD}/u-boot.bin
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${UBOOT_REPO}/bl31.elf
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${UBOOT_REPO}/tee.bin
-cd ${BUILD}/uboot-${UBOOT_REPO}
+# px30_loader_v2.02.135.bin
+#./rkbin/tools/boot_merger /home/user/drive/workspace/rk356x_linux_release_20211019/rkbin/RKBOOT/PX30MINIALL.ini
 
-./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
-#
-# Check if make_fit_atf.sh done his job Ok.
-# It will fail to create bl31_0x*.bin files if there
-# is no python2 in a system or because of another reason.
-#
-ls bl31_0x*.bin
-if ! [ $? ]; then
-	exit -1
-fi
+# 2. Create trust.img
 
-./tools/mkimage -f u-boot.its -E u-boot.itb
-cp u-boot.itb ${IMAGES}/uboot.img
+cd ${BUILD}/rkbin
+./tools/trust_merger ./RKTRUST/PX30TRUST.ini --size 2048 2 --sha 3 --rsa 3
+cp trust.img ${IMAGES}
 cd -
+
+# 2.1 Create uboot.img
+${BUILD}/rkbin/tools/loaderimage --pack --uboot ${IMAGES}/u-boot.bin ${IMAGES}/uboot.img 0x00200000 --size 2048 2
+
 
 # 3. Linux kernel
 cp ${IMAGES}/Image ${IMAGES}/linux
@@ -119,7 +99,7 @@ if [ $? -eq 0 ]; then
 	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
 	echo "command to your terminal:"
 	echo
-	echo "		sudo dd if=${IMAGES}/sdcard.img of=/dev/sdX status=progress bs=1M"
+	echo "		sudo dd if=output/images/sdcard.img of=/dev/sdX status=progress bs=1M"
 	echo
 	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
