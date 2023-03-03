@@ -35,7 +35,7 @@
 		rockchip,wake-irq = <0>;
 		/* If enable uart uses irq instead of fiq */
 		rockchip,irq-mode-enable = <1>;
-		rockchip,baudrate = <1500000>;  /* Only 115200 and 1500000 */
+		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
 		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&uart2m0_xfer>;
@@ -559,14 +559,14 @@
 		     &gmac1m0_rgmii_bus
 		     &gmac1m0_clkinout>;
 
-    tx_delay = <0x1>;
-    rx_delay = <0x1>;
+//    tx_delay = <0x1>;
+//    rx_delay = <0x1>;
 		     
-//	tx_delay = <0x4f>;
-//	rx_delay = <0x26>;
+	tx_delay = <0x4f>;
+	rx_delay = <0x26>;
 
 	phy-handle = <&rgmii_phy1>;
-	status = "ok";
+	status = "disabled";
 };
 
 &mdio0 {
@@ -592,7 +592,7 @@
 };*/
 
 &pcie30phy {
-	status = "okay";
+	status = "disabled";
 };
 
 &pcie3x1 {
@@ -603,7 +603,7 @@
 
     vpcie3v3-supply = <&pcie30_3v3>;
     /* rockchip,bifurcation; lane0 when using 1+1 */
-    status = "okay";
+    status = "disabled";
 };
 
 &pcie3x2 {
@@ -1106,7 +1106,7 @@
 	bus-width = <8>;
 	supports-emmc;
 	non-removable;
-	max-frequency = <200000000>;
+	max-frequency = <20000000>; // 20MHz
     pinctrl-names = "default";
 	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
 	status = "okay";
