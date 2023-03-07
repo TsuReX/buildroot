@@ -419,6 +419,7 @@
 &gmac {
 	phy-supply = <&vcc_phy>;
 	clock_in_out = "output";
+	// RMII_RESET#
 	snps,reset-gpio = <&gpio2 13 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 50000 50000>;
