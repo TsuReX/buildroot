@@ -145,7 +145,7 @@
 		rockchip,screen-on-voltage = <3600>;
 		status = "okay";
 	};
-*/
+
 	rk809-sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -175,7 +175,7 @@
 		pinctrl-0 = <&hp_det>;
 		io-channels = <&saradc 1>;
 	};
-
+*/
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		/*clocks = <&rk809 1>;*/
@@ -220,7 +220,7 @@
 	};
 	*/
 
-	vcc_mipi: vcc_mipi {
+/*	vcc_mipi: vcc_mipi {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio1 15 GPIO_ACTIVE_HIGH>;
@@ -237,7 +237,7 @@
 		pinctrl-0 = <&cif_pwr>;
 		regulator-name = "dvdd_1v2";
 	};
-/*
+
 	wireless-wlan {
 		compatible = "wlan-platdata";
 		wifi_chip_type = "rtl8723ds";
@@ -428,12 +428,17 @@
 
 &gpu {
 	mali-supply = <&vdd_logic>;
-	status = "okay";
+	status = "disabled";
 };
 
 &i2c0 {
 	status = "okay";
 
+    // I2C0_SCL / GPIO0_B0
+	// I2C0_SDA / GPIO0_B1
+	pinctrl-names = "default";
+    pinctrl-0 = <&i2c0_xfer>;
+	
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
@@ -682,7 +687,7 @@
 			};
 		};
 
-		rk809_codec: codec {
+/*		rk809_codec: codec {
 			#sound-dai-cells = <0>;
 			compatible = "rockchip,rk809-codec", "rockchip,rk817-codec";
 			clocks = <&cru SCLK_I2S1_OUT>;
@@ -691,87 +696,66 @@
 			pinctrl-0 = <&i2s1_2ch_mclk>;
 			hp-volume = <20>;
 			spk-volume = <3>;
-			speak-gpio = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
-			status = "okay";
-		};
+			// speak-gpio = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+			status = "disabled";
+		}; */
 	};
 };
 
 &i2c1 {
+    // UART3_CTS / GPIO0_C2 / I2C1_SCL
+    // UART3_RTS / GPIO0_C3 / I2C1_SDA
+	pinctrl-names = "default";
+    pinctrl-0 = <&i2c1_xfer>;
 	status = "okay";
-/*   
-   sensor@4c {
-        status = "okay";
-        compatible = "gs_mc3230";
-        reg = <0x4c>;
-        type = <SENSOR_TYPE_ACCEL>;
-        irq_enable = <0>;
-        poll_delay_ms = <30>;
-        layout = <1>;
-    };
-    
-	gt1x: gt1x@14 {
-        status = "disabled";
-		compatible = "goodix,gt1x";
-		reg = <0x14>;
-		power-supply = <&vcc3v3_lcd>;
-		goodix,rst-gpio = <&gpio0 RK_PB4 GPIO_ACTIVE_HIGH>;
-		goodix,irq-gpio = <&gpio0 RK_PA5 IRQ_TYPE_LEVEL_LOW>;
+	
+    d27: gpio@20 {
+		compatible = "ti,tca9534";
+		reg = <0x20>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		gpio-controller;
+		#gpio-cells = <2>;
 	};
-
-	*/
+	
+    d28: gpio@21 {
+		compatible = "ti,tca9534";
+		reg = <0x21>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
 };
 
 &i2c2 {
-	status = "okay";
-
+	
 	clock-frequency = <100000>;
 
 	/* These are relatively safe rise/fall times; TODO: measure */
 	i2c-scl-falling-time-ns = <50>;
 	i2c-scl-rising-time-ns = <300>;
-/*
-	ov13850: ov13850@10 {
-		compatible = "ovti,ov13850";
-		status = "okay";
-		reg = <0x10>;
-		clocks = <&cru SCLK_CIF_OUT>;
-		clock-names = "xvclk";
+    
+    // I2C2_SCL / GPIO2_C0
+	// I2C2_SDA / GPIO2_B7
+	pinctrl-names = "default";
+    pinctrl-0 = <&i2c2_xfer>;
+    status = "okay";
+};
 
-		// conflict with csi-ctl-gpios 
-		reset-gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
-		pwdn-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
+&i2c3 {
+	
+	clock-frequency = <100000>;
 
-		avdd-supply = <&vcc_mipi>; // VCC28_MIPI 
-		dovdd-supply = <&vcc_mipi>; // VCC18_MIPI 
-		dvdd-supply = <&dvdd_1v2>; // DVDD_1V2 
-
-		rockchip,camera-module-index = <0>;
-		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "CMK-CT0116";
-		rockchip,camera-module-lens-name = "Largan-50013A1";
-
-		port {
-			ucam_out: endpoint {
-				remote-endpoint = <&mipi_in_ucam>;
-				data-lanes = <1 2>;
-			};
-		};
-	};
-
-	gslx680: gslx680@41 {
-	    compatible = "gslX680";
-	    reg = <0x41>;
-	    screen_max_x = <800>;
-	    screen_max_y = <1280>;
-	    touch-gpio = <&gpio0 5 IRQ_TYPE_LEVEL_LOW>;
-	    reset-gpio = <&gpio0 12 GPIO_ACTIVE_HIGH>;
-		flip-x = <1>;
-		flip-y = <0>;
-		swap-xy = <0>;
-		gsl,fw = <1>;
-	};
-*/
+	/* These are relatively safe rise/fall times; TODO: measure */
+	i2c-scl-falling-time-ns = <50>;
+	i2c-scl-rising-time-ns = <300>;
+    
+    // I2C3_SCL / GPIO1_B5 / SPI0_MOSI
+	// I2C3_SDA / GPIO1_B4 / SPI0_MISO
+	pinctrl-names = "default";
+    pinctrl-0 = <&i2c3_xfer>;
+    status = "disabled";
 };
 
 &i2s1_2ch {
@@ -922,55 +906,83 @@
 	pmuio1-supply = <&vcc3v0_pmu>;
 	pmuio2-supply = <&vcc3v0_pmu>;
 };
-
+/*
 &pwm0 {
 	status = "okay";
 };
+*/
+
+&uart0 {
+    // UART0_TX / GPIO0_B2
+    // UART0_RX / GPIO0_B3
+    // UART0_CTS / GPIO0_B4
+    // UART0_RTS / GPIO0_B5
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
+    status = "okay";
+};
+
+&uart1 {
+    // UART1_TX / GPIO1_C0
+    // UART1_RX / GPIO1_C1
+    // UART1_CTS / GPIO1_C2
+    // UART1_RTS / GPIO1_C3
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_xfer &uart1_cts &uart1_rts>;
+	status = "okay";
+};
+
+&uart2 {
+    // UART2_TX / GPIO2_C4
+    // UART2_RX / GPIO2_C6
+	// DON'T ENABLE, USE FIQ_DEBUGGER INSTEAD
+	pinctrl-0 = <&uart2m1_xfer>;
+	status = "disabled";
+};
 
 &uart3 {
-	status = "okay"; // to enable uart3, plz disable pwm3
-	pinctrl-0 = <&uart3m0_xfer &uart3m0_cts &uart3m0_rts>;
+    // UART3_TX / GPIO0_C0
+    // UART3_RX / GPIO0_C1
+    // UART3_CTS / GPIO0_C2 / I2C1_SCL
+    // UART3_RTS / GPIO0_C3 / I2C1_SDA
+    
+    // WITHOUT I2C1
+	//pinctrl-0 = <&uart3m0_xfer &uart3m0_cts &uart3m0_rts>;
+	
+	// WITH I2C1
+	pinctrl-0 = <&uart3m0_xfer>;
+	status = "okay";
 };
 
-&pwm3 {
+&uart4 {
+    // UART4_TX / GPIO1_D5 / uSD_DAT3-UART4_TX
+    // UART4_RX / GPIO1_D4 / uSD_DAT2-UART4_RX
+	// DON'T ENABLE, USD DATA LINES ARE ASSIGNED TO
+	pinctrl-0 = <&uart4_xfer>;
 	status = "disabled";
-	interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH 0>;
-	compatible = "rockchip,remotectl-pwm";
-	pinctrl-names = "default";
-	remote_pwm_id = <3>;
-	handle_cpu_id = <0>;
-	remote_support_psci = <1>;
-
-    ir_key1{
-        rockchip,usercode = <0xff00>;
-        rockchip,key_table =
-            <0xeb   KEY_POWER>,
-            <0xec   KEY_COMPOSE>,
-            <0xfe   KEY_BACK>,
-            <0xb7   KEY_HOME>,
-            <0xa3   KEY_WWW>,
-            <0xf4   KEY_VOLUMEUP>,
-            <0xa7   KEY_VOLUMEDOWN>,
-            <0xf8   KEY_ENTER>,
-            <0xfc   KEY_UP>,
-            <0xfd   KEY_DOWN>,
-            <0xf1   KEY_LEFT>,
-            <0xe5   KEY_RIGHT>;
-    };
 };
 
+&uart5 {
+    // UART5_TX / GPIO3_A1
+    // UART5_RX / GPIO3_A2
+    // UART5_CTS / GPIO3_A3
+    // UART5_RTS / GPIO3_A5
+	pinctrl-0 = <&uart5_xfer &uart5_cts &uart5_rts>;
+	status = "okay";
+};
 
+/*
 &rk_rga {
 	status = "okay";
 };
 
 &rk_isp {
 	rockchip,gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_HIGH>;
-    status = "okay";
+    status = "disable";
 };
-/*
+
 &rkisp1 {
-	status = "okay";
+	status = "disabled";
 
 	port {
 		#address-cells = <1>;
@@ -994,19 +1006,32 @@
 	vref-supply = <&vcc1v8_soc>;
 };
 */
-&spi0 {
-    status = "disabled"; /* spi0_clk conflicts with camera vcc_mipi */
-    max-freq = <48000000>;
 
-    spi_wk2xxx: spi_wk2xxx@00{
-           status = "okay";
-           compatible = "firefly,spi-wk2xxx";
-           reg = <0x00>;
-           spi-max-frequency = <10000000>;
-           //reset-gpio = <&gpio2 11 GPIO_ACTIVE_HIGH>;
-           //irq-gpio = <&gpio0 13 IRQ_TYPE_EDGE_FALLING>;
-           cs-gpio = <&gpio1 14 GPIO_ACTIVE_LOW>;
-       };
+&spi0 {
+    max-freq = <48000000>;
+    pinctrl-names = "default", "high_speed";
+    pinctrl-0 = <&spi0_clk &spi0_csn &spi0_miso &spi0_mosi>;
+    pinctrl-1 = <&spi0_clk_hs &spi0_csn &spi0_miso_hs &spi0_mosi_hs>;
+
+    status = "okay";
+
+    ethernet1: w5100@0 {
+        compatible = "wiznet,w5100";
+        reg = <0>;
+        interrupt-parent = <&d27>;
+        interrupts = <7 IRQ_TYPE_EDGE_RISING>;
+        spi-max-frequency = <30000000>;
+        status = "okay";
+    };
+};
+
+&spi1 {
+    max-freq = <48000000>;
+    pinctrl-names = "default", "high_speed";
+	pinctrl-0 = <&spi1_clk &spi1_csn0 &spi1_csn1 &spi1_miso &spi1_mosi>;
+	pinctrl-1 = <&spi1_clk_hs &spi1_csn0 &spi1_csn1 &spi1_miso_hs &spi1_mosi_hs>;
+	
+	status = "okay";
 };
 
 &emmc {
@@ -1057,17 +1082,6 @@
 	status = "okay";
 };
 */
-&uart1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart1_xfer &uart1_cts>;
-	status = "okay";
-};
-
-&uart0 {
-    pinctrl-names = "default";
-    pinctrl-0 = <&uart0_xfer>;
-    status = "okay";
-};
 
 &u2phy {
 	status = "okay";
