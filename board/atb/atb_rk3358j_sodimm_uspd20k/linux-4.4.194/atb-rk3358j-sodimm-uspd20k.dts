@@ -208,8 +208,7 @@
 		regulator-max-microvolt = <5000000>;
 	};
 
-    /*
-	vcc5v0_host_en: vcc5v0-host-en-regulator {
+/* vcc5v0_host_en: vcc5v0-host-en-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
@@ -217,8 +216,30 @@
 		pinctrl-0 = <&host_vbus_drv>;
 		regulator-name = "vcc5v0_host_en";
 		regulator-always-on;
+	}; */
+
+	wireless-wlan {
+		compatible = "wlan-platdata";
+		wifi_chip_type = "rtl8723ds";
+		// WL_HOST_WAKE#
+		WIFI,host_wake_irq = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+		status = "okay";
 	};
-	*/
+
+	wireless-bluetooth {
+		compatible = "bluetooth-platdata";
+		clocks = <&rk809 1>;
+		clock-names = "ext_clock";
+		uart_rts_gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default","rts_gpio";
+		pinctrl-0 = <&uart1_rts>, <&bt_reset>;
+		pinctrl-1 = <&uart1_rts_gpio>;
+		// BT_ENABLE
+		BT,reset_gpio = <&gpio3 RK_PA0 GPIO_ACTIVE_HIGH>;
+		// BT_WAKE_HOST#
+		BT,wake_host_irq = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
 
 /*	vcc_mipi: vcc_mipi {
 		compatible = "regulator-fixed";
@@ -236,27 +257,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&cif_pwr>;
 		regulator-name = "dvdd_1v2";
-	};
-
-	wireless-wlan {
-		compatible = "wlan-platdata";
-		wifi_chip_type = "rtl8723ds";
-		WIFI,host_wake_irq = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-		status = "okay";
-	};
-
-	wireless-bluetooth {
-		compatible = "bluetooth-platdata";
-		clocks = <&rk809 1>;
-		clock-names = "ext_clock";
-		uart_rts_gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;
-		pinctrl-names = "default","rts_gpio";
-		pinctrl-0 = <&uart1_rts>, <&bt_reset>;
-		pinctrl-1 = <&uart1_rts_gpio>;
-		BT,reset_gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
-		//BT,wake_gpio = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
-		BT,wake_host_irq = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
-		status = "okay";
 	};
 
 	leds {
@@ -816,7 +816,7 @@
 &pinctrl {
 	bluetooth {
 		bt_reset: bt-reset{
-			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
@@ -826,23 +826,7 @@
 		};
 	};
  
-    /*sdmmc {
-        sdmmc_clk: sdmmc-clk {
-            rockchip,pins =
-                <1 RK_PD6 RK_FUNC_1 &pcfg_pull_none_8ma>;
-        };
 
-        sdmmc_cmd: sdmmc-cmd {
-            rockchip,pins =
-                <1 RK_PD7 RK_FUNC_1 &pcfg_pull_up_8ma>;
-        };
-        
-        sdmmc_det: sdmmc-det {
-            rockchip,pins =
-                <0 RK_PA3 RK_FUNC_1 &pcfg_pull_up_8ma>;
-        };
-    }
-	*/
 	pmic {
 		pmic_int: pmic_int {
 			rockchip,pins =
@@ -885,19 +869,10 @@
 
 	sdio-pwrseq {
 		wifi_enable_h: wifi-enable-h {
-			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
-	cam0 {
-		cif_pwr: cif-pwr {
-			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
-		};
-
-		dvp_pwr: dvp-pwr {
-			rockchip,pins = <1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_down>;
-		};
-	};
 };
 
 &pmu_io_domains {
@@ -928,7 +903,9 @@
     // UART1_CTS / GPIO1_C2
     // UART1_RTS / GPIO1_C3
 	pinctrl-names = "default";
-	pinctrl-0 = <&uart1_xfer &uart1_cts &uart1_rts>;
+	// DON'T DECLARE RTS, IT'S DECLARED IN BT CONFIGURATION
+	//pinctrl-0 = <&uart1_xfer &uart1_cts &uart1_rts>;
+    pinctrl-0 = <&uart1_xfer &uart1_cts>;
 	status = "okay";
 };
 
@@ -1062,7 +1039,7 @@
 	status = "okay";
 };
 
-/*
+
 &sdio {
 	bus-width = <4>;
 	cap-sd-highspeed;
@@ -1074,7 +1051,7 @@
 	sd-uhs-sdr104;
 	status = "okay";
 };
-
+/*
 &tsadc {
 	pinctrl-names = "init", "default";
 	pinctrl-0 = <&tsadc_otp_gpio>;
