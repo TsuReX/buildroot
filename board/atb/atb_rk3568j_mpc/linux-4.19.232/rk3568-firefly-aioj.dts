@@ -27,7 +27,6 @@
     status = "okay";
     connect = <&vp0_out_hdmi>;
 };
-<<<<<<< HEAD
 
 
 &pcie3x2 {
@@ -37,5 +36,3 @@
 &pcie3x1 {
 	status = "disabled";
 };
-=======
->>>>>>> atb_rk3568j_smc
