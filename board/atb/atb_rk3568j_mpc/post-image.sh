@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+#set -xe
 
 BUILDROOT_HOME=$(pwd)
 #OUTPUT=`dirname ${1}`
