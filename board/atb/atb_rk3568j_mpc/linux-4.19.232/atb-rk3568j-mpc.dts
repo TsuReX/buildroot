@@ -18,15 +18,12 @@
 #include "rk3568.dtsi"
 
 / {
-    //compatible = "rockchip,rk3568-firefly-aioj", "rockchip,rk3568";
     compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
     
     model = "ATB-RK3568J-MPC";
     
     chosen: chosen {
-		// bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=PARTLABEL=rootfs rootfstype=ext4 ro rootwait overlayroot=device:dev=PARTLABEL=userdata,fstype=ext4,mkfs=1 coherent_pool=1m systemd.gpt_auto=0 cgroup_enable=memory swapaccount=1 swiotlb=0x10000";
-    
-        bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk0p3=rootfs rootfstype=ext4 ro rootwait";
+        bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
     };
 
 	fiq-debugger {
