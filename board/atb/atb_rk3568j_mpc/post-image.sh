@@ -13,11 +13,13 @@ SOC=RK3568J
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
+IMAGE_NAME="$(basename -s .dtb $2)"
 
 echo "argc = $#"
 echo "arg0 = $0"
 echo "arg1 = $1"
 echo "arg2 = $2"
+
 
 UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
 
@@ -114,14 +116,14 @@ ${OUTPUT}/host/bin/genimage \
 	--outputpath "${BINARIES_DIR}" \
 	--config "${GENIMAGE_CFG}"
 
-mv ${IMAGES}/sdcard.img ${IMAGES}/${BOARD_NAME}.img
+mv ${IMAGES}/sdcard.img ${IMAGES}/${IMAGE_NAME}.img
 
 if [ $? -eq 0 ]; then
 	echo
 	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
 	echo "command to your terminal:"
 	echo
-	echo "		sudo dd if=${IMAGES}/${BOARD_NAME}.img of=/dev/sdX status=progress bs=1M"
+	echo "		sudo dd if=${IMAGES}/${IMAGE_NAME}.img of=/dev/sdX status=progress bs=1M"
 	echo
 	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
