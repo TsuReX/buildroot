@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+#set -xe
 
 #
 # Common variables
@@ -32,14 +32,12 @@ mkdir -p home
 #
 # Create mass storage file
 #
-rm -rf var/run/mass_storage
-dd if=/dev/zero of=var/run/mass_storage bs=512 seek=128K count=0
-cat <<EOT | /sbin/sfdisk -L -uS var/run/mass_storage
-,,c
-EOT
-/sbin/mkfs.vfat --offset=2048 -S512 var/run/mass_storage
-
-cd -
-
-cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/S91MassStorage ${TARGET}/etc/init.d/
-chmod 0755 ${TARGET}/etc/init.d/S91MassStorage
+#rm -rf var/run/mass_storage
+#dd if=/dev/zero of=var/run/mass_storage bs=512 seek=128K count=0
+#cat <<EOT | /sbin/sfdisk -L -uS var/run/mass_storage
+#,,c
+#EOT
+#/sbin/mkfs.vfat --offset=2048 -S512 var/run/mass_storage
+#cd -
+#cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/S91MassStorage ${TARGET}/etc/init.d/
+#chmod 0755 ${TARGET}/etc/init.d/S91MassStorage
