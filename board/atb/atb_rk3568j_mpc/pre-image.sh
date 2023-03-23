@@ -28,6 +28,14 @@ mkdir -p var/run
 mkdir -p var/lock
 mkdir -p var/log
 mkdir -p home
+mkdir -p etc/network
+mkdir -p etc/ifplugd
+
+cd -
+
+cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/interfaces ${TARGET}/etc/network/
+cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/ifplugd.conf ${TARGET}/etc/ifplugd/
+cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/fstab ${TARGET}/etc/
 
 #
 # Create mass storage file
