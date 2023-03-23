@@ -593,8 +593,7 @@
 
 &pcie3x1 {
 
-    // ATB-RK3568J-MPC
-    // PCIE30X1_PERSTn
+    // PCIE30X1_PERSTn -> R115(0) -> D8
     reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
 
     vpcie3v3-supply = <&pcie30_3v3>;
