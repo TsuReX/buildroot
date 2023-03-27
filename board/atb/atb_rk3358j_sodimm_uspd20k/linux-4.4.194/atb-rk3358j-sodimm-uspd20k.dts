@@ -418,9 +418,10 @@
 
 &gmac {
 	phy-supply = <&vcc_phy>;
+//	clock_in_out = "input";
 	clock_in_out = "output";
 	// RMII_RESET#
-	snps,reset-gpio = <&gpio2 13 GPIO_ACTIVE_LOW>;
+	snps,reset-gpio = <&gpio2 RK_PB5 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 50000 50000>;
 	status = "okay";
@@ -433,6 +434,12 @@
 
 &i2c0 {
 	status = "okay";
+
+	clock-frequency = <100000>;
+
+	/* These are relatively safe rise/fall times; TODO: measure */
+	i2c-scl-falling-time-ns = <50>;
+	i2c-scl-rising-time-ns = <300>;
 
     // I2C0_SCL / GPIO0_B0
 	// I2C0_SDA / GPIO0_B1
@@ -703,6 +710,12 @@
 };
 
 &i2c1 {
+	clock-frequency = <100000>;
+
+	/* These are relatively safe rise/fall times; TODO: measure */
+	i2c-scl-falling-time-ns = <50>;
+	i2c-scl-rising-time-ns = <300>;
+
     // UART3_CTS / GPIO0_C2 / I2C1_SCL
     // UART3_RTS / GPIO0_C3 / I2C1_SDA
 	pinctrl-names = "default";
