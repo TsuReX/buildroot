@@ -50,18 +50,44 @@ if ! [ -d ${BUILD}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
 	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
 fi
-
-sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD}/rkbin/tools/ddrbin_param.txt > ${BUILD}/rkbin/tools/ddrbin_param_115200.txt
-cp ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
-${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
-
 PLAT=rk3568
-SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
-#TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
-TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
+#SPL_BIN=rk356x_spl_nand_v1.07.bin
+#SPL_BIN=rk356x_spl_v1.08.bin
+SPL_BIN=rk356x_spl_v1.12.bin
+
+
+#TPL_BIN=rk3568_ddr_1056MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_1184MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_528MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_780MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_920MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1332MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_1560MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_324MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_630MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_780MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1184MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_1332MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1560MHz_v1.05-firefly.bin
+#TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
+#TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
+TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+
+SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
+TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${TPL_BIN}
+
+UART_TPL_BIN=uart_115200_${TPL_BIN}
+sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD}/rkbin/tools/ddrbin_param.txt > ${BUILD}/rkbin/tools/ddrbin_param_115200.txt
+cp ${TPL_BIN_PATH} ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
+${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
+TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
+
 
 # 1. Create idblock.bin
-${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
+${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES}/idblock.bin
 
 # 2. Create uboot.img
 REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
