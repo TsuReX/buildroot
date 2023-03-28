@@ -24,7 +24,7 @@
 	};
 
 	chosen: chosen {
-		stdout-path = "serial2:1500000n8";
+		stdout-path = "serial2:115200n8";
 		bootargs = "root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
 	};
 
