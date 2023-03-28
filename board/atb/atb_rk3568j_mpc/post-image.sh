@@ -51,9 +51,14 @@ if ! [ -d ${BUILD}/rkbin ]; then
 	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
 fi
 
+sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD}/rkbin/tools/ddrbin_param.txt > ${BUILD}/rkbin/tools/ddrbin_param_115200.txt
+cp ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
+${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
+
 PLAT=rk3568
 SPL_BIN=${BUILD}/rkbin/bin/rk35/rk356x_spl_v1.12.bin
-TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
+#TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.13.bin
+TPL_BIN=${BUILD}/rkbin/bin/rk35/rk3568_ddr_1560MHz_uart_115200_v1.13.bin
 
 # 1. Create idblock.bin
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
