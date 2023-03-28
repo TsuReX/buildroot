@@ -37,13 +37,22 @@ fi
 
 PLAT=px30
 
-SPL_BIN=${BUILD}/rkbin/bin/rk33/px30_miniloader_v1.35.bin
-TPL_BIN=${BUILD}/rkbin/bin/rk33/px30_ddr_333MHz_uart2_m1_v2.02.bin
+SPL_BIN=px30_miniloader_v1.35.bin
 
+TPL_BIN=px30_ddr_333MHz_uart2_m1_v2.02.bin
+
+SPL_BIN_PATH=${BUILD}/rkbin/bin/rk33/${SPL_BIN}
+TPL_BIN_PATH=${BUILD}/rkbin/bin/rk33/${TPL_BIN}
+
+UART_TPL_BIN=TPL_BIN=px30_ddr_333MHz_uart2_m1_uart_115200_v2.02.bin
+sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD}/rkbin/tools/ddrbin_param.txt > ${BUILD}/rkbin/tools/ddrbin_param_115200.txt
+cp ${TPL_BIN_PATH} ${BUILD}/rkbin/bin/rk33/${UART_TPL_BIN}
+${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk33/${UART_TPL_BIN}
+TPL_BIN_PATH=${BUILD}/rkbin/bin/rk33/${UART_TPL_BIN}
 
 # 1. Create idblock.bin
-echo "---> ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin"
-${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN}:${SPL_BIN} ${IMAGES}/idblock.bin
+#echo "---> ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES}/idblock.bin"
+${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES}/idblock.bin
 
 # px30_loader_v2.02.135.bin
 #./rkbin/tools/boot_merger /home/user/drive/workspace/rk356x_linux_release_20211019/rkbin/RKBOOT/PX30MINIALL.ini
