@@ -1,10 +1,6 @@
 #!/bin/sh
 
-<<<<<<< HEAD
 #set -xe
-=======
-set -xe
->>>>>>> atb_rk3568j_smc
 
 #
 # Common variables
@@ -32,7 +28,6 @@ mkdir -p var/run
 mkdir -p var/lock
 mkdir -p var/log
 mkdir -p home
-<<<<<<< HEAD
 mkdir -p etc/network
 mkdir -p etc/ifplugd
 
@@ -41,13 +36,10 @@ cd -
 cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/interfaces ${TARGET}/etc/network/
 cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/ifplugd.conf ${TARGET}/etc/ifplugd/
 cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/fstab ${TARGET}/etc/
-=======
->>>>>>> atb_rk3568j_smc
 
 #
 # Create mass storage file
 #
-<<<<<<< HEAD
 #rm -rf var/run/mass_storage
 #dd if=/dev/zero of=var/run/mass_storage bs=512 seek=128K count=0
 #cat <<EOT | /sbin/sfdisk -L -uS var/run/mass_storage
@@ -57,16 +49,3 @@ cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/fstab ${TARGET}/etc/
 #cd -
 #cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/S91MassStorage ${TARGET}/etc/init.d/
 #chmod 0755 ${TARGET}/etc/init.d/S91MassStorage
-=======
-rm -rf var/run/mass_storage
-dd if=/dev/zero of=var/run/mass_storage bs=512 seek=128K count=0
-cat <<EOT | /sbin/sfdisk -L -uS var/run/mass_storage
-,,c
-EOT
-/sbin/mkfs.vfat --offset=2048 -S512 var/run/mass_storage
-
-cd -
-
-cp ${BUILDROOT_HOME}/board/atb/${BOARD_NAME}/S91MassStorage ${TARGET}/etc/init.d/
-chmod 0755 ${TARGET}/etc/init.d/S91MassStorage
->>>>>>> atb_rk3568j_smc
