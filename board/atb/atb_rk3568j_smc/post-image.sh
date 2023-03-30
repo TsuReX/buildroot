@@ -85,6 +85,10 @@ cp ${TPL_BIN_PATH} ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
 ${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
 TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
 
+echo "SPL_BIN_PATH ${SPL_BIN_PATH}"
+echo "TPL_BIN_PATH ${TPL_BIN_PATH}"
+echo "UART_TPL_BIN ${UART_TPL_BIN}"
+
 # 1. Create idblock.bin
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES}/idblock.bin
 

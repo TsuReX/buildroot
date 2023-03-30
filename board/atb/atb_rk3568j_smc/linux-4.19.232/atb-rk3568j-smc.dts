@@ -1,13 +1,5 @@
 /dts-v1/;
 
-//// #include "rk3568-firefly-aioj.dtsi"
-
-//// #include "rk3568-firefly-port.dtsi"
-
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/pinctrl/rockchip.h>
-
-//// #include "rk3568-firefly-core.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/pwm/pwm.h>
@@ -18,14 +10,11 @@
 #include "rk3568.dtsi"
 
 / {
-    //compatible = "rockchip,rk3568-firefly-aioj", "rockchip,rk3568";
     compatible = "atb,atb-rk3568j-smc", "rockchip,rk3568";
     
     model = "ATB-RK3568J-SMC";
     
     chosen: chosen {
-		// bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=PARTLABEL=rootfs rootfstype=ext4 ro rootwait overlayroot=device:dev=PARTLABEL=userdata,fstype=ext4,mkfs=1 coherent_pool=1m systemd.gpt_auto=0 cgroup_enable=memory swapaccount=1 swiotlb=0x10000";
-    
         bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk0p3=rootfs rootfstype=ext4 ro rootwait";
     };
 
@@ -78,43 +67,6 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&dc_12v>;
 	};
-
-	vcc5v0_host: vcc5v0-host-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_host_en>;
-		regulator-name = "vcc5v0_host";
-		regulator-always-on;
-	};
-
-	vcc5v0_otg: vcc5v0-otg-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_otg_en>;
-		regulator-name = "vcc5v0_otg";
-	};
-
-	/*vcc3v3_lcd0_n: vcc3v3-lcd0-n {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_lcd0_n";
-		regulator-boot-on;
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
-	};
-
-	vcc3v3_lcd1_n: vcc3v3-lcd1-n {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_lcd1_n";
-		regulator-boot-on;
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
-	};*/
 
 	vcc2v5_sys: vcc2v5-ddr {
 		compatible = "regulator-fixed";
@@ -176,59 +128,6 @@
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&vcc5v0_sys>;
 	};
-
-	vcc_camera: vcc-camera-regulator {
-		compatible = "regulator-fixed";
-		//gpio = <&pca9555 PCA_IO0_0 GPIO_ACTIVE_HIGH>;
-		gpio = <&pca9555 PCA_IO0_3 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc_cam>;
-		regulator-name = "vcc_camera";
-		enable-active-high;
-		status = "disabled";
-	};
-
-/*	vcc_hub_power: vcc-hub-power-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio3 RK_PA2 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc_hub_power_en>;
-		regulator-name = "vcc_hub_power_en";
-		regulator-always-on;
-	};*/
-
-/*	vcc_hub_reset: vcc-hub-reset-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc_hub_reset_en>;
-		regulator-name = "vcc_hub_reset_en";
-		regulator-always-on;
-	};*/
-
-    /* Enable PCIE clock generaton U7 on the dev borad */
-    /*pcie_pi6c_oe: pcie-pi6c-oe-regulator {
-		compatible = "regulator-fixed";
-		//enable-active-high;
-		//PCIECLKIC_OE_H_GPIO3_A7
-		gpio = <&gpio3 RK_PA7 GPIO_ACTIVE_LOW>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pcie_pi6c_oe_en>;
-		regulator-name = "pcie_pi6c_oe_en";
-		regulator-always-on;
-	};*/
-
-    /*vcc_4g_power: vcc-4g-power-regulator {
-        compatible = "regulator-fixed";
-        enable-active-high;
-        gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&vcc_4g_power_en>;
-        regulator-name = "vcc_4g_power_en";
-        regulator-always-on;
-    };*/
 
 	audiopwmout_diff: audiopwmout-diff {
 		status = "disabled";
@@ -348,8 +247,6 @@
         compatible = "firefly,rk356x-gpio";
         // VD12 USER
         firefly-gpio = <&gpio0 12 GPIO_ACTIVE_HIGH>;          /* GPIO0_A7 */
-        
-        //firefly-irq-gpio = <&gpio4 29 IRQ_TYPE_EDGE_RISING>;  /* GPIO4_D5 */
     };
 
     pwm_demo: pwm_demo {
@@ -371,34 +268,6 @@
 		status = "disabled";
 	};
 
-	atb_leds: leds {
-		status = "okay";
-		compatible = "gpio-leds";
-
-		user_led: user {
-			label = "user";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			// VD12 USER
-			gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_HIGH>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&led_user>;
-		};
-
-		/*user_led: user {
-			label = "firefly:yellow:user";
-			linux,default-trigger = "ir-user-click";
-			default-state = "off";
-			gpios = <&pca9555 PCA_IO1_2 GPIO_ACTIVE_LOW>;
-		};
-
-		fan_ctl: fan-ctl {
-			label = "firefly:fan_ctl:user";
-			linux,default-trigger = "ir-user-click";
-			default-state = "on";
-			gpios = <&pca9555 PCA_IO1_0 GPIO_ACTIVE_HIGH>;
-		};*/
-	};
 	adc_keys: adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 0>;
@@ -499,97 +368,72 @@
 };
 
 &gmac0 {
-	phy-mode = "rgmii";
-	clock_in_out = "input";
-    
-	// ATB-RK3568J-SMC
-    // RGMII0_RST -> N-MOSFET(VT6) -> RGMII0_RST_
-    
-	snps,reset-gpio = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
-	snps,reset-active-high;
-	
-	/* Reset time is 20ms, 100ms for rtl8211f */
-	snps,reset-delays-us = <0 20000 100000>;
-
 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
-	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>, <&gmac0_clkin>;
-
+	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
+	assigned-clock-rates = <0>, <125000000>;
+	clock_in_out = "output";
+	phy-handle = <&rgmii_phy0>;
+	phy-mode = "rgmii-id";
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac0_miim
 		     &gmac0_tx_bus2
 		     &gmac0_rx_bus2
 		     &gmac0_rgmii_clk
-		     &gmac0_rgmii_bus
-		     &gmac0_clkinout>;
+		     &gmac0_rgmii_bus>;
 
-//	tx_delay = <0x3c>;
-//	rx_delay = <0x2f>;
+    tx_delay = <0x3c>;
+	rx_delay = <0x2f>;
 
-	tx_delay = <0x1>;
-    rx_delay = <0x1>;
-
-
-	phy-handle = <&rgmii_phy0>;
-	status = "ok";
+	status = "okay";
 };
 
 &gmac1 {
-	phy-mode = "rgmii";
-	clock_in_out = "input";
-    
-    // ATB-RK3568J-SMC
-    // RGMII1_RST -> N-MOSFET(VT7) -> RGMII1_RST_
-    
-	snps,reset-gpio = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
-	snps,reset-active-high;
-
-	/* Reset time is 20ms, 100ms for rtl8211f */
-	snps,reset-delays-us = <0 20000 100000>;
-
 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
-	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&gmac1_clkin>;
-
+	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
+	assigned-clock-rates = <0>, <125000000>;
+	clock_in_out = "output";
+	phy-handle = <&rgmii_phy1>;
+	phy-mode = "rgmii-id";
 	pinctrl-names = "default";
-
-	// ATB-RK3568J-SMC
-
-    pinctrl-0 = <&gmac1m0_tx_bus2
+	pinctrl-0 = <&gmac1m0_tx_bus2
 		     &gmac1m0_rx_bus2
 		     &gmac1m0_rgmii_clk
-		     &gmac1m0_rgmii_bus
-		     &gmac1m0_clkinout>;
+		     &gmac1m0_rgmii_bus>;
 
-//    tx_delay = <0x1>;
-//    rx_delay = <0x1>;
-		     
-	tx_delay = <0x4f>;
+    tx_delay = <0x4f>;
 	rx_delay = <0x26>;
 
-	phy-handle = <&rgmii_phy1>;
-	status = "disabled";
+	status = "okay";
 };
 
 &mdio0 {
-	rgmii_phy0: phy@1 {
+	rgmii_phy0: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0x1>;
-		led_status_value = <0x6940>;
+		reset-assert-us = <20000>;
+		reset-deassert-us = <100000>;
+/*
+        RGMII0_RST -> VT6(NMOS) -> RGMII0_RST_
+        0 -> 1
+        1 -> 0
+*/
+        reset-gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
 	};
 	
-	rgmii_phy1: phy@2 {
+    rgmii_phy1: ethernet-phy@2 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0x2>;
-		led_status_value = <0x6940>;
+		reset-assert-us = <20000>;
+		reset-deassert-us = <100000>;
+/*
+        RGMII1_RST -> VT7(NMOS) -> RGMII1_RST_
+        0 -> 1
+        1 -> 0
+*/
+		reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
 	};
-};
 
-/*&mdio1 {
-	rgmii_phy1: phy@2 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x2>;
-		led_status_value = <0x6940>;
-	};
-};*/
+};
 
 &pcie30phy {
 	status = "disabled";
@@ -597,7 +441,6 @@
 
 &pcie3x1 {
 
-    // ATB-RK3568J-SMC
     // PCIE30X2_PERSTn
     reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 
@@ -608,7 +451,6 @@
 
 &pcie3x2 {
 
-    // ATB-RK3568J-SMC
     // PCIE30X2_PERSTn
     reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
     
@@ -912,167 +754,17 @@
 	status = "disabled";
 	clock-frequency = <100000>;
 
-	pca9555: gpio@21 {
-		status = "disabled";
-		compatible = "nxp,pca9555";
-		reg = <0x21>;
-		gpio-controller;
-		#gpio-cells = <2>;
-		gpio-group-num = <500>;
-	};
-
-	gt1x: gt1x@14 {
-		status = "disabled";
-		compatible = "goodix,gt1x";
-		reg = <0x14>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&touch_gpio>;
-		goodix,rst-gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
-		goodix,irq-gpio = <&gpio0 RK_PB5 IRQ_TYPE_LEVEL_LOW>;
-	};
 };
 
 &i2c4 {
 	status = "disabled";
 	clock-frequency = <400000>;
-/*
-	XC7160b: XC7160b@1b{
-        status = "okay";
-        compatible = "firefly,xc7160";
-        reg = <0x1b>;
-        clocks = <&cru CLK_CIF_OUT>;
-        clock-names = "xvclk";
-        //avdd-supply = <&vcc_mipi>;
-        power-domains = <&power RK3568_PD_VI>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&cif_clk>;
 
-        //power-gpios = <&pca9555 PCA_IO0_4 GPIO_ACTIVE_HIGH>;
-        reset-gpios = <&pca9555 PCA_IO0_0 GPIO_ACTIVE_HIGH>;
-        pwdn-gpios = <&pca9555 PCA_IO0_1 GPIO_ACTIVE_HIGH>;
-
-        firefly,clkout-enabled-index = <0>;
-        rockchip,camera-module-index = <0>;
-        rockchip,camera-module-facing = "back";
-        rockchip,camera-module-name = "NC";
-        rockchip,camera-module-lens-name = "NC";
-        port {
-			xc7160b_out: endpoint {
-				remote-endpoint = <&mipi_in_ucam3>;
-                data-lanes = <1 2 3 4>;
-            };
-        };
-    };
-
-	gc8034: gc8034@37 {
-		compatible = "galaxycore,gc8034";
-		status = "disabled";
-		reg = <0x37>;
-		clocks = <&cru CLK_CIF_OUT>;
-		clock-names = "xvclk";
-		pinctrl-names = "default";
-		pinctrl-0 = <&cif_clk>;
-		reset-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>;
-		pwdn-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_LOW>;
-		rockchip,grf = <&grf>;
-		rockchip,camera-module-index = <0>;
-		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "RK-CMK-8M-2-v1";
-		rockchip,camera-module-lens-name = "CK8401";
-		port {
-			gc8034_out: endpoint {
-				remote-endpoint = <&mipi_in_ucam1>;
-				data-lanes = <1 2 3 4>;
-			};
-		};
-	};
-
-	os04a10: os04a10@36 {
-		status = "disabled";
-		compatible = "ovti,os04a10";
-		reg = <0x36>;
-		clocks = <&cru CLK_CIF_OUT>;
-		clock-names = "xvclk";
-		power-domains = <&power RK3568_PD_VI>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&cif_clk>;
-		reset-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>;
-		pwdn-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-		rockchip,camera-module-index = <0>;
-		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "CMK-OT1607-FV1";
-		rockchip,camera-module-lens-name = "M12-40IRC-4MP-F16";
-		port {
-			ucam_out0: endpoint {
-				remote-endpoint = <&mipi_in_ucam0>;
-				data-lanes = <1 2 3 4>;
-			};
-		};
-	};
-
-	ov5695: ov5695@36 {
-		status = "disabled";
-		compatible = "ovti,ov5695";
-		reg = <0x36>;
-		clocks = <&cru CLK_CIF_OUT>;
-		clock-names = "xvclk";
-		power-domains = <&power RK3568_PD_VI>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&cif_clk>;
-		reset-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_HIGH>;
-		pwdn-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-		rockchip,camera-module-index = <0>;
-		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "TongJu";
-		rockchip,camera-module-lens-name = "CHT842-MD";
-		port {
-			ov5695_out: endpoint {
-				remote-endpoint = <&mipi_in_ucam2>;
-				data-lanes = <1 2>;
-			};
-		};
-	};
-*/
 };
 
 &i2c5 {
 	status = "disabled";
 
-/*	hym8563: hym8563@51 {
-		status = "disabled";
-		compatible = "haoyu,hym8563";
-		reg = <0x51>;
-		#clock-cells = <0>;
-		rtc-irq-gpio = <&gpio0 RK_PD3 IRQ_TYPE_EDGE_FALLING>;
-		clock-frequency = <32768>;
-		// clock-output-names = "xin32k";
-        // rtc_int is not connected
-	};
-
-	mc3230: mc3230sensor@4c {
-		compatible = "gs_mc3230";
-		reg = <0x4c>;
-		type = <SENSOR_TYPE_ACCEL>;
-		irq_enable = <0>;
-		poll_delay_ms = <30>;
-		layout = <4>;
-		status = "disabled";
-	};
-
-	mxc6655xa: mxc6655xa@15 {
-		status = "disabled";
-		compatible = "gs_mxc6655xa";
-		pinctrl-names = "default";
-		pinctrl-0 = <&mxc6655xa_irq_gpio>;
-		reg = <0x15>;
-		irq-gpio = <&gpio3 RK_PC1 IRQ_TYPE_LEVEL_LOW>;
-		irq_enable = <0>;
-		poll_delay_ms = <30>;
-		type = <SENSOR_TYPE_ACCEL>;
-		power-off-in-suspend = <1>;
-		layout = <1>;
-	};
-	*/
 };
 
 &pmu_io_domains {
@@ -1197,28 +889,7 @@
 			reg = <0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-/*
-			mipi_in_ucam0: endpoint@1 {
-				reg = <1>;
-				remote-endpoint = <&ucam_out0>;
-				data-lanes = <1 2 3 4>;
-			};
-			mipi_in_ucam1: endpoint@2 {
-				reg = <2>;
-				remote-endpoint = <&gc8034_out>;
-				data-lanes = <1 2 3 4>;
-			};
-			mipi_in_ucam2: endpoint@3 {
-				reg = <3>;
-				remote-endpoint = <&ov5695_out>;
-				data-lanes = <1 2>;
-			};
-			mipi_in_ucam3: endpoint@4 {
-				reg = <4>;
-				remote-endpoint = <&xc7160b_out>;
-				data-lanes = <1 2 3 4>;
-			};
-*/
+
 		};
 		port@1 {
 			reg = <1>;
@@ -1272,20 +943,6 @@
 	pinctrl-0 = <&spi1m1_pins>;
 	pinctrl-1 = <&spi1m1_pins_hs>;
 
-	spi_wk2xxx: spi_wk2xxx@00{
-		status = "disabled";
-		compatible = "firefly,spi-wk2xxx";
-		reg = <0x00>;
-		spi-max-frequency = <10000000>;
-		power-gpio = <&pca9555 PCA_IO1_7 GPIO_ACTIVE_HIGH>;
-		reset-gpio = <&pca9555 PCA_IO1_1 GPIO_ACTIVE_HIGH>;
-		irq-gpio = <&gpio0 RK_PA6 IRQ_TYPE_EDGE_FALLING>;
-		cs-gpio = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
-		/* rk3399 driver support SPI_CPOL | SPI_CPHA | SPI_CS_HIGH */
-		//spi-cpha;     /* SPI mode: CPHA=1 */
-		//spi-cpol;     /* SPI mode: CPOL=1 */
-		//spi-cs-high;
-	};
 };
 
 &sfc{
@@ -1334,10 +991,6 @@
 &hdmi_in_vp1 {
 	status = "disabled";
 };
-
-/*&hdmi_sound {
-	status = "okay";
-};*/
 
 &iep {
 	status = "okay";
@@ -1413,22 +1066,22 @@
 };
 
 &u2phy0_host {
-	phy-supply = <&vcc5v0_host>;
+//	phy-supply = <&vcc5v0_host>;
 	status = "okay";
 };
 
 &u2phy0_otg {
-	vbus-supply = <&vcc5v0_otg>;
+//	vbus-supply = <&vcc5v0_otg>;
 	status = "okay";
 };
 
 &u2phy1_host {
-	phy-supply = <&vcc5v0_host>;
+//	phy-supply = <&vcc5v0_host>;
 	status = "okay";
 };
 
 &u2phy1_otg {
-	phy-supply = <&vcc5v0_host>;
+//	phy-supply = <&vcc5v0_host>;
 	status = "okay";
 };
 
@@ -1478,24 +1131,7 @@
 	status = "disabled";
 };
 
-
-&pca9555 {
-    status = "disabled";
-};
-
-/*&hym8563 {
-    status = "disabled";
-};
-
-&mc3230 {
-    status = "disabled";
-};
-*/
 &spi1 {
-	status = "okay";
-};
-
-&spi_wk2xxx {
 	status = "okay";
 };
 
@@ -1613,23 +1249,6 @@
 		};
 	};
 
-	usb {
-		vcc5v0_host_en: vcc5v0-host-en {
-			rockchip,pins = <0 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		vcc5v0_otg_en: vcc5v0-otg-en {
-			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-	cam {
-		vcc_cam: vcc-cam {
-			rockchip,pins =
-				/* camera power en */
-				<0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
 	headphone {
 		hp_det: hp-det {
 			rockchip,pins = <3 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
@@ -1654,45 +1273,4 @@
 		};
 	};
 
-	touch {
-		touch_gpio: touch-gpio {
-			rockchip,pins =
-				<0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
-				<0 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-	mxc6655xa {
-		mxc6655xa_irq_gpio: mxc6655xa_irq_gpio {
-			rockchip,pins = <RK_GPIO3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
- /*	usb {
-		vcc_hub_power_en: vcc-hub-power-en {
-			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		vcc_hub_reset_en: vcc-hub-reset-en {
-			rockchip,pins = <3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-   pcie {
-        pcie_pi6c_oe_en: pcie-pi6c-oe-en {
-			rockchip,pins = <3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-    };
-*/
-/*	4g {
-	    vcc_4g_power_en: vcc-4g-power-en {
-	        rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
-	    };
-	};
-*/
-	leds {
-	    led_user: led-user {
-	        rockchip,pins = <0 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
-	    };
-	};
 };
