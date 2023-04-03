@@ -24,7 +24,7 @@
 	};
 
 	chosen: chosen {
-		stdout-path = "serial2:115200n8";
+		stdout-path = "serial8:115200n8";
 		bootargs = "root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
 	};
 
@@ -669,6 +669,24 @@
 };
 
 &uart2 {
+	status = "disabled";
+};
+
+&uart8 {
+/*
+    UART8_TX -> D22 (UART-RS232) -> X32.3
+    UART8_RX <- D22 (UART-RS232) <- X32.6
+*/
+    pinctrl-0 = <&uart8m1_xfer>;
+	status = "okay";
+};
+
+&uart9 {
+/*
+    UART9_TX -> D22 (UART-RS232) -> X32.1
+    UART9_RX <- D22 (UART-RS232) <- X32.8
+*/
+    pinctrl-0 = <&uart9m1_xfer>;
 	status = "okay";
 };
 
