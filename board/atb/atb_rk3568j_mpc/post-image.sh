@@ -160,5 +160,6 @@ if [ $? -eq 0 ]; then
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
 	echo
 fi
-
+lsblk
+echo
 exit $?

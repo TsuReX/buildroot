@@ -10,6 +10,11 @@
 #include <dt-bindings/pinctrl/rockchip.h>
 #include <dt-bindings/soc/rockchip,vop2.h>
 #include "rk3568.dtsi"
+#include "ethernet-mpc.dtsi"
+#include "pcie-mpc.dtsi"
+
+// Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
+// #include "wireless-mpc.dtsi"
 
 / {
     compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
@@ -24,7 +29,7 @@
 	};
 
 	chosen: chosen {
-		stdout-path = "serial2:115200n8";
+		stdout-path = "serial8:115200n8";
 		bootargs = "root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
 	};
 
@@ -164,154 +169,6 @@
 	};*/
 	
 	
-/*
-    This is dummy regulator.
-    It is used to have ability to activate PCIE clocks
-*/
-    pcie_clk_en: pcie-clk-en {
-        compatible = "regulator-fixed";
-        enable-active-high;
-        // 1V8_PCIE_PWREN
-        gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie_clk_en_pin>;
-        regulator-name = "pcie_clk_en_pin";
-        regulator-always-on;
-    };
-/*
-    MPC
-
-    1V8_PCIE_PWREN -> VT14(NMOS)->PCIe_EN_ -> VT15 (PMOS) -> +3.3v2_M2_CON
-    0 -> 1 -> 0
-    1 -> 0 -> 1
-
-    +3.3v2_M2_CON supplies device connected to X18 (m.2 B/M)
-
-    1V8_PCIE_PWREN -> VT14(NMOS)->PCIe_EN_ -> VT28 (PMOS) -> +3.3vPCIe
-    0 -> 1 -> 0
-    1 -> 0 -> 1
-
-    +3.3vPCIe supplies D8 (SFP) and activtes generating PCIE30_REFCLKP/PCIE30_REFCLKN (reference clocks for PCIE3x controller) clocks
-
-    D14 multiplexor is responsible for switching PCIE30_TX1P/PCIE30_TX1N and PCIE30_RX1P/PCIE30_RX1N between X18 and D8(SFP)
-*/
-	
-	
-};
-
-&gmac0 {
-	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
-	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
-	assigned-clock-rates = <0>, <125000000>;
-	clock_in_out = "output";
-	phy-handle = <&rgmii_phy0>;
-	phy-mode = "rgmii-id";
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac0_miim
-		     &gmac0_tx_bus2
-		     &gmac0_rx_bus2
-		     &gmac0_rgmii_clk
-		     &gmac0_rgmii_bus>;
-
-    tx_delay = <0x3c>;
-	rx_delay = <0x2f>;   
-
-	status = "okay";
-};
-
-&gmac1 {
-	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
-	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
-	assigned-clock-rates = <0>, <125000000>;
-	clock_in_out = "output";
-	phy-handle = <&rgmii_phy1>;
-	phy-mode = "rgmii-id";
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac1m0_miim
-		     &gmac1m0_tx_bus2
-		     &gmac1m0_rx_bus2
-		     &gmac1m0_rgmii_clk
-		     &gmac1m0_rgmii_bus>;
-    
-	tx_delay = <0x4f>;
-	rx_delay = <0x26>;
-	
-	status = "okay";
-};
-
-&mdio0 {
-	rgmii_phy0: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <100000>;
-/*
-        RGMII0_RST -> VT5(NMOS) -> RGMII0_RST_
-        0 -> 1
-        1 -> 0
-*/
-        reset-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-	};
-};
-
-&mdio1 {
-	rgmii_phy1: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <100000>;
-/*
-        RGMII1_RST -> VT17(NMOS) -> RGMII1_RST_
-        0 -> 1
-        1 -> 0
-*/
-		reset-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-	};
-};
-
-&pcie30phy {
-	status = "disabled";
-};
-
-&pcie3x1 {
-    reg = <0x3 0xc0400000 0x0 0x00400000>,
-            <0x0 0xfe270000 0x0 0x00010000>,
-            <0x3 0x7f000000 0x0 0x01000000>;
-
-    ranges = <0x00000800 0x0 0xf2000000 0x0 0xf2000000 0x0 0x100000>,
-            <0x81000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x100000>,
-            <0x82000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x1e00000>,
-            <0xc3000000 0x3 0x40000000 0x3 0x40000000 0x0 0x3ef00000>;
-/*
-    PCIE30X1_PERSTn -> R115(0) -> D8
-    0 -> 0
-    1 -> 1
-*/    
-    reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
-
-    status = "disabled";
-};
-
-&pcie3x2 {
-
-	reg = <0x3 0xc0800000 0x0 0x400000>,
-	      <0x0 0xfe280000 0x0 0x10000>,
-		  <0x3 0xbf000000 0x0 0x01000000>;
-
-	ranges = <0x00000800 0x0 0xf0000000 0x0 0xf0000000 0x0 0x100000>,
-		  <0x81000000 0x0 0xf0100000 0x0 0xf0100000 0x0 0x100000>,
-		  <0x82000000 0x0 0xf0200000 0x0 0xf0200000 0x0 0x1e00000>,
-		  <0xc3000000 0x3 0x80000000 0x3 0x80000000 0x0 0x3ef00000>;
-
-/*
-    PCIE30X2_PERSTn is pulled up to +3.3vPCIe via R116(10K)
-    PCIE30X2_PERSTn -> R179(0) -> M2_PCIE_RSTn (X18 m.2 B/M PERST#)
-    0 -> 0
-    1 -> 1
-*/
-    reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
-
-    status = "okay";
 };
 
 &gpu {
@@ -344,6 +201,26 @@
 &i2c0 {
 	status = "okay";
 
+	// D21
+    lm96163@4c {
+        compatible = "national,lm96163";
+        reg = <0x4c>;
+    };
+
+    // D24
+    pcf85063: rtc@51 {
+        compatible = "nxp,pcf85063a";
+        reg = <0x51>;
+        quartz-load-femtofarads = <12500>;
+
+        clock {
+            compatible = "fixed-clock";
+            #clock-cells = <0>;
+            clock-frequency = <32768>;
+        };
+    };
+
+    // D18
 	vdd_cpu: regulator@1c {
 		compatible = "tcs,tcs4525";
 		reg = <0x1c>;
@@ -361,6 +238,7 @@
 		};
 	};
 
+	// D17
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
@@ -669,6 +547,24 @@
 };
 
 &uart2 {
+	status = "disabled";
+};
+
+&uart8 {
+/*
+    UART8_TX -> D22 (UART-RS232) -> X32.3
+    UART8_RX <- D22 (UART-RS232) <- X32.6
+*/
+    pinctrl-0 = <&uart8m1_xfer>;
+	status = "okay";
+};
+
+&uart9 {
+/*
+    UART9_TX -> D22 (UART-RS232) -> X32.1
+    UART9_RX <- D22 (UART-RS232) <- X32.8
+*/
+    pinctrl-0 = <&uart9m1_xfer>;
 	status = "okay";
 };
 
@@ -741,14 +637,3 @@
 		remote-endpoint = <&hdmi_in_vp0>;
 	};
 };
-
-	
-&pinctrl {
-	pcie {
-		pcie_clk_en_pin: pcie-clk-en-pin {
-			// 1V8_PCIE_PWREN
-			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-};
-
