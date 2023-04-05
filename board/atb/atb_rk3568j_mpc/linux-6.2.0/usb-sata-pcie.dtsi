@@ -1,0 +1,143 @@
+/*
+    USB2_HOST2
+*/
+&usb_host0_ehci {
+    phys = <&usb2phy0_host>;
+    phy-names = "usb";
+	status = "okay";
+};
+
+&usb_host0_ohci {
+    phys = <&usb2phy0_host>;
+    phy-names = "usb";
+	status = "okay";
+};
+
+&usb2phy0_host {
+	phy-supply = <&vcc5v0_usb_host>;
+	status = "okay";
+};
+
+&usb2phy0_otg {
+	phy-supply = <&vcc5v0_usb_otg>;
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+/*
+    USB2_HOST3
+*/
+&usb_host1_ehci {
+    phys = <&usb2phy1_host>;
+    phy-names = "usb";
+	status = "okay";
+};
+
+&usb_host1_ohci {
+    phys = <&usb2phy1_host>;
+    phy-names = "usb";
+	status = "okay";
+};
+
+&usb2phy1_host {
+	phy-supply = <&vcc5v0_usb_host>;
+	status = "okay";
+};
+
+
+&usb2phy1_otg {
+	phy-supply = <&vcc5v0_usb_host>;
+	status = "okay";
+};
+
+&usb2phy1 {
+
+	status = "okay";
+};
+
+/*
+    USB3_OTG0 or SATA0
+*/
+// X4
+&usb_host0_xhci {
+    dr_mode = "otg";
+    phy_type = "utmi_wide";
+	extcon = <&usb2phy0>; // <--------------------------------!!!
+	// If this controller is enabled, sata1 must be disabled
+	status = "okay";
+};
+
+// This controller isn't declared in DTS by Rockchip manufacturer.
+// If this controller is enabled, usb_host0_xhci must be disabled
+//&sata0 {
+//    status = "disabled";
+//}
+
+// This controller isn't declared in DTS by Rockchip manufacturer.
+// This controller is phy for usb_host0_xhci and sata0 controllers
+//&combphy0 {
+//	status = "disabled";
+//};
+
+/*
+    USB3_HOST1 or SATA1
+*/
+
+/*
+    Signals form usb_host1_xhci and sata1 controllers controllers go through D12(switch) and D10(switch) to X14(m.2B) or X16(SATA).
+    To supply X16(SATA) with signals from SATA1 it needs to set EXT_SATA_EN=1 (+3.3v) and disable usb_host1_xhci controller.
+    To supply X14(m.2B) with signals from SATA1 it needs to set EXT_SATA_EN=0 (GND) and disable usb_host1_xhci controller.
+    To supply X14(m.2B) with signals from USB3_HOS1 it needs to set EXT_SATA_EN=0 (GND), M2_USB3.0_EN=1 (+3.3v) and disable sata1 controller.
+    By defaults M2_USB3.0_EN and EXT_SATA_EN signals are pulled down.
+*/
+&usb_host1_xhci {
+    dr_mode = "host";
+    phys = <&usb2phy0_host>, <&combphy1 PHY_TYPE_USB3>;
+    phy-names = "usb2-phy", "usb3-phy";
+
+	// If this controller is enabled, sata1 must be disabled
+	status = "okay";
+};
+
+// This board doesn't use this controller
+&sata1 {
+    phys = <&combphy1 PHY_TYPE_SATA>;
+    phy-names = "sata-phy";
+
+    // If this controller is enabled, usb_host1_xhci must be disabled
+    status = "okay";
+}
+
+// This controller is phy for usb_host1_xhci and sata1 controllers 
+&combphy1 {
+	status = "okay";
+};
+
+/*
+    PCIE2x1 or SATA2
+*/
+
+// This board doesn't use this controller
+&pcie2x1 {
+	phys = <&combphy2 PHY_TYPE_PCIE>;
+	phy-names = "pcie-phy";
+    status = "disabled";
+}
+
+/*
+    SATA2 <-> D13 (switch) <-> X18 (m.2B/M)
+    The signals from SATA2 go through D13 in case if M2_CONFIG signal is set to low level (GND).
+    By default M2_CONFIG is set up to high level (+3.3v)
+*/
+&sata2 {
+    phys = <&combphy2 PHY_TYPE_SATA>;
+    status = "disabled";
+}
+
+// This controller is phy for pcie2x1 and sata2 controllers	
+&combphy2 {
+	status = "disabled";
+};
