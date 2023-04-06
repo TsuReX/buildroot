@@ -34,16 +34,23 @@
 &pcie30phy {
 	status = "disabled";
 };
-
+/*
+    This controller has one lane 1.
+    The lane 1 can be switched between X18(m.2B/M) and D8(WGI210AT). This depends on ETH_PCIE_SEL (D14 switch) signal state.
+    If bifurcation mode is cativated the lane 1 is controlled by pcie3x1.
+    To suplpy X18 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+    To suplpy D8 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+    ETH_PCIE_SEL signal is pulled up via R178, and pulled down via R102.
+*/
 &pcie3x1 {
     reg = <0x3 0xc0400000 0x0 0x00400000>,
-            <0x0 0xfe270000 0x0 0x00010000>,
-            <0x3 0x7f000000 0x0 0x01000000>;
+          <0x0 0xfe270000 0x0 0x00010000>,
+          <0x3 0x7f000000 0x0 0x01000000>;
 
     ranges = <0x00000800 0x0 0xf2000000 0x0 0xf2000000 0x0 0x100000>,
-            <0x81000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x100000>,
-            <0x82000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x1e00000>,
-            <0xc3000000 0x3 0x40000000 0x3 0x40000000 0x0 0x3ef00000>;
+             <0x81000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x100000>,
+             <0x82000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x1e00000>,
+             <0xc3000000 0x3 0x40000000 0x3 0x40000000 0x0 0x3ef00000>;
 /*
     PCIE30X1_PERSTn -> R115(0) -> D8
     0 -> 0
@@ -54,6 +61,15 @@
     status = "disabled";
 };
 
+/*
+    This controller has two lanes which can be organized in PCIE2x mode or in case of enabled bifurcation in PCIE1x mode.
+    The lane 0 an 1 connected to X18(m.2B).
+    The lane 1 can be switched between X18(m.2B/M) and D8(WGI210AT). This depends on ETH_PCIE_SEL (D14 switch) signal state.
+    If bifurcation mode is cativated the lane 1 is controlled by pcie3x1.
+    To suplpy X18 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+    To suplpy D8 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+    ETH_PCIE_SEL signal is pulled up via R178, and pulled down via R102.
+*/
 &pcie3x2 {
 
 	reg = <0x3 0xc0800000 0x0 0x400000>,
@@ -61,9 +77,9 @@
 		  <0x3 0xbf000000 0x0 0x01000000>;
 
 	ranges = <0x00000800 0x0 0xf0000000 0x0 0xf0000000 0x0 0x100000>,
-		  <0x81000000 0x0 0xf0100000 0x0 0xf0100000 0x0 0x100000>,
-		  <0x82000000 0x0 0xf0200000 0x0 0xf0200000 0x0 0x1e00000>,
-		  <0xc3000000 0x3 0x80000000 0x3 0x80000000 0x0 0x3ef00000>;
+             <0x81000000 0x0 0xf0100000 0x0 0xf0100000 0x0 0x100000>,
+             <0x82000000 0x0 0xf0200000 0x0 0xf0200000 0x0 0x1e00000>,
+             <0xc3000000 0x3 0x80000000 0x3 0x80000000 0x0 0x3ef00000>;
 
 /*
     PCIE30X2_PERSTn is pulled up to +3.3vPCIe via R116(10K)
@@ -73,9 +89,8 @@
 */
     reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 
-    status = "okay";
+    status = "disabled";
 };
-
 
 &pinctrl {
 	pcie {

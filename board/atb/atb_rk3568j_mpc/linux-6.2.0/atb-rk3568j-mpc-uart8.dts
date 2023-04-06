@@ -12,6 +12,7 @@
 #include "rk3568.dtsi"
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
+#include "usb-sata-pcie.dtsi"
 
 // Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
 // #include "wireless-mpc.dtsi"
