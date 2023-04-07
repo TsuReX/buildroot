@@ -213,8 +213,13 @@
 		     &gmac0_rgmii_clk
 		     &gmac0_rgmii_bus>;
 
-    tx_delay = <0x3c>;
-	rx_delay = <0x2f>;   
+    snps,reset-gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	/* Reset time is 20ms, 100ms for rtl8211f */
+	snps,reset-delays-us = <0 20000 100000>;
+
+    tx_delay = <0x4a>;
+    rx_delay = <0x35>;
 
 	status = "okay";
 };
@@ -232,10 +237,15 @@
 		     &gmac1m1_rx_bus2
 		     &gmac1m1_rgmii_clk
 		     &gmac1m1_rgmii_bus>;
-    
+
+    snps,reset-gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	/* Reset time is 20ms, 100ms for rtl8211f */
+	snps,reset-delays-us = <0 20000 100000>;
+
     tx_delay = <0x4d>;
     rx_delay = <0x2d>;
-	
+
 	status = "okay";
 };
 
@@ -243,9 +253,6 @@
 	rgmii_phy0: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0x1>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <100000>;
-        reset-gpios = <&gpio0 RK_PD5 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -253,9 +260,6 @@
 	rgmii_phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0x1>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <100000>;
-		reset-gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -732,12 +736,23 @@
 	};
 };
 
-	
 &pinctrl {
 	pcie {
 		pcie_clk_en_pin: pcie-clk-en-pin {
 			// 1V8_PCIE_PWREN
 			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+    rgmii_phy0_reset {
+		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
+			rockchip,pins = <0 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+    rgmii_phy1_reset {
+		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
