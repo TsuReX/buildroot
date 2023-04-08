@@ -485,7 +485,7 @@
 
 &gmac0 {
 	phy-mode = "rgmii";
-	clock_in_out = "input";
+	clock_in_out = "output";
     
     // MB-JD4-RK3568 
     // GMAC0_RSTn_GPIO2_D3
@@ -523,7 +523,7 @@
 
 &gmac1 {
 	phy-mode = "rgmii";
-	clock_in_out = "input";
+	clock_in_out = "output";
     
     // MB-JD4-RK3568
 	// GMAC1_RSTn_GPIO2_D1
