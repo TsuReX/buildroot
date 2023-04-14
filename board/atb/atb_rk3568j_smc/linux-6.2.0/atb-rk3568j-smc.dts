@@ -163,7 +163,7 @@
 
 &gmac1 {
 	phy-mode = "rgmii";
-	clock_in_out = "input";
+	clock_in_out = "output";
 
 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
@@ -173,6 +173,7 @@
 			&gmac1m0_rx_bus2
 			&gmac1m0_rgmii_clk
 			&gmac1m0_rgmii_bus
+			&eth1m0_pins
 			&gmac1m0_clkinout>;
 /*
 	RGMII1_RST -> VT7(NMOS) -> RGMII1_RST_
