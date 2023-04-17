@@ -19,14 +19,14 @@
 
 	fiq-debugger {
 		compatible = "rockchip,fiq-debugger";
-		rockchip,serial-id = <2>;
+		rockchip,serial-id = <8>;
 		rockchip,wake-irq = <0>;
 		/* If enable uart uses irq instead of fiq */
 		rockchip,irq-mode-enable = <1>;
 		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
 		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&uart2m0_xfer>;
+		pinctrl-0 = <&uart8m1_xfer>;
 		status = "okay";
 	};
 
@@ -485,66 +485,90 @@
 
 &gmac0 {
 	phy-mode = "rgmii";
-	clock_in_out = "input";
+	clock_in_out = "output";
+    
+    // MB-JD4-RK3568 
+    // GMAC0_RSTn_GPIO2_D3
+/*
+    snps,reset-gpio = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+*/	
+	// ATB-RK3568J-MPC
+    // RGMII0_RST -> VT5(NMOS) -> RGMII0_RST_
+    // 0 -> 1
+    // 1 -> 0
+	snps,reset-gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+	snps,reset-active-high;
+	
+	/* Reset time is 20ms, 100ms for rtl8211f */
+	snps,reset-delays-us = <0 20000 100000>;
 
 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
 	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>, <&gmac0_clkin>;
 
 	pinctrl-names = "default";
-	pinctrl-0 = <	&gmac0_miim
-					&gmac0_tx_bus2
-					&gmac0_rx_bus2
-					&gmac0_rgmii_clk
-					&gmac0_rgmii_bus
-					&gmac0_clkinout>;
-/*
-	RGMII0_RST -> VT5(NMOS) -> RGMII0_RST_
-	0 -> 1
-	1 -> 0
-*/
-	snps,reset-gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-	snps,reset-active-high;
-
-	/* Reset time is 20ms, 100ms for rtl8211f */
-	snps,reset-delays-us = <0 20000 100000>;
+	pinctrl-0 = <&gmac0_miim
+		     &gmac0_tx_bus2
+		     &gmac0_rx_bus2
+		     &gmac0_rgmii_clk
+		     &gmac0_rgmii_bus
+		     &gmac0_clkinout>;
 
 	tx_delay = <0x3c>;
 	rx_delay = <0x2f>;
 
 	phy-handle = <&rgmii_phy0>;
-	status = "okay";
+	status = "ok";
 };
 
 &gmac1 {
 	phy-mode = "rgmii";
-	clock_in_out = "input";
-
-	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
-	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&gmac1_clkin>;
-
-	pinctrl-names = "default";
-	pinctrl-0 = <	&gmac1m0_miim
-					&gmac1m0_tx_bus2
-					&gmac1m0_rx_bus2
-					&gmac1m0_rgmii_clk
-					&gmac1m0_rgmii_bus
-					&gmac1m0_clkinout>;
+	clock_in_out = "output";
+    
+    // MB-JD4-RK3568
+	// GMAC1_RSTn_GPIO2_D1
 /*
-	RGMII1_RST -> VT17(NMOS) -> RGMII1_RST_
-	0 -> 1
-	1 -> 0
+    snps,reset-gpio = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
 */
+    // ATB-RK3568J-MPC
+    // RGMII1_RST -> VT17(NMOS) -> RGMII1_RST_
+    // 0 -> 1
+    // 1 -> 0
 	snps,reset-gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
 	snps,reset-active-high;
 
 	/* Reset time is 20ms, 100ms for rtl8211f */
 	snps,reset-delays-us = <0 20000 100000>;
 
+	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
+	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&gmac1_clkin>;
+
+	pinctrl-names = "default";
+
+    // MB-JD4-RK3568
+/*    
+    pinctrl-0 = <&gmac1m1_miim
+		     &gmac1m1_tx_bus2
+		     &gmac1m1_rx_bus2
+		     &gmac1m1_rgmii_clk
+		     &gmac1m1_rgmii_bus
+		     &gmac1m1_clkinout>;
+*/	
+	// ATB-RK3568J-MPC
+
+    pinctrl-0 = <&gmac1m0_miim
+		     &gmac1m0_tx_bus2
+		     &gmac1m0_rx_bus2
+		     &gmac1m0_rgmii_clk
+		     &gmac1m0_rgmii_bus
+		     &gmac1m0_clkinout>;
+		     
 	tx_delay = <0x4f>;
 	rx_delay = <0x26>;
 
 	phy-handle = <&rgmii_phy1>;
-	status = "okay";
+	status = "ok";
 };
 
 &mdio0 {
