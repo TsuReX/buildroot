@@ -6,6 +6,7 @@
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
 #include "usb-sata-pcie.dtsi"
+#include "video-mpc.dtsi"
 
 // Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
 // #include "wireless-mpc.dtsi"
@@ -23,8 +24,20 @@
 	};
 
 	chosen: chosen {
-		stdout-path = "serial2:115200n8";
-		bootargs = "root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
+	};
+
+	fiq-debugger {
+		compatible = "rockchip,fiq-debugger";
+		rockchip,serial-id = <8>;
+		rockchip,wake-irq = <0>;
+		/* If enable uart uses irq instead of fiq */
+		rockchip,irq-mode-enable = <1>;
+		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
+		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart8m1_xfer>;
+		status = "okay";
 	};
 
 	dc_12v: dc-12v {
@@ -34,17 +47,6 @@
 		regulator-boot-on;
 		regulator-min-microvolt = <12000000>;
 		regulator-max-microvolt = <12000000>;
-	};
-
-	hdmi-con {
-		compatible = "hdmi-connector";
-		type = "a";
-
-		port {
-			hdmi_con_in: endpoint {
-				remote-endpoint = <&hdmi_out_con>;
-			};
-		};
 	};
 
 	rk809-sound {
@@ -154,28 +156,6 @@
 
 &gpu {
 	mali-supply = <&vdd_gpu>;
-	status = "okay";
-};
-
-&hdmi {
-	avdd-0v9-supply = <&vdda0v9_image>;
-	avdd-1v8-supply = <&vcca1v8_image>;
-	status = "okay";
-};
-
-&hdmi_in {
-	hdmi_in_vp0: endpoint {
-		remote-endpoint = <&vp0_out_hdmi>;
-	};
-};
-
-&hdmi_out {
-	hdmi_out_con: endpoint {
-		remote-endpoint = <&hdmi_con_in>;
-	};
-};
-
-&hdmi_sound {
 	status = "okay";
 };
 
@@ -528,8 +508,8 @@
     UART8_TX -> D22 (UART-RS232) -> X32.3
     UART8_RX <- D22 (UART-RS232) <- X32.6
 */
-    pinctrl-0 = <&uart8m1_xfer>;
-	status = "okay";
+	pinctrl-0 = <&uart8m1_xfer>;
+	status = "disabled";
 };
 
 &uart9 {
@@ -537,8 +517,6 @@
     UART9_TX -> D22 (UART-RS232) -> X32.1
     UART9_RX <- D22 (UART-RS232) <- X32.8
 */
-    pinctrl-0 = <&uart9m1_xfer>;
+	pinctrl-0 = <&uart9m1_xfer>;
 	status = "okay";
-};
-
 };

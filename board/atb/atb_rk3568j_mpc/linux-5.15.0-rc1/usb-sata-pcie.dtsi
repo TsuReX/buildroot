@@ -1,178 +1,176 @@
 /{
 
 /*
-    This is dummy regulator.
-    It is used to have ability to switch X14 between SATA and USB
+	This is dummy regulator.
+	It is used to have ability to switch X14 between SATA and USB
 */
-    m2_usb3_en: m2-usb3-en {
-        compatible = "regulator-fixed";
-        enable-active-high;
-        // M2_USB3.0_EN  PD(R161)
-        gpio = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&m2_usb3_en_pin>;
-        regulator-name = "m2_usb3_en";
-        //regulator-always-on;
-        regulator-always-off;
-    };
+	m2_usb3_en: m2-usb3-en {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// M2_USB3.0_EN  PD(R161)
+		gpio = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&m2_usb3_en_pin>;
+		regulator-name = "m2_usb3_en";
+		//regulator-always-on;
+		regulator-always-off;
+	};
 };
 
 /*
-    USB2_HOST2
+	USB2_HOST2
 */
 
 /*
- * This controller is connected to X5 upper port
- */
+	This controller is connected to X5 upper port
+*/
 &usb_host0_ehci {
-    phys = <&usb2phy0_host>;
-    phy-names = "usb";
-	status = "disabled";
+	phys = <&u2phy0_host>;
+	phy-names = "usb";
+	status = "okay";
 };
 
 /*
- * This controller is connected to X5 upper port
- */
+	This controller is connected to X5 upper port
+*/
 &usb_host0_ohci {
-    phys = <&usb2phy0_host>;
-    phy-names = "usb";
-	status = "disabled";
+	phys = <&u2phy0_host>;
+	phy-names = "usb";
+	status = "okay";
 };
 
-&usb2phy0_host {
+&u2phy0_host {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
-&usb2phy0_otg {
+&u2phy0_otg {
 	phy-supply = <&vcc5v0_usb_otg>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy0 {
-	status = "disabled";
+	status = "okay";
 };
 
 /*
- *   USB2_HOST3
- */
+	USB2_HOST3
+*/
 
 /*
- * This controller is connected to X5 lower port
- */
+	This controller is connected to X5 lower port
+*/
 &usb_host1_ehci {
-    phys = <&usb2phy1_host>;
-    phy-names = "usb";
-	status = "disabled";
+	phys = <&u2phy1_host>;
+	phy-names = "usb";
+	status = "okay";
 };
 
 /*
- * This controller is connected to X5 lower port
- */
+	This controller is connected to X5 lower port
+*/
 &usb_host1_ohci {
-    phys = <&usb2phy1_host>;
-    phy-names = "usb";
-	status = "disabled";
+	phys = <&u2phy1_host>;
+	phy-names = "usb";
+	status = "okay";
 };
 
 
-&usb2phy1_host {
+&u2phy1_host {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
 
-&usb2phy1_otg {
+&u2phy1_otg {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy1 {
-
-	status = "disabled";
+	status = "okay";
 };
 
 /*
- *   USB3_OTG0 or SATA0
- */
+	USB3_OTG0 or SATA0
+*/
 // X4
-&usb_host0_xhci {
-    dr_mode = "otg";
-    phy_type = "utmi_wide";
-	extcon = <&usb2phy0>;
+&usbdrd_dwc3 {
+	phys = <&u2phy0_otg>, <&combphy0_us PHY_TYPE_USB3>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
+	snps,dis_u2_susphy_quirk;
 	// If this controller is enabled, sata0 must be disabled
+	status = "okay";
+};
+
+// If this controller is enabled, usbdrd_dwc3 must be disabled
+&sata0 {
 	status = "disabled";
 };
 
-// This controller isn't declared in DTS by Rockchip manufacturer.
-// If this controller is enabled, usb_host0_xhci must be disabled
-//&sata0 {
-//    status = "disabled";
-//}
 
-// This controller isn't declared in DTS by Rockchip manufacturer.
-// This controller is phy for usb_host0_xhci and sata0 controllers
-//&combphy0 {
-//	status = "disabled";
-//};
+// This controller is phy for usbdrd_dwc3 and sata0 controllers
+&combphy0_us {
+	status = "okay";
+};
 
 /*
- *   USB3_HOST1 or SATA1
- */
+	USB3_HOST1 or SATA1
+*/
 
 /*
- *  Signals form usb_host1_xhci and sata1 controllers controllers go through D12(switch)(EXT_SATA_EN) and D10(switch)(M2_USB3.0_EN) to X14(m.2B) or X16(SATA).
- *  To supply X16(SATA) with signals from SATA1 it needs to set EXT_SATA_EN=1 (+3.3v) and disable usb_host1_xhci controller.
- *  To supply X14(m.2B) with signals from SATA1 it needs to set EXT_SATA_EN=0 (GND) and disable usb_host1_xhci controller.
- *  To supply X14(m.2B) with signals from USB3_HOS1 it needs to set EXT_SATA_EN=0 (GND), M2_USB3.0_EN=1 (+3.3v) and disable sata1 controller.
- *  By defaults M2_USB3.0_EN signal is pulled down via R161 and EXT_SATA_EN signal is pulled down via R165 and can be pulled up via X17.
- */
-&usb_host1_xhci {
-    dr_mode = "host";
-    phys = <&usb2phy0_host>, <&combphy1 PHY_TYPE_USB3>;
-    phy-names = "usb2-phy", "usb3-phy";
-
+	Signals form usbhost_dwc3 and sata1 controllers controllers go through D12(switch)(EXT_SATA_EN) and D10(switch)(M2_USB3.0_EN) to X14(m.2B) or X16(SATA).
+	To supply X16(SATA) with signals from SATA1 it needs to set EXT_SATA_EN=1 (+3.3v) and disable usbhost_dwc3 controller.
+	To supply X14(m.2B) with signals from SATA1 it needs to set EXT_SATA_EN=0 (GND) and disable usbhost_dwc3 controller.
+	To supply X14(m.2B) with signals from USB3_HOS1 it needs to set EXT_SATA_EN=0 (GND), M2_USB3.0_EN=1 (+3.3v) and disable sata1 controller.
+	By defaults M2_USB3.0_EN signal is pulled down via R161 and EXT_SATA_EN signal is pulled down via R165 and can be pulled up via X17.
+*/
+&usbhost_dwc3 {
+	phys = <&u2phy0_host>, <&combphy1_usq PHY_TYPE_USB3>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
 	// If this controller is enabled, sata1 must be disabled
 	status = "disabled";
 };
 
 // This board doesn't use this controller
 &sata1 {
-    phys = <&combphy1 PHY_TYPE_SATA>;
-    phy-names = "sata-phy";
+	phys = <&combphy1_usq PHY_TYPE_SATA>;
+	phy-names = "sata-phy";
 
-    // If this controller is enabled, usb_host1_xhci must be disabled
-    status = "disabled";
+	// If this controller is enabled, usbhost_dwc3 must be disabled
+	status = "okay";
 };
 
-// This controller is phy for usb_host1_xhci and sata1 controllers 
-&combphy1 {
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1_usq {
+	status = "okay";
+};
+
+/*
+	PCIE2x1 or SATA2
+*/
+
+// This board doesn't use this controller
+&pcie2x1 {
+	phys = <&combphy2_psq PHY_TYPE_PCIE>;
+	phy-names = "pcie-phy";
 	status = "disabled";
 };
 
 /*
- *   PCIE2x1 or SATA2
- */
-
-// This board doesn't use this controller
-&pcie2x1 {
-	phys = <&combphy2 PHY_TYPE_PCIE>;
-	phy-names = "pcie-phy";
-    status = "disabled";
-};
-
-/*
- *   SATA2 <-> D13 (switch) <-> X18 (m.2B/M)
- *   The signals from SATA2 go through D13 in case if M2_CONFIG signal is set to low level (GND).
- *   By default M2_CONFIG is set up to high level (+3.3v) via R177
- */
+	SATA2 <-> D13 (switch) <-> X18 (m.2B/M)
+	he signals from SATA2 go through D13 in case if M2_CONFIG signal is set to low level (GND).
+	By default M2_CONFIG is set up to high level (+3.3v) via R177
+*/
 &sata2 {
-    phys = <&combphy2 PHY_TYPE_SATA>;
+    phys = <&combphy2_psq PHY_TYPE_SATA>;
     status = "disabled";
 };
 
-// This controller is phy for pcie2x1 and sata2 controllers	
-&combphy2 {
+// This controller is phy for pcie2x1 and sata2 controllers
+&combphy2_psq {
 	status = "disabled";
 };
 
@@ -184,3 +182,35 @@
 		};
 	};
 };
+
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&usbdrd_dwc3 {
+	phys = <&u2phy0_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
+	snps,dis_u2_susphy_quirk;
+	status = "okay";
+};
+
+&usbhost_dwc3 {
+	phys = <&u2phy1_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
+	status = "okay";
+};
+
