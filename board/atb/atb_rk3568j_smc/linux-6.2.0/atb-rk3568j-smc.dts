@@ -495,3 +495,34 @@
 //	phy-supply = <&vcc5v0_usb_host>;
 	status = "okay";
 };
+
+/*
+	This interface isn't in use
+*/
+&spi0 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi0m1_pins>;
+
+	status = "disabled";
+};
+
+&spi1 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
+
+	status = "okay";
+};
+
+&spi2 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi2m1_pins &spi2m1_cs0 &spi2m1_cs1>;
+
+	status = "okay";
+};
+
+&spi3 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
+
+	status = "okay";
+};
