@@ -46,7 +46,7 @@
 					&gmac1m0_rgmii_clk
 					&gmac1m0_rgmii_bus
 					&gmac1m0_clkinout
-					&rgmii_phy0_reset_pin>;
+					&rgmii_phy1_reset_pin>;
 /*
 	RGMII1_RST -> VT17(NMOS) -> RGMII1_RST_
 	0 -> 1

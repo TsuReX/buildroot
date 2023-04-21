@@ -27,7 +27,7 @@
 &usb_host0_ehci {
     phys = <&usb2phy0_host>;
     phy-names = "usb";
-	status = "disabled";
+	status = "okay";
 };
 
 /*
@@ -36,21 +36,21 @@
 &usb_host0_ohci {
     phys = <&usb2phy0_host>;
     phy-names = "usb";
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy0_host {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy0_otg {
 	phy-supply = <&vcc5v0_usb_otg>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy0 {
-	status = "disabled";
+	status = "okay";
 };
 
 /*
@@ -63,7 +63,7 @@
 &usb_host1_ehci {
     phys = <&usb2phy1_host>;
     phy-names = "usb";
-	status = "disabled";
+	status = "okay";
 };
 
 /*
@@ -72,24 +72,24 @@
 &usb_host1_ohci {
     phys = <&usb2phy1_host>;
     phy-names = "usb";
-	status = "disabled";
+	status = "okay";
 };
 
 
 &usb2phy1_host {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
 
 &usb2phy1_otg {
 	phy-supply = <&vcc5v0_usb_host>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb2phy1 {
 
-	status = "disabled";
+	status = "okay";
 };
 
 /*
@@ -101,7 +101,7 @@
     phy_type = "utmi_wide";
 	extcon = <&usb2phy0>;
 	// If this controller is enabled, sata0 must be disabled
-	status = "disabled";
+	status = "okay";
 };
 
 // This controller isn't declared in DTS by Rockchip manufacturer.
@@ -142,7 +142,7 @@
     phy-names = "sata-phy";
 
     // If this controller is enabled, usb_host1_xhci must be disabled
-    status = "disabled";
+    status = "okay";
 };
 
 // This controller is phy for usb_host1_xhci and sata1 controllers 
@@ -168,12 +168,12 @@
  */
 &sata2 {
     phys = <&combphy2 PHY_TYPE_SATA>;
-    status = "disabled";
+    status = "okay";
 };
 
 // This controller is phy for pcie2x1 and sata2 controllers	
 &combphy2 {
-	status = "disabled";
+	status = "okay";
 };
 
 &pinctrl {

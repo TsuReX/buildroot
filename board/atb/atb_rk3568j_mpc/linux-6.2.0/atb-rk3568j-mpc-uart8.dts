@@ -11,3 +11,21 @@
 		bootargs = "root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
 	};
 };
+
+&uart2 {
+/*
+	UART8_TX -> R287 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R288 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart2m0_xfer>;
+	status = "disabled";
+};
+
+&uart8 {
+/*
+	UART8_TX -> R289 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart8m1_xfer>;
+	status = "okay";
+};

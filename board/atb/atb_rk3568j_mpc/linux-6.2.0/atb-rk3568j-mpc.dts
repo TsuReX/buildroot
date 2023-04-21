@@ -7,15 +7,16 @@
 #include "rk3568.dtsi"
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
-#include "usb-sata-pcie.dtsi"
+#include "usb-sata-pcie-mpc.dtsi"
+#include "video-mpc.dtsi"
 
 // Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
 // #include "wireless-mpc.dtsi"
 
 / {
-    compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
+	compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
     
-    model = "ATB-RK3568J-MPC";
+	model = "ATB-RK3568J-MPC";
 
 	aliases {
 		ethernet0 = &gmac0;
@@ -36,17 +37,6 @@
 		regulator-boot-on;
 		regulator-min-microvolt = <12000000>;
 		regulator-max-microvolt = <12000000>;
-	};
-
-	hdmi-con {
-		compatible = "hdmi-connector";
-		type = "a";
-
-		port {
-			hdmi_con_in: endpoint {
-				remote-endpoint = <&hdmi_out_con>;
-			};
-		};
 	};
 
 	leds {
@@ -131,40 +121,23 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&vcc5v0_usb>;
 	};
-
-/*	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_lcd0_n";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		enable-active-high;
-		gpio = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc3v3_sys>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc3v3_lcd0_n_en>;
-
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
-	};
-
-	vcc3v3_lcd1_n: vcc3v3-lcd1-n {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_lcd1_n";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		enable-active-high;
-		gpio = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc3v3_sys>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc3v3_lcd1_n_en>;
-
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
-	};*/
 	
-	
+};
+
+&cpu0 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu1 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu2 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu3 {
+	cpu-supply = <&vdd_cpu>;
 };
 
 &gpu {
@@ -172,49 +145,70 @@
 	status = "okay";
 };
 
-&hdmi {
-	avdd-0v9-supply = <&vdda0v9_image>;
-	avdd-1v8-supply = <&vcca1v8_image>;
+&pmu_io_domains {
+	pmuio1-supply = <&vcc3v3_pmu>;
+	pmuio2-supply = <&vcc3v3_pmu>;
+	vccio1-supply = <&vccio_acodec>;
+	vccio2-supply = <&vcc_1v8>;
+	vccio3-supply = <&vccio_sd>;
+	vccio4-supply = <&vcc_1v8>;
+	vccio5-supply = <&vcc_3v3>;
+	vccio6-supply = <&vcc_1v8>;
+	vccio7-supply = <&vcc_3v3>;
 	status = "okay";
 };
 
-&hdmi_in {
-	hdmi_in_vp0: endpoint {
-		remote-endpoint = <&vp0_out_hdmi>;
-	};
+/* EMMC0 - D15 */
+&sdhci {
+	bus-width = <8>;
+	max-frequency = <200000000>;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
+	status = "okay";
 };
 
-&hdmi_out {
-	hdmi_out_con: endpoint {
-		remote-endpoint = <&hdmi_con_in>;
-	};
-};
-
-&hdmi_sound {
+/* SDMMC0 - X21 */
+&sdmmc0 {
+	max-frequency = <150000000>;
+	supports-sd;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc3v3_sd>;
+	vqmmc-supply = <&vccio_sd>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
 	status = "okay";
 };
 
 &i2c0 {
+
+	pinctrl-0 = <&i2c0_xfer>;
+	pinctrl-names = "default";
+	
 	status = "okay";
 
 	// D21
-    lm96163@4c {
-        compatible = "national,lm96163";
-        reg = <0x4c>;
-    };
+	lm96163@4c {
+		compatible = "national,lm96163";
+		reg = <0x4c>;
+	};
 
-    // D24
-    pcf85063: rtc@51 {
-        compatible = "nxp,pcf85063a";
-        reg = <0x51>;
-        quartz-load-femtofarads = <12500>;
+	// D24
+	pcf85063: rtc@51 {
+		compatible = "nxp,pcf85063a";
+		reg = <0x51>;
+		quartz-load-femtofarads = <12500>;
 
-        clock {
-            compatible = "fixed-clock";
-            #clock-cells = <0>;
-            clock-frequency = <32768>;
-        };
-    };
+		clock {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
 
     // D18
 	vdd_cpu: regulator@1c {
@@ -456,7 +450,23 @@
 };
 
 &i2c1 {
-	status = "disabled";
+	pinctrl-0 = <&i2c1_xfer>;
+	status = "okay";
+};
+
+&i2c2 {
+	pinctrl-0 = <&i2c2m0_xfer>;
+	status = "okay";
+};
+
+&i2c3 {
+	pinctrl-0 = <&i2c3m0_xfer>;
+	status = "okay";
+};
+
+&i2c4 {
+	pinctrl-0 = <&i2c4m0_xfer>;
+	status = "okay";
 };
 
 &i2s0_8ch {
@@ -468,168 +478,40 @@
 	status = "disabled";
 };
 
-&pmu_io_domains {
-	pmuio1-supply = <&vcc3v3_pmu>;
-	pmuio2-supply = <&vcc3v3_pmu>;
-	vccio1-supply = <&vccio_acodec>;
-	vccio2-supply = <&vcc_1v8>;
-	vccio3-supply = <&vccio_sd>;
-	vccio4-supply = <&vcc_1v8>;
-	vccio5-supply = <&vcc_3v3>;
-	vccio6-supply = <&vcc_1v8>;
-	vccio7-supply = <&vcc_3v3>;
+&uart0 {
+	pinctrl-0 = <&uart0_xfer &uart0_ctsn &uart0_rtsn>;
 	status = "okay";
 };
 
-/* EMMC0 - D15 */
-&sdhci {
-	bus-width = <8>;
-	max-frequency = <200000000>;
-	non-removable;
-	pinctrl-names = "default";
-	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
-	status = "okay";
-};
-
-/* SDMMC0 - X21 */
-&sdmmc0 {
-	max-frequency = <150000000>;
-	supports-sd;
-	bus-width = <4>;
-	cap-mmc-highspeed;
-	cap-sd-highspeed;
-	disable-wp;
-	sd-uhs-sdr104;
-	vmmc-supply = <&vcc3v3_sd>;
-	vqmmc-supply = <&vccio_sd>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
-	status = "okay";
-};
-
-&tsadc {
-	rockchip,hw-tshut-mode = <1>;
-	rockchip,hw-tshut-polarity = <0>;
+&uart1 {
+	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+	// This interface is used to communicate with WIFI&BT A1
 	status = "disabled";
-};
-
-&saradc {
-	vref-supply = <&vcca_1v8>;
-	status = "disabled";
-};
-
-&combphy0 {
-	status = "okay";
-};
-
-&combphy1 {
-	status = "okay";
-};
-
-&cpu0 {
-	cpu-supply = <&vdd_cpu>;
-};
-
-&cpu1 {
-	cpu-supply = <&vdd_cpu>;
-};
-
-&cpu2 {
-	cpu-supply = <&vdd_cpu>;
-};
-
-&cpu3 {
-	cpu-supply = <&vdd_cpu>;
 };
 
 &uart2 {
-	status = "disabled";
+/*
+	UART8_TX -> R287 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R288 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
 };
 
 &uart8 {
 /*
-    UART8_TX -> D22 (UART-RS232) -> X32.3
-    UART8_RX <- D22 (UART-RS232) <- X32.6
+	UART8_TX -> R289 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
 */
-    pinctrl-0 = <&uart8m1_xfer>;
-	status = "okay";
+	pinctrl-0 = <&uart8m1_xfer>;
+	status = "disabled";
 };
 
 &uart9 {
 /*
-    UART9_TX -> D22 (UART-RS232) -> X32.1
-    UART9_RX <- D22 (UART-RS232) <- X32.8
+	UART9_TX -> R291 -> D22 (UART-RS232) -> X32.1
+	UART9_RX <- R292 <- D22 (UART-RS232) <- X32.8
 */
-    pinctrl-0 = <&uart9m1_xfer>;
-	status = "okay";
-};
-
-&usb_host0_ehci {
-	status = "okay";
-};
-
-&usb_host0_ohci {
-	status = "okay";
-};
-
-&usb_host0_xhci {
-	extcon = <&usb2phy0>;
-	status = "okay";
-};
-
-&usb_host1_ehci {
-	status = "okay";
-};
-
-&usb_host1_ohci {
-	status = "okay";
-};
-
-&usb_host1_xhci {
-	status = "okay";
-};
-
-&usb2phy0 {
-	status = "okay";
-};
-
-&usb2phy0_host {
-	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
-};
-
-&usb2phy0_otg {
-	phy-supply = <&vcc5v0_usb_otg>;
-	status = "okay";
-};
-
-&usb2phy1 {
-	status = "okay";
-};
-
-&usb2phy1_host {
-	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
-};
-
-&usb2phy1_otg {
-	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
-};
-
-&vop {
-	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
-	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
-	status = "okay";
-};
-
-&vop_mmu {
-	status = "okay";
-};
-
-&vp0 {
-	vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
-		reg = <ROCKCHIP_VOP2_EP_HDMI0>;
-		remote-endpoint = <&hdmi_in_vp0>;
-	};
+	pinctrl-0 = <&uart9m1_xfer>;
+	status = "disabled";
 };
