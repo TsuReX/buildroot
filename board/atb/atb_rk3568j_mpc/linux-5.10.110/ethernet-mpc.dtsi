@@ -46,7 +46,7 @@
 					&gmac1m0_rgmii_clk
 					&gmac1m0_rgmii_bus
 					&gmac1m0_clkinout
-					&rgmii_phy0_reset_pin>;
+					&rgmii_phy1_reset_pin>;
 /*
 	RGMII1_RST -> VT17(NMOS) -> RGMII1_RST_
 	0 -> 1
@@ -84,9 +84,9 @@
 	rgmii_phy0_reset {
 		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
 /*
-            RGMII0_RST -> VT5 (NMOS) -> RGMII0_RST_
-            0 -> 1
-            1 -> 0
+			RGMII0_RST -> VT5 (NMOS) -> RGMII0_RST_
+			0 -> 1
+			1 -> 0
 */
 			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
@@ -95,9 +95,9 @@
     rgmii_phy1_reset {
 		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
 /*
-            RGMII1_RST -> VT7 (NMOS) -> RGMII1_RST_
-            0 -> 1
-            1 -> 0
+			RGMII1_RST -> VT7 (NMOS) -> RGMII1_RST_
+			0 -> 1
+			1 -> 0
 */
 			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};

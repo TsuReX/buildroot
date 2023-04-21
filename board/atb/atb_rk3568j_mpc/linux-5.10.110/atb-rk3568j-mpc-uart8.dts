@@ -1,0 +1,36 @@
+
+/dts-v1/;
+#include "atb-rk3568j-mpc.dts"
+
+/ {
+	fiq-debugger {
+		compatible = "rockchip,fiq-debugger";
+		rockchip,serial-id = <8>;
+		rockchip,wake-irq = <0>;
+		/* If enable uart uses irq instead of fiq */
+		rockchip,irq-mode-enable = <1>;
+		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
+		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart8m1_xfer>;
+		status = "okay";
+	};
+};
+
+&uart2 {
+/*
+	UART8_TX -> R287 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R288 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
+};
+
+&uart8 {
+/*
+	UART8_TX -> R289 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart8m1_xfer>;
+	status = "disabled";
+};
