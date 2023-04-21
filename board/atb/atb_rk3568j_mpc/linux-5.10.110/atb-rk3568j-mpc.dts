@@ -510,3 +510,63 @@
 	pinctrl-0 = <&uart9m1_xfer>;
 	status = "disabled";
 };
+
+/*
+	This interface isn't in use
+*/
+&spi0 {
+	pinctrl-0 = <&spi0m1_pins &spi0m1_cs0>;
+
+	status = "okay";
+
+	spi_test0@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+};
+
+&spi1 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
+
+	status = "okay";
+
+	spi_test1@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+};
+
+&spi2 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi2m1_pins &spi2m1_cs0 &spi2m1_cs1>;
+
+	status = "okay";
+
+/*	spi_test21@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+*/
+	spi_test22@1 {
+		compatible = "rockchip,spidev";
+		reg = <1>;
+		spi-max-frequency = <48000000>;
+	};
+};
+
+&spi3 {
+	max-freq = <48000000>;
+	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
+
+	status = "okay";
+
+	spi_test3@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+};
