@@ -1,4 +1,13 @@
 
+/*
+	This controller has one lane 1.
+	The lane 1 can be switched between X18(m.2B/M) and D8(WGI210AT). This depends on ETH_PCIE_SEL (D14 switch) signal state.
+	If bifurcation mode is cativated the lane 1 is controlled by pcie3x1.
+	To suplpy X18 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+	To suplpy D8 with lane 1 signals it needs to set ETH_PCIE_SEL=1.
+	ETH_PCIE_SEL signal is pulled up via R178, and pulled down via R102.
+*/
+
 /{
 /*
 	This is dummy regulator.
@@ -44,22 +53,28 @@
 	ETH_PCIE_SEL signal is pulled up via R178, and pulled down via R102.
 */
 &pcie3x1 {
-	reg =	<0x3 0xc0400000 0x0 0x00400000>,
-			<0x0 0xfe270000 0x0 0x00010000>,
-			<0x3 0x7f000000 0x0 0x01000000>;
-
-	ranges =	<0x00000800 0x0 0xf2000000 0x0 0xf2000000 0x0 0x100000>,
-				<0x81000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x100000>,
-				<0x82000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x1e00000>,
-				<0xc3000000 0x3 0x40000000 0x3 0x40000000 0x0 0x3ef00000>;
+	num-viewport = <4>;
+	rockchip,bifurcation;
+	rockchip,init-delay-ms = <100>;
 /*
 	PCIE30X1_PERSTn -> R115(0) -> D8
 	0 -> 0
 	1 -> 1
-*/    
+*/
 	reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
 
-	status = "okay";
+	status = "disabled";
+
+	pcie@10 {
+		reg = <0x00100000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+/*		r8125_2: pcie@10,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};*/
+	};
 };
 
 /*
@@ -72,16 +87,8 @@
 	ETH_PCIE_SEL signal is pulled up via R178, and pulled down via R102.
 */
 &pcie3x2 {
-
-	reg =	<0x3 0xc0800000 0x0 0x400000>,
-			<0x0 0xfe280000 0x0 0x10000>,
-			<0x3 0xbf000000 0x0 0x01000000>;
-
-	ranges =	<0x00000800 0x0 0xf0000000 0x0 0xf0000000 0x0 0x100000>,
-				<0x81000000 0x0 0xf0100000 0x0 0xf0100000 0x0 0x100000>,
-				<0x82000000 0x0 0xf0200000 0x0 0xf0200000 0x0 0x1e00000>,
-				<0xc3000000 0x3 0x80000000 0x3 0x80000000 0x0 0x3ef00000>;
-
+	num-viewport = <4>;
+	rockchip,bifurcation;
 /*
 	PCIE30X2_PERSTn is pulled up to +3.3vPCIe via R116(10K)
 	PCIE30X2_PERSTn -> R179(0) -> M2_PCIE_RSTn (X18 m.2 B/M PERST#)
@@ -90,7 +97,18 @@
 */
 	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 
-	status = "okay";
+	status = "disabled";
+
+	pcie@20 {
+		reg = <0x00200000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+/*		r8125_1: pcie@20,0 {
+			reg = <0x000000 0 0 0 0>;
+			local-mac-address = [ 00 00 00 00 00 00 ];
+		};*/
+	};
 };
 
 &pinctrl {
@@ -120,3 +138,4 @@
 		};
 	};
 };
+

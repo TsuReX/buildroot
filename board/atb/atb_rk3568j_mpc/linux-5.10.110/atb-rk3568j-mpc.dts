@@ -1,26 +1,43 @@
-
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/rockchip.h>
-#include <dt-bindings/soc/rockchip,vop2.h>
 #include "rk3568.dtsi"
-#include "ethernet-smc.dtsi"
-#include "video-smc.dtsi"
+#include "ethernet-mpc.dtsi"
+#include "pcie-mpc.dtsi"
+#include "usb-sata-pcie-mpc.dtsi"
+#include "video-mpc.dtsi"
+
+// Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
+// #include "wireless-mpc.dtsi"
 
 / {
-	model = "Rockchip RK3568 EVB1 DDR4 V10 Board";
-	compatible = "rockchip,rk3568-evb1-v10", "rockchip,rk3568";
+	compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
+    
+	model = "ATB-RK3568J-MPC";
 
 	aliases {
 		ethernet0 = &gmac0;
 		ethernet1 = &gmac1;
-		mmc0 = &sdmmc0;
-		mmc1 = &sdhci;
+        mmc0 = &sdhci;
+		mmc1 = &sdmmc0;
 	};
 
 	chosen: chosen {
-		stdout-path = "serial2:115200n8";
+		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
+	};
+
+	fiq-debugger {
+		compatible = "rockchip,fiq-debugger";
+		rockchip,serial-id = <2>;
+		rockchip,wake-irq = <0>;
+		/* If enable uart uses irq instead of fiq */
+		rockchip,irq-mode-enable = <1>;
+		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
+		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart2m0_xfer>;
+		status = "okay";
 	};
 
 	dc_12v: dc-12v {
@@ -30,19 +47,6 @@
 		regulator-boot-on;
 		regulator-min-microvolt = <12000000>;
 		regulator-max-microvolt = <12000000>;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_work: led-0 {
-			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
-			function = LED_FUNCTION_HEARTBEAT;
-			color = <LED_COLOR_ID_BLUE>;
-			linux,default-trigger = "heartbeat";
-			pinctrl-names = "default";
-			pinctrl-0 = <&led_work_en>;
-		};
 	};
 
 	rk809-sound {
@@ -81,6 +85,8 @@
 
 	vcc5v0_usb: vcc5v0-usb {
 		compatible = "regulator-fixed";
+		enable-active-high;
+		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
 		regulator-name = "vcc5v0_usb";
 		regulator-always-on;
 		regulator-boot-on;
@@ -89,14 +95,30 @@
 		vin-supply = <&dc_12v>;
 	};
 
-};
+	vcc5v0_usb_host: vcc5v0-usb-host {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		// pinctrl-0 = <&vcc5v0_usb_host_en>;
+		regulator-name = "vcc5v0_usb_host";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc5v0_usb>;
+	};
 
-&combphy0 {
-	status = "okay";
-};
+	vcc5v0_usb_otg: vcc5v0-usb-otg {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		// pinctrl-0 = <&vcc5v0_usb_otg_en>;
+		regulator-name = "vcc5v0_usb_otg";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc5v0_usb>;
+	};
 
-&combphy1 {
-	status = "okay";
 };
 
 &cpu0 {
@@ -120,9 +142,70 @@
 	status = "okay";
 };
 
+&pmu_io_domains {
+	pmuio1-supply = <&vcc3v3_pmu>;
+	pmuio2-supply = <&vcc3v3_pmu>;
+	vccio1-supply = <&vccio_acodec>;
+	vccio2-supply = <&vcc_1v8>;
+	vccio3-supply = <&vccio_sd>;
+	vccio4-supply = <&vcc_1v8>;
+	vccio5-supply = <&vcc_3v3>;
+	vccio6-supply = <&vcc_1v8>;
+	vccio7-supply = <&vcc_3v3>;
+	status = "okay";
+};
+
+/* EMMC0 - D15 */
+&sdhci {
+	bus-width = <8>;
+	max-frequency = <200000000>;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
+	status = "okay";
+};
+
+/* SDMMC0 - X21 */
+&sdmmc0 {
+	max-frequency = <150000000>;
+	supports-sd;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc3v3_sd>;
+	vqmmc-supply = <&vccio_sd>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+	status = "okay";
+};
+
 &i2c0 {
+	pinctrl-0 = <&i2c0_xfer>;
+
 	status = "okay";
 
+	// D21
+	lm96163@4c {
+		compatible = "national,lm96163";
+		reg = <0x4c>;
+	};
+
+	// D24
+	pcf85063: rtc@51 {
+		compatible = "nxp,pcf85063a";
+		reg = <0x51>;
+		quartz-load-femtofarads = <12500>;
+
+		clock {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
+
+    // D18
 	vdd_cpu: regulator@1c {
 		compatible = "tcs,tcs4525";
 		reg = <0x1c>;
@@ -140,6 +223,7 @@
 		};
 	};
 
+	// D17
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
@@ -151,7 +235,7 @@
 		clock-names = "mclk";
 		clocks = <&cru I2S1_MCLKOUT_TX>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pmic_int>, <&i2s1m0_mclk>;
+		// pinctrl-0 = <&pmic_int>, <&i2s1m0_mclk>;
 		rockchip,system-power-controller;
 		#sound-dai-cells = <0>;
 		vcc1-supply = <&vcc3v3_sys>;
@@ -235,8 +319,7 @@
 				regulator-name = "vdda0v9_image";
 				regulator-min-microvolt = <900000>;
 				regulator-max-microvolt = <900000>;
-				regulator-always-on;
-				regulator-boot-on;
+
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
@@ -330,8 +413,7 @@
 				regulator-name = "vcca1v8_image";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
-				regulator-always-on;
-				regulator-boot-on;
+
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
@@ -363,147 +445,85 @@
 };
 
 &i2c1 {
+	pinctrl-0 = <&i2c1_xfer>;
 	status = "okay";
+};
 
+&i2c2 {
+	pinctrl-0 = <&i2c2m0_xfer>;
+	status = "okay";
+};
+
+&i2c3 {
+	pinctrl-0 = <&i2c3m0_xfer>;
+	status = "okay";
+};
+
+&i2c4 {
+	pinctrl-0 = <&i2c4m0_xfer>;
+	status = "okay";
 };
 
 &i2s0_8ch {
-	status = "okay";
+	status = "disabled";
 };
 
 &i2s1_8ch {
 	rockchip,trcm-sync-tx-only;
+	status = "disabled";
+};
+
+&uart0 {
+	pinctrl-0 = <&uart0_xfer &uart0_ctsn &uart0_rtsn>;
 	status = "okay";
 };
 
-&pinctrl {
-
-	leds {
-		led_work_en: led_work_en {
-			rockchip,pins = <0 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-	pmic {
-		pmic_int: pmic_int {
-			rockchip,pins =
-				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-
-};
-
-&pmu_io_domains {
-	pmuio1-supply = <&vcc3v3_pmu>;
-	pmuio2-supply = <&vcc3v3_pmu>;
-	vccio1-supply = <&vccio_acodec>;
-	vccio2-supply = <&vcc_1v8>;
-	vccio3-supply = <&vccio_sd>;
-	vccio4-supply = <&vcc_1v8>;
-	vccio5-supply = <&vcc_3v3>;
-	vccio6-supply = <&vcc_1v8>;
-	vccio7-supply = <&vcc_3v3>;
-	status = "okay";
-};
-
-&saradc {
-	vref-supply = <&vcca_1v8>;
-	status = "okay";
-};
-
-&sdhci {
-	bus-width = <8>;
-	max-frequency = <200000000>;
-	non-removable;
-	pinctrl-names = "default";
-	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
-	status = "okay";
-};
-
-&sdmmc0 {
-	bus-width = <4>;
-	cap-sd-highspeed;
-	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
-	disable-wp;
-	pinctrl-names = "default";
-	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
-	sd-uhs-sdr104;
-	vmmc-supply = <&vcc3v3_sd>;
-	vqmmc-supply = <&vccio_sd>;
-	status = "okay";
-};
-
-&tsadc {
-	rockchip,hw-tshut-mode = <1>;
-	rockchip,hw-tshut-polarity = <0>;
-	status = "okay";
+&uart1 {
+	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+	// This interface is used to communicate with WIFI&BT A1
+	status = "disabled";
 };
 
 &uart2 {
-	status = "okay";
+/*
+	UART8_TX -> R287 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R288 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart2m0_xfer>;
+	status = "disabled";
 };
 
-&usb_host0_ehci {
-	status = "okay";
+&uart8 {
+/*
+	UART8_TX -> R289 -> D22 (UART-RS232) -> X32.3
+	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
+*/
+	pinctrl-0 = <&uart8m1_xfer>;
+	status = "disabled";
 };
 
-&usb_host0_ohci {
-	status = "okay";
-};
-
-&usb_host0_xhci {
-	extcon = <&usb2phy0>;
-	status = "okay";
-};
-
-&usb_host1_ehci {
-	status = "okay";
-};
-
-&usb_host1_ohci {
-	status = "okay";
-};
-
-&usb_host1_xhci {
-	status = "okay";
-};
-
-&usb2phy0 {
-	status = "okay";
-};
-
-&usb2phy0_host {
-//	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
-};
-
-&usb2phy0_otg {
-//	phy-supply = <&vcc5v0_usb_otg>;
-	status = "okay";
-};
-
-&usb2phy1 {
-	status = "okay";
-};
-
-&usb2phy1_host {
-//	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
-};
-
-&usb2phy1_otg {
-//	phy-supply = <&vcc5v0_usb_host>;
-	status = "okay";
+&uart9 {
+/*
+	UART9_TX -> R291 -> D22 (UART-RS232) -> X32.1
+	UART9_RX <- R292 <- D22 (UART-RS232) <- X32.8
+*/
+	pinctrl-0 = <&uart9m1_xfer>;
+	status = "disabled";
 };
 
 /*
 	This interface isn't in use
 */
 &spi0 {
-	max-freq = <48000000>;
-	pinctrl-0 = <&spi0m1_pins>;
+	pinctrl-0 = <&spi0m1_pins &spi0m1_cs0>;
 
-	status = "disabled";
+	status = "okay";
+
+	spi_test0@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
 };
 
 &spi1 {
@@ -511,6 +531,12 @@
 	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
 
 	status = "okay";
+
+	spi_test1@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
 };
 
 &spi2 {
@@ -518,6 +544,18 @@
 	pinctrl-0 = <&spi2m1_pins &spi2m1_cs0 &spi2m1_cs1>;
 
 	status = "okay";
+
+/*	spi_test21@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+*/
+	spi_test22@1 {
+		compatible = "rockchip,spidev";
+		reg = <1>;
+		spi-max-frequency = <48000000>;
+	};
 };
 
 &spi3 {
@@ -525,4 +563,10 @@
 	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
 
 	status = "okay";
+
+	spi_test3@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
 };
