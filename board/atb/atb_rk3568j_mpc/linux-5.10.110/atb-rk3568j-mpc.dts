@@ -515,6 +515,8 @@
 	This interface isn't in use
 */
 &spi0 {
+	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi0m1_pins &spi0m1_cs0>;
 
 	status = "okay";
@@ -528,6 +530,7 @@
 
 &spi1 {
 	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
 
 	status = "okay";
@@ -541,16 +544,17 @@
 
 &spi2 {
 	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi2m1_pins &spi2m1_cs0 &spi2m1_cs1>;
 
 	status = "okay";
 
-/*	spi_test21@0 {
+	spi_test21@0 {
 		compatible = "rockchip,spidev";
 		reg = <0>;
 		spi-max-frequency = <48000000>;
 	};
-*/
+
 	spi_test22@1 {
 		compatible = "rockchip,spidev";
 		reg = <1>;
@@ -560,6 +564,7 @@
 
 &spi3 {
 	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
 
 	status = "okay";
@@ -569,4 +574,17 @@
 		reg = <0>;
 		spi-max-frequency = <48000000>;
 	};
+};
+
+&sfc {
+	status = "okay";
+
+		flash@0 {
+//			compatible = "spi-nand";
+			compatible = "jedec,spi-nor";
+			reg = <0>;
+			spi-max-frequency = <80000000>;
+			spi-rx-bus-width = <4>;
+			spi-tx-bus-width = <1>;
+		};
 };
