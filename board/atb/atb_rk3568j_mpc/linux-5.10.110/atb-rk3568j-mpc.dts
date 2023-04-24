@@ -161,7 +161,7 @@
 		reg = <0x51>;
 		quartz-load-femtofarads = <12500>;
 
-		clock {
+		rtc_clock: rtc_clock {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <32768>;

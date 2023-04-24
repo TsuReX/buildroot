@@ -3,7 +3,7 @@
 
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
-		clocks = <&pcf85063>; // <----------------------------------!!!
+		clocks = <&rtc_clock>; // <----------------------------------!!!
 		clock-names = "ext_clock"; // <----------------------------------!!!
 		pinctrl-names = "default";
 		pinctrl-0 = <&wlan_en_pin>;
@@ -31,7 +31,7 @@
 	wireless_bluetooth: wireless-bluetooth {
 		compatible = "bluetooth-platdata";
 		// This chip is clocked form D24 via WiFi_32KHZ signal
-		clocks = <&pcf85063 1>;  // <----------------------------------!!!
+		clocks = <&rtc_clock>;  // <----------------------------------!!!
 		clock-names = "ext_clock";    // <----------------------------------!!!
 		//wifi-bt-power-toggle;
 
