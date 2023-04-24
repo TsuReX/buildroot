@@ -3,12 +3,11 @@
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/rockchip.h>
 #include "rk3568.dtsi"
+
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
 #include "usb-sata-pcie-mpc.dtsi"
 #include "video-mpc.dtsi"
-
-// Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
 #include "wireless-mpc.dtsi"
 
 / {
@@ -146,6 +145,7 @@
 
 &i2c0 {
 	pinctrl-0 = <&i2c0_xfer>;
+	pinctrl-names = "default";
 
 	status = "okay";
 
@@ -410,21 +410,25 @@
 
 &i2c1 {
 	pinctrl-0 = <&i2c1_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c2 {
 	pinctrl-0 = <&i2c2m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c3 {
 	pinctrl-0 = <&i2c3m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c4 {
 	pinctrl-0 = <&i2c4m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -434,6 +438,16 @@
 
 &i2s1_8ch {
 	rockchip,trcm-sync-tx-only;
+	pinctrl-0 = <	&pmic_audio_mclk
+					&pmic_audio_sclk
+					&pmic_audio_lrck
+					&pmic_audio_sdi
+					&pmic_audio_sdo
+					&pmic_audio_pdmclk
+					&bt_audio_sdi
+					&bt_audio_sdo>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
@@ -454,12 +468,14 @@
 	UART2_RX <- R288 <- D22 (UART-RS232) <- X32.6
 */
 	pinctrl-0 = <&uart2m0_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
 &uart5 {
 	// This interface is used to communicate with GNSS A2
 	pinctrl-0 = <&uart5m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
@@ -469,6 +485,7 @@
 	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
 */
 	pinctrl-0 = <&uart8m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
@@ -478,18 +495,17 @@
 	UART9_RX <- R292 <- D22 (UART-RS232) <- X32.8
 */
 	pinctrl-0 = <&uart9m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
-/*
-	This interface isn't in use
-*/
 &spi0 {
 	max-freq = <48000000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0m1_pins &spi0m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test0@0 {
 		compatible = "rockchip,spidev";
@@ -503,7 +519,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test1@0 {
 		compatible = "rockchip,spidev";
@@ -538,7 +555,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test3@0 {
 		compatible = "rockchip,spidev";
@@ -548,11 +566,14 @@
 };
 
 &sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
 	status = "okay";
 
 		flash@0 {
 //			compatible = "spi-nand";
-			compatible = "jedec,spi-nor";
+//			compatible = "jedec,spi-nor";
+			compatible = "spi-nor";
 			reg = <0>;
 			spi-max-frequency = <80000000>;
 			spi-rx-bus-width = <4>;
@@ -564,7 +585,51 @@
 	pmic {
 		pmic_int_pin: pmic-int-pin {
 			// PMIC_INT_
-			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	pmic_audio {
+		pmic_audio_mclk:pmic_audio_mclk {
+			/* i2s1m0_mclk */
+			rockchip,pins = <1 RK_PA2 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sclk:pmic_audio_sclk {
+			/* i2s1m0_sclktx */
+			rockchip,pins = <1 RK_PA3 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_lrck:pmic_audio_lrck {
+			/* i2s1m0_lrcktx */
+			rockchip,pins = <1 RK_PA5 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdi:pmic_audio_sdi {
+			/* i2s1m0_sdo0 */
+			rockchip,pins = <1 RK_PA7 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdo:pmic_audio_sdo {
+			/* i2s1m0_sdi0 */
+			rockchip,pins = <1 RK_PB3 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_pdmclk:pmic_audio_pdmclk {
+			/* i2s1m0_lrckrx */
+			rockchip,pins = <1 RK_PA6 1 &pcfg_pull_none>;
+		};
+	};
+
+	bt_audio {
+		bt_audio_sdi:bt_audio_sdi {
+			/* i2s1m1_sdi2 */
+			rockchip,pins = <3 RK_PD4 4 &pcfg_pull_none>;
+		};
+
+		bt_audio_sdo:bt_audio_sdo {
+			/* i2s1m0_sdi1 */
+			rockchip,pins = <1 RK_PB2 2 &pcfg_pull_none>;
 		};
 	};
 };
