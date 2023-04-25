@@ -1,0 +1,107 @@
+
+/{
+/*
+	This is dummy regulator.
+	It is used to have ability to activate PCIE clocks
+*/
+	pcie_clk_en: pcie-clk-en {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// 1V8_PCIE_PWREN
+		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pcie_clk_en_pin>;
+		regulator-name = "pcie_clk_en_pin";
+		regulator-always-on;
+    };
+/*
+	1V8_PCIE_PWREN -> D19 -> PCIe_REF_EN
+	0 -> 0
+	1 -> 1
+*/
+};
+
+&pcie30phy {
+	status = "okay";
+};
+
+/*
+	This controller has one lane 0.
+	The lane 0 is connected to PCIE_A pins on SMARC connector X1.
+	If bifurcation mode is cativated the lane 0 is controlled by pcie3x1.
+*/
+&pcie3x1 {
+	num-viewport = <4>;
+	rockchip,bifurcation;
+	rockchip,init-delay-ms = <100>;
+/*
+	Both controllers have the single PCIE reset signal line.
+	PCIE30X2_PERSTn -> D3 -> PCIe_RST_
+	0 -> 0
+	1 -> 1
+*/
+	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+
+	status = "disabled";
+
+	pcie@10 {
+		reg = <0x00100000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+	};
+};
+
+/*
+	This controller has two lanes which can be organized in PCIE2x mode or in case of enabled bifurcation in PCIE1x mode.
+	The lane 0 is connected to PCIE_B pins on SMARC connector X1.
+	If bifurcation mode is cativated the lane 1 is controlled by pcie3x1, lane 0 is controlled by pcie3x2
+*/
+&pcie3x2 {
+	num-viewport = <4>;
+	rockchip,bifurcation;
+/*
+	Both controllers have the single PCIE reset signal line.
+	PCIE30X2_PERSTn -> D3 -> PCIe_RST_
+	0 -> 0
+	1 -> 1
+*/
+	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+
+	status = "disabled";
+
+	pcie@20 {
+		reg = <0x00200000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+	};
+};
+
+&pinctrl {
+	pcie {
+		pcie_clk_en_pin: pcie-clk-en-pin {
+			// 1V8_PCIE_PWREN
+			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie3x1_reset_pin: pcie3x1-reset-pin {
+/*
+			Both controllers have the single PCIE reset signal line.
+			PCIE30X2_PERSTn -> D3 -> PCIe_RST_
+			0 -> 0
+			1 -> 1
+*/
+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie3x2_reset_pin: pcie3x2-reset-pin {
+/*
+			Both controllers have the single PCIE reset signal line.
+			PCIE30X2_PERSTn -> D3 -> PCIe_RST_
+			0 -> 0
+			1 -> 1
+*/
+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
