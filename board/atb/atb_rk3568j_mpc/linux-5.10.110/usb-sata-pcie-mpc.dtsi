@@ -110,8 +110,8 @@
 	This controller is connected to X5 upper port
 */
 &usb_host0_ehci {
-	phys = <&u2phy0_host>;
-	phy-names = "usb";
+//	phys = <&u2phy0_host>;
+//	phy-names = "usb";
 	status = "okay";
 };
 
@@ -119,20 +119,20 @@
 	This controller is connected to X5 upper port
 */
 &usb_host0_ohci {
-	phys = <&u2phy0_host>;
-	phy-names = "usb";
+//	phys = <&u2phy0_host>;
+//	phy-names = "usb";
 	status = "okay";
 };
 
 &u2phy0_host {
-	//phy-supply = <&vcc5v0_usb_host>;
-	phy-supply = <&usb2_h2_en>;
+//	phy-supply = <&vcc5v0_usb_host>;
+//	phy-supply = <&usb2_h2_en>;
 	status = "okay";
 };
 
 &u2phy0_otg {
-	//phy-supply = <&vcc5v0_usb_otg>;
-	phy-supply = <&cpu_otg_usb_en>;
+//	phy-supply = <&vcc5v0_usb_otg>;
+//	phy-supply = <&cpu_otg_usb_en>;
 	status = "okay";
 };
 
@@ -148,8 +148,8 @@
 	This controller is connected to X5 lower port
 */
 &usb_host1_ehci {
-	phys = <&u2phy1_host>;
-	phy-names = "usb";
+//	phys = <&u2phy1_host>;
+//	phy-names = "usb";
 	status = "okay";
 };
 
@@ -157,22 +157,22 @@
 	This controller is connected to X5 lower port
 */
 &usb_host1_ohci {
-	phys = <&u2phy1_host>;
-	phy-names = "usb";
+//	phys = <&u2phy1_host>;
+//	phy-names = "usb";
 	status = "okay";
 };
 
 
 &u2phy1_host {
-	//phy-supply = <&vcc5v0_usb_host>;
-	phy-supply = <&usb2_h3_en>;
+//	phy-supply = <&vcc5v0_usb_host>;
+//	phy-supply = <&usb2_h3_en>;
 	status = "okay";
 };
 
 
 &u2phy1_otg {
-	//phy-supply = <&vcc5v0_usb_host>;
-	phy-supply = <&usb2_h3_en>;
+//	phy-supply = <&vcc5v0_usb_host>;
+//	phy-supply = <&usb2_h3_en>;
 	status = "okay";
 };
 
@@ -185,22 +185,26 @@
 */
 // X4
 &usbdrd_dwc3 {
-	phys = <&u2phy0_otg>, <&combphy0_us PHY_TYPE_USB3>;
-	phy-names = "usb2-phy";
-	maximum-speed = "high-speed";
-	snps,dis_u2_susphy_quirk;
+//	phys = <&u2phy0_otg>, <&combphy0_us PHY_TYPE_USB3>;
+//	phy-names = "usb2-phy";
+//	maximum-speed = "high-speed";
+//	snps,dis_u2_susphy_quirk;
+	dr_mode = "host";
 	// If this controller is enabled, sata0 must be disabled
 	status = "okay";
 };
 
-// If this controller is enabled, usbdrd_dwc3 must be disabled
+&usbdrd30 {
+	status = "okay";
+};
+
 &sata0 {
+//	If this controller is enabled, usbdrd_dwc3 must be disabled
 	status = "disabled";
 };
 
-
-// This controller is phy for usbdrd_dwc3 and sata0 controllers
 &combphy0_us {
+//	This controller is phy for usbdrd_dwc3 and sata0 controllers
 	status = "okay";
 };
 
@@ -216,10 +220,14 @@
 	By defaults M2_USB3.0_EN signal is pulled down via R161 and EXT_SATA_EN signal is pulled down via R165 and can be pulled up via X17.
 */
 &usbhost_dwc3 {
-	phys = <&u2phy0_host>, <&combphy1_usq PHY_TYPE_USB3>;
-	phy-names = "usb2-phy";
-	maximum-speed = "high-speed";
+//	phys = <&u2phy0_host>, <&combphy1_usq PHY_TYPE_USB3>;
+//	phy-names = "usb2-phy";
+//	maximum-speed = "high-speed";
 	// If this controller is enabled, sata1 must be disabled
+	status = "disabled";
+};
+
+&usbhost30 {
 	status = "disabled";
 };
 
