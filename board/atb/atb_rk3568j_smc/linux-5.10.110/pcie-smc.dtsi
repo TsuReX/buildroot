@@ -3,9 +3,6 @@
 /*
 	This is dummy regulator.
 	It is used to have ability to activate PCIE clocks
-*/
-
-/*
 	1V8_PCIE_PWREN -> D19 -> PCIe_REF_EN
 	0 -> 0
 	1 -> 1
@@ -13,7 +10,6 @@
 	pcie_clk_en: pcie-clk-en {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		// 1V8_PCIE_PWREN
 		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pcie_clk_en_pin>;
@@ -28,13 +24,12 @@
 	0 -> 0
 	1 -> 1
 */
-
-    pcie30_Reset: reset-pcie-regulator {
+    pcie30_reset: pcie30-reset {
 		compatible = "regulator-fixed";
 		regulator-name = "pcie30_reset";
 		gpio = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pcie3_reset_pin>;
+		pinctrl-0 = <&pcie30_reset_pin>;
 		enable-active-high;
 		regulator-always-on;
 		regulator-boot-on;
@@ -56,7 +51,7 @@
 	num-viewport = <4>;
 	rockchip,bifurcation;
 	rockchip,init-delay-ms = <100>;
-		
+
 	status = "okay";
 };
 
@@ -76,17 +71,21 @@
 &pinctrl {
 	pcie {
 		pcie_clk_en_pin: pcie-clk-en-pin {
-			// 1V8_PCIE_PWREN
+/*
+			1V8_PCIE_PWREN -> D19 -> PCIe_REF_EN
+			0 -> 0
+			1 -> 1
+*/
 			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		pcie3_reset_pin: pcie3_reset-pin {
-
-//			Both controllers have the single PCIE reset signal line.
-//			PCIE30X2_PERSTn -> D3 -> PCIe_RST_
-//			0 -> 0
-//			1 -> 1
-
+		pcie30_reset_pin: pcie30-reset-pin {
+/*
+			Both controllers have the single PCIE reset signal line.
+			PCIE30X2_PERSTn -> D3 -> PCIe_RST_
+			0 -> 0
+			1 -> 1
+*/
 			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
