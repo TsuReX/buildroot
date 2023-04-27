@@ -3,13 +3,12 @@
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/rockchip.h>
 #include "rk3568.dtsi"
+
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
 #include "usb-sata-pcie-mpc.dtsi"
 #include "video-mpc.dtsi"
-
-// Currently wireless subsystem is unavailable due to error caused by sdio_pwrseq
-// #include "wireless-mpc.dtsi"
+#include "wireless-mpc.dtsi"
 
 / {
 	compatible = "atb,atb-rk3568j-mpc", "rockchip,rk3568";
@@ -82,43 +81,6 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&dc_12v>;
 	};
-
-	vcc5v0_usb: vcc5v0-usb {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
-		regulator-name = "vcc5v0_usb";
-		regulator-always-on;
-		regulator-boot-on;
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&dc_12v>;
-	};
-
-	vcc5v0_usb_host: vcc5v0-usb-host {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		// pinctrl-0 = <&vcc5v0_usb_host_en>;
-		regulator-name = "vcc5v0_usb_host";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&vcc5v0_usb>;
-	};
-
-	vcc5v0_usb_otg: vcc5v0-usb-otg {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		// pinctrl-0 = <&vcc5v0_usb_otg_en>;
-		regulator-name = "vcc5v0_usb_otg";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&vcc5v0_usb>;
-	};
-
 };
 
 &cpu0 {
@@ -183,6 +145,7 @@
 
 &i2c0 {
 	pinctrl-0 = <&i2c0_xfer>;
+	pinctrl-names = "default";
 
 	status = "okay";
 
@@ -198,7 +161,7 @@
 		reg = <0x51>;
 		quartz-load-femtofarads = <12500>;
 
-		clock {
+		rtc_clock: rtc_clock {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
@@ -227,15 +190,16 @@
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
-		interrupt-parent = <&gpio0>;
-		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
 		assigned-clocks = <&cru I2S1_MCLKOUT_TX>;
 		assigned-clock-parents = <&cru CLK_I2S1_8CH_TX>;
 		#clock-cells = <1>;
 		clock-names = "mclk";
 		clocks = <&cru I2S1_MCLKOUT_TX>;
 		pinctrl-names = "default";
-		// pinctrl-0 = <&pmic_int>, <&i2s1m0_mclk>;
+		pinctrl-0 = <&pmic_int_pin>, <&i2s1m0_mclk>;
+		// PMIC_INT_
+		interrupt-parent = <&gpio0>;
+		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
 		rockchip,system-power-controller;
 		#sound-dai-cells = <0>;
 		vcc1-supply = <&vcc3v3_sys>;
@@ -446,21 +410,25 @@
 
 &i2c1 {
 	pinctrl-0 = <&i2c1_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c2 {
 	pinctrl-0 = <&i2c2m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c3 {
 	pinctrl-0 = <&i2c3m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &i2c4 {
 	pinctrl-0 = <&i2c4m0_xfer>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -470,7 +438,17 @@
 
 &i2s1_8ch {
 	rockchip,trcm-sync-tx-only;
-	status = "disabled";
+	pinctrl-0 = <	&pmic_audio_mclk
+					&pmic_audio_sclk
+					&pmic_audio_lrck
+					&pmic_audio_sdi
+					&pmic_audio_sdo
+					&pmic_audio_pdmclk
+					&bt_audio_sdi
+					&bt_audio_sdo>;
+	pinctrl-names = "default";
+
+	status = "okay";
 };
 
 &uart0 {
@@ -486,10 +464,18 @@
 
 &uart2 {
 /*
-	UART8_TX -> R287 -> D22 (UART-RS232) -> X32.3
-	UART8_RX <- R288 <- D22 (UART-RS232) <- X32.6
+	UART2_TX -> R287 -> D22 (UART-RS232) -> X32.3
+	UART2_RX <- R288 <- D22 (UART-RS232) <- X32.6
 */
 	pinctrl-0 = <&uart2m0_xfer>;
+	pinctrl-names = "default";
+	status = "disabled";
+};
+
+&uart5 {
+	// This interface is used to communicate with GNSS A2
+	pinctrl-0 = <&uart5m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
@@ -499,6 +485,7 @@
 	UART8_RX <- R290 <- D22 (UART-RS232) <- X32.6
 */
 	pinctrl-0 = <&uart8m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
@@ -508,16 +495,17 @@
 	UART9_RX <- R292 <- D22 (UART-RS232) <- X32.8
 */
 	pinctrl-0 = <&uart9m1_xfer>;
+	pinctrl-names = "default";
 	status = "disabled";
 };
 
-/*
-	This interface isn't in use
-*/
 &spi0 {
+	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi0m1_pins &spi0m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test0@0 {
 		compatible = "rockchip,spidev";
@@ -528,9 +516,11 @@
 
 &spi1 {
 	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi1m1_pins &spi1m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test1@0 {
 		compatible = "rockchip,spidev";
@@ -541,16 +531,18 @@
 
 &spi2 {
 	max-freq = <48000000>;
-	pinctrl-0 = <&spi2m1_pins &spi2m1_cs0 &spi2m1_cs1>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2m0_pins &spi2m0_cs0 &spi2m0_cs1>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
-/*	spi_test21@0 {
+	spi_test21@0 {
 		compatible = "rockchip,spidev";
 		reg = <0>;
 		spi-max-frequency = <48000000>;
 	};
-*/
+
 	spi_test22@1 {
 		compatible = "rockchip,spidev";
 		reg = <1>;
@@ -560,13 +552,84 @@
 
 &spi3 {
 	max-freq = <48000000>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
 
-	status = "okay";
+	// This interface doesn't have output
+	status = "disabled";
 
 	spi_test3@0 {
 		compatible = "rockchip,spidev";
 		reg = <0>;
 		spi-max-frequency = <48000000>;
+	};
+};
+
+&sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
+	status = "okay";
+
+		flash@0 {
+//			compatible = "spi-nand";
+//			compatible = "jedec,spi-nor";
+			compatible = "spi-nor";
+			reg = <0>;
+			spi-max-frequency = <80000000>;
+			spi-rx-bus-width = <4>;
+			spi-tx-bus-width = <1>;
+		};
+};
+
+&pinctrl {
+	pmic {
+		pmic_int_pin: pmic-int-pin {
+			// PMIC_INT_
+			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	pmic_audio {
+		pmic_audio_mclk:pmic_audio_mclk {
+			/* i2s1m0_mclk */
+			rockchip,pins = <1 RK_PA2 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sclk:pmic_audio_sclk {
+			/* i2s1m0_sclktx */
+			rockchip,pins = <1 RK_PA3 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_lrck:pmic_audio_lrck {
+			/* i2s1m0_lrcktx */
+			rockchip,pins = <1 RK_PA5 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdi:pmic_audio_sdi {
+			/* i2s1m0_sdo0 */
+			rockchip,pins = <1 RK_PA7 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdo:pmic_audio_sdo {
+			/* i2s1m0_sdi0 */
+			rockchip,pins = <1 RK_PB3 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_pdmclk:pmic_audio_pdmclk {
+			/* i2s1m0_lrckrx */
+			rockchip,pins = <1 RK_PA6 1 &pcfg_pull_none>;
+		};
+	};
+
+	bt_audio {
+		bt_audio_sdi:bt_audio_sdi {
+			/* i2s1m1_sdi2 */
+			rockchip,pins = <3 RK_PD4 4 &pcfg_pull_none>;
+		};
+
+		bt_audio_sdo:bt_audio_sdo {
+			/* i2s1m0_sdi1 */
+			rockchip,pins = <1 RK_PB2 2 &pcfg_pull_none>;
+		};
 	};
 };
