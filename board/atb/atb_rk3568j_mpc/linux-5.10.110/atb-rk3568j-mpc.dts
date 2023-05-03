@@ -7,7 +7,6 @@
 #include "ethernet-mpc.dtsi"
 #include "pcie-mpc.dtsi"
 #include "usb-sata-pcie-mpc.dtsi"
-#include "video-mpc.dtsi"
 #include "wireless-mpc.dtsi"
 
 / {
@@ -633,3 +632,5 @@
 		};
 	};
 };
+
+#include "video-mpc.dtsi"
