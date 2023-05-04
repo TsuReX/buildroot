@@ -12,7 +12,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&m2_usb3_en_pin>;
 		regulator-name = "m2_usb3_en";
-		//regulator-always-on;
 		regulator-always-off;
 	};
 
@@ -29,7 +28,6 @@
 		pinctrl-0 = <&cpu_otg_usb_en_pin>;
 		regulator-name = "cpu_otg_usb_en";
 		regulator-always-on;
-		//regulator-always-off;
 	};
 
 /*
@@ -45,7 +43,6 @@
 		pinctrl-0 = <&usb2_h2_en_pin>;
 		regulator-name = "usb2_h2_en";
 		regulator-always-on;
-		//regulator-always-off;
 	};
 
 /*
@@ -61,45 +58,7 @@
 		pinctrl-0 = <&usb2_h3_en_pin>;
 		regulator-name = "usb2_h3_en";
 		regulator-always-on;
-		//regulator-always-off;
 	};
-/*
-	vcc5v0_usb: vcc5v0-usb {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
-		regulator-name = "vcc5v0_usb";
-		regulator-always-on;
-		regulator-boot-on;
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&dc_12v>;
-	};
-
-	vcc5v0_usb_host: vcc5v0-usb-host {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		// pinctrl-0 = <&vcc5v0_usb_host_en>;
-		regulator-name = "vcc5v0_usb_host";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&vcc5v0_usb>;
-	};
-
-	vcc5v0_usb_otg: vcc5v0-usb-otg {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		// gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		// pinctrl-0 = <&vcc5v0_usb_otg_en>;
-		regulator-name = "vcc5v0_usb_otg";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		vin-supply = <&vcc5v0_usb>;
-	};
-*/
 };
 
 /*
@@ -110,8 +69,6 @@
 	This controller is connected to X5 upper port
 */
 &usb_host0_ehci {
-//	phys = <&u2phy0_host>;
-//	phy-names = "usb";
 	status = "okay";
 };
 
@@ -119,20 +76,14 @@
 	This controller is connected to X5 upper port
 */
 &usb_host0_ohci {
-//	phys = <&u2phy0_host>;
-//	phy-names = "usb";
 	status = "okay";
 };
 
 &u2phy0_host {
-//	phy-supply = <&vcc5v0_usb_host>;
-//	phy-supply = <&usb2_h2_en>;
 	status = "okay";
 };
 
 &u2phy0_otg {
-//	phy-supply = <&vcc5v0_usb_otg>;
-//	phy-supply = <&cpu_otg_usb_en>;
 	status = "okay";
 };
 
@@ -148,8 +99,6 @@
 	This controller is connected to X5 lower port
 */
 &usb_host1_ehci {
-//	phys = <&u2phy1_host>;
-//	phy-names = "usb";
 	status = "okay";
 };
 
@@ -157,22 +106,16 @@
 	This controller is connected to X5 lower port
 */
 &usb_host1_ohci {
-//	phys = <&u2phy1_host>;
-//	phy-names = "usb";
 	status = "okay";
 };
 
 
 &u2phy1_host {
-//	phy-supply = <&vcc5v0_usb_host>;
-//	phy-supply = <&usb2_h3_en>;
 	status = "okay";
 };
 
 
 &u2phy1_otg {
-//	phy-supply = <&vcc5v0_usb_host>;
-//	phy-supply = <&usb2_h3_en>;
 	status = "okay";
 };
 
@@ -185,10 +128,6 @@
 */
 // X4
 &usbdrd_dwc3 {
-//	phys = <&u2phy0_otg>, <&combphy0_us PHY_TYPE_USB3>;
-//	phy-names = "usb2-phy";
-//	maximum-speed = "high-speed";
-//	snps,dis_u2_susphy_quirk;
 	dr_mode = "host";
 	// If this controller is enabled, sata0 must be disabled
 	status = "okay";
@@ -220,9 +159,6 @@
 	By defaults M2_USB3.0_EN signal is pulled down via R161 and EXT_SATA_EN signal is pulled down via R165 and can be pulled up via X17.
 */
 &usbhost_dwc3 {
-//	phys = <&u2phy0_host>, <&combphy1_usq PHY_TYPE_USB3>;
-//	phy-names = "usb2-phy";
-//	maximum-speed = "high-speed";
 	// If this controller is enabled, sata1 must be disabled
 	status = "disabled";
 };
@@ -233,9 +169,6 @@
 
 // This board doesn't use this controller
 &sata1 {
-	phys = <&combphy1_usq PHY_TYPE_SATA>;
-	phy-names = "sata-phy";
-
 	// If this controller is enabled, usbhost_dwc3 must be disabled
 	status = "okay";
 };
@@ -251,8 +184,6 @@
 
 // This board doesn't use this controller
 &pcie2x1 {
-	phys = <&combphy2_psq PHY_TYPE_PCIE>;
-	phy-names = "pcie-phy";
 	status = "disabled";
 };
 
@@ -262,8 +193,7 @@
 	By default M2_CONFIG is set up to high level (+3.3v) via R177
 */
 &sata2 {
-    phys = <&combphy2_psq PHY_TYPE_SATA>;
-    status = "disabled";
+	status = "disabled";
 };
 
 // This controller is phy for pcie2x1 and sata2 controllers
