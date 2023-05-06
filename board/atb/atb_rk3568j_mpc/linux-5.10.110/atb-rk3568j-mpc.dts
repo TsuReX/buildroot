@@ -103,6 +103,22 @@
 	status = "okay";
 };
 
+/*
+ *	There are 10 independent IO domains in RK3566/RK3568, including PMUIO[0:2] and VCCIO[1:7].
+ *	1/ PMUIO0 and PMUIO1 are fixed-level power domains which cannot be configured;
+ *	2/ PMUIO2 and VCCIO1,VCCIO[3:7] domains require that their hardware power supply voltages
+ *		must be consistent with the software configuration correspondingly
+ *		a/ When the hardware IO level is connected to 1.8V, the software voltage configuration
+ *			should also be configured to 1.8V accordingly;
+ *		b/ When the hardware IO level is connected to 3.3V, the software voltage configuration
+ *			should also be configured to 3.3V accordingly;
+ *	3/ VCCIO2 voltage control selection (0xFDC20140)
+ *	BIT[0]: 0x0: from GPIO_0A7 (default)
+ *	BIT[0]: 0x1: from GRF
+ *	Default is determined by Pin FLASH_VOL_SEL/GPIO0_A7:
+ *	L:VCCIO2 must supply 3.3V
+ *	H:VCCIO2 must supply 1.8V
+ */
 &pmu_io_domains {
 	pmuio1-supply = <&vcc3v3_pmu>;
 	pmuio2-supply = <&vcc3v3_pmu>;
@@ -189,6 +205,11 @@
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
+		interrupt-parent = <&gpio0>;
+/*
+		PMIC_INT_
+*/
+		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
 		assigned-clocks = <&cru I2S1_MCLKOUT_TX>;
 		assigned-clock-parents = <&cru CLK_I2S1_8CH_TX>;
 		#clock-cells = <1>;
@@ -196,9 +217,6 @@
 		clocks = <&cru I2S1_MCLKOUT_TX>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pmic_int_pin>, <&i2s1m0_mclk>;
-		// PMIC_INT_
-		interrupt-parent = <&gpio0>;
-		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
 		rockchip,system-power-controller;
 		#sound-dai-cells = <0>;
 		vcc1-supply = <&vcc3v3_sys>;
