@@ -67,8 +67,6 @@
 	This controller is connected to USB3 pins on SMARC connector X1 (conga SMC1 lower X4)
 */
 &usbdrd_dwc3 {
-	phys = <&u2phy0_host>;
-//	extcon = <&usb2phy0>;
 	dr_mode = "host";
 	// If this controller is enabled, sata0 must be disabled
 	status = "okay";
@@ -107,9 +105,6 @@
 
 // This board doesn't use this controller
 &sata1 {
-	phys = <&combphy1_usq PHY_TYPE_SATA>;
-	phy-names = "sata-phy";
-
 	// If this controller is enabled, usbhost_dwc3 must be disabled
 	status = "disabled";
 };
@@ -125,8 +120,6 @@
 
 // This board doesn't use this controller
 &pcie2x1 {
-	phys = <&combphy2_psq PHY_TYPE_PCIE>;
-	phy-names = "pcie-phy";
 	status = "disabled";
 };
 
@@ -134,8 +127,7 @@
 	SATA2 lines are connected to SATA pins on SMARC connector X1
 */
 &sata2 {
-    phys = <&combphy2_psq PHY_TYPE_SATA>;
-    status = "okay";
+	status = "okay";
 };
 
 // This controller is phy for pcie2x1 and sata2 controllers
