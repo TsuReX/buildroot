@@ -7,6 +7,7 @@
 #include "rk3568.dtsi"
 #include "ethernet-smc.dtsi"
 #include "video-smc.dtsi"
+#include "wireless-smc.dtsi"
 
 / {
 	model = "Rockchip RK3568 EVB1 DDR4 V10 Board";
@@ -110,6 +111,7 @@
 		gpio = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
+		regulator-always-on;
 		vin-supply = <&dc_12v>;
 	};
     
@@ -147,6 +149,19 @@
 &i2c0 {
 	status = "okay";
 
+    // D13
+	pcf85063: rtc@51 {
+		compatible = "nxp,pcf85063a";
+		reg = <0x51>;
+		quartz-load-femtofarads = <12500>;
+
+		rtc_clock: rtc_clock {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
+	
 	vdd_cpu: regulator@1c {
 		compatible = "tcs,tcs4525";
 		reg = <0x1c>;
@@ -178,14 +193,14 @@
 		pinctrl-0 = <&pmic_int>, <&i2s1m0_mclk>;
 		rockchip,system-power-controller;
 		#sound-dai-cells = <0>;
-		vcc1-supply = <&vcc3v3_sys>;
-		vcc2-supply = <&vcc3v3_sys>;
-		vcc3-supply = <&vcc3v3_sys>;
-		vcc4-supply = <&vcc3v3_sys>;
+		vcc1-supply = <&vcc5v0_sys>;
+		vcc2-supply = <&vcc5v0_sys>;
+		vcc3-supply = <&vcc5v0_sys>;
+		vcc4-supply = <&vcc5v0_sys>;
 		vcc5-supply = <&vcc3v3_sys>;
-		vcc6-supply = <&vcc3v3_sys>;
+		vcc6-supply = <&vcc5v0_sys>;
 		vcc7-supply = <&vcc3v3_sys>;
-		vcc8-supply = <&vcc3v3_sys>;
+		vcc8-supply = <&vcc5v0_sys>;
 		vcc9-supply = <&vcc3v3_sys>;
 		wakeup-source;
 
@@ -306,7 +321,9 @@
 				regulator-name = "vccio_sd";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
-
+				regulator-boot-on;
+				regulator-always-on;
+				
 				regulator-state-mem {
 					regulator-off-in-suspend;
 				};
@@ -373,6 +390,8 @@
 
 			vcc3v3_sd: SWITCH_REG2 {
 				regulator-name = "vcc3v3_sd";
+				regulator-boot-on;
+				regulator-always-on;
 
 				regulator-state-mem {
 					regulator-off-in-suspend;
@@ -420,11 +439,11 @@
 &pmu_io_domains {
 	pmuio1-supply = <&vcc3v3_pmu>;
 	pmuio2-supply = <&vcc3v3_pmu>;
-	vccio1-supply = <&vccio_acodec>;
+	vccio1-supply = <&vcc_1v8>;
 	vccio2-supply = <&vcc_1v8>;
 	vccio3-supply = <&vccio_sd>;
 	vccio4-supply = <&vcc_1v8>;
-	vccio5-supply = <&vcc_3v3>;
+	vccio5-supply = <&vcc_1v8>;
 	vccio6-supply = <&vcc_1v8>;
 	vccio7-supply = <&vcc_1v8>;
 	status = "okay";
