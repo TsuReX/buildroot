@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#set -xe
+# Debugging options
+# This command is used to print each being executed line of script
+#set -x
+# This command is used to stop script execution after a command finished with non zero value
+#set -e
 
 BUILDROOT_HOME=$(pwd)
 #OUTPUT=`dirname ${1}`
@@ -31,6 +35,7 @@ fi
 IMAGES=$1
 OUTPUT=${IMAGES}/..
 BUILD=${OUTPUT}/build
+TARGET_DIR=${OUTPUT}/target
 GENIMAGE_TMP="${IMAGES}/genimage.tmp"
 BINARIES_DIR=${OUTPUT}/images
 
@@ -64,7 +69,7 @@ TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 
 SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
 TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${TPL_BIN}
@@ -113,6 +118,40 @@ cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 # 5. Rootfs
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
+
+# These images are stored in dl directory where all packages being used for building are stored.
+# But currently images of rootfs were placed there directly, it's a temporal trick.
+# It's crucial to implement aproach of images retreiving from external storage.
+echo "WARNING! Images were placed directly!!!"
+#ROOTFS_IMG="debian10-lxde.rootfs.ext4"
+#ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
+#ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
+#ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4"
+ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
+
+echo "External rootfs is ${ROOTFS_IMG}"
+
+# Copy new or replace existing image to avoid impact of changes made earlier
+cp -f ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ${IMAGES}/ext.rootfs.ext4
+
+# Unmount and remove mnt directory if it exists by any reasons
+mountpoint ${IMAGES}/mnt
+if [ $? == 0 ]; then
+	sudo umount ${IMAGES}/mnt
+fi
+sudo rm -rf ${IMAGES}/mnt
+
+mkdir ${IMAGES}/mnt
+sudo mount ${IMAGES}/ext.rootfs.ext4 ${IMAGES}/mnt
+if ! [ $? == 0 ]; then
+	exit 2
+fi
+
+sudo cp ${TARGET_DIR}/etc/fstab ${IMAGES}/mnt/etc/
+sudo cp -r ${TARGET_DIR}/lib/modules ${IMAGES}/mnt/lib/
+
+sudo umount ${IMAGES}/mnt
+sudo rm -rf ${IMAGES}/mnt
 
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
