@@ -69,7 +69,7 @@ TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
-TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 
 SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
 TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${TPL_BIN}
@@ -123,11 +123,11 @@ ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT
 # But currently images of rootfs were placed there directly, it's a temporal trick.
 # It's crucial to implement aproach of images retreiving from external storage.
 echo "WARNING! Images were placed directly!!!"
-#ROOTFS_IMG="debian10-lxde.rootfs.ext4"
+ROOTFS_IMG="debian10-lxde.rootfs.ext4"
 #ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
 #ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
 #ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4"
-ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
+#ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
 
 echo "External rootfs is ${ROOTFS_IMG}"
 
@@ -181,6 +181,7 @@ ${OUTPUT}/host/bin/genimage \
 	--config "${GENIMAGE_CFG}"
 
 mv ${IMAGES}/sdcard.img ${IMAGES}/${IMAGE_NAME}.img
+ls -lh ${IMAGES}/${IMAGE_NAME}.img
 
 if [ $? -eq 0 ]; then
 	echo
