@@ -131,6 +131,12 @@ ROOTFS_IMG="debian10-lxde.rootfs.ext4"
 
 echo "External rootfs is ${ROOTFS_IMG}"
 
+if ! [ -e ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ]; then
+	cd ${BUILDROOT_HOME}/dl/
+	wget --ftp-user=atbftp --ftp-password=atbftp ftp://10.15.30.153/${ROOTFS_IMG}
+	cd -
+fi
+
 # Copy new or replace existing image to avoid impact of changes made earlier
 cp -f ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ${IMAGES}/ext.rootfs.ext4
 
