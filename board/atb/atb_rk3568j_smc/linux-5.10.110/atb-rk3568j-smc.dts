@@ -180,7 +180,7 @@
 
     // D18
 	vdd_cpu: regulator@1c {
-		compatible = "tcs,tcs4525";
+		compatible = "tcs,tcs452x";
 		reg = <0x1c>;
 		fcs,suspend-voltage-selector = <1>;
 		regulator-name = "vdd_cpu";
