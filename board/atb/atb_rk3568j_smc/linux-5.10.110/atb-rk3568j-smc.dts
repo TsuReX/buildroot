@@ -12,7 +12,7 @@
 / {
 	compatible = "atb,atb-rk3568j-smc", "rockchip,rk3568";
     
-	model = "ATB-RK3568J-MPC";
+	model = "ATB-RK3568J-SMC";
 
 	aliases {
 		ethernet0 = &gmac0;
