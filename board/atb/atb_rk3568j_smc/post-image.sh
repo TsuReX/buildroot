@@ -28,15 +28,6 @@ if ! [ $# == 2 ]; then
     exit -1
 fi
 
-#if [ -z "$1" ] ; then
-#	echo "ERROR: path to output directory isn't specified"
-#fi
-
-#if [ -z "$2" ]; then
-#    echo "ERROR: $2 DTB file isn't specified"
-#    exit -1
-#fi
-
 IMAGES=$1
 OUTPUT=${IMAGES}/..
 BUILD=${OUTPUT}/build
@@ -55,17 +46,16 @@ PLAT=rk3568
 #SPL_BIN=rk356x_spl_v1.08.bin
 SPL_BIN=rk356x_spl_v1.12.bin
 
-
 #TPL_BIN=rk3568_ddr_1056MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_1184MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_780MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
+TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_1332MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_1560MHz_v1.05.bin
-TPL_BIN=rk3568_ddr_324MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_324MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_630MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_780MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_1184MHz_v1.05.bin
@@ -118,8 +108,6 @@ cd -
 cp ${IMAGES}/Image ${IMAGES}/linux
 
 # 4. Linux device tree blob
-#cp ${BUILD}/linux-rk356x_linux_release_v1.3.0a/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dtb ${IMAGES}/dtb
-#cp ${IMAGES}/rk3568-firefly-aioj.dtb ${IMAGES}/dtb
 cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 
 # 5. Rootfs
@@ -130,6 +118,9 @@ ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
 # space. We don't rely on genimage to build the rootfs image, just to insert a
 # pre-built one in the disk image.
+
+UBOOT_ENV_SIZE=0x8000
+${BUILD}/uboot-${UBOOT_REPO}/tools/mkenvimage -s ${UBOOT_ENV_SIZE} -o ${IMAGES}/uboot.env ${BOARD_DIR}/uboot/uboot.env.txt
 
 trap 'rm -rf "${ROOTPATH_TMP}"' EXIT
 ROOTPATH_TMP="$(mktemp -d)"
@@ -163,6 +154,7 @@ if [ $? -eq 0 ]; then
 	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
 	echo
 fi
+
 lsblk
 echo
 exit $?
