@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#set -xe
+# Debugging options
+# This command is used to print each being executed line of script
+#set -x
+# This command is used to stop script execution after a command finished with non zero value
+#set -e
 
 BUILDROOT_HOME=$(pwd)
 #OUTPUT=`dirname ${1}`
@@ -31,6 +35,7 @@ fi
 IMAGES=$1
 OUTPUT=${IMAGES}/..
 BUILD=${OUTPUT}/build
+TARGET_DIR=${OUTPUT}/target
 GENIMAGE_TMP="${IMAGES}/genimage.tmp"
 BINARIES_DIR=${OUTPUT}/images
 
@@ -114,6 +119,53 @@ cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
+# These images are stored in dl directory where all packages being used for building are stored.
+ROOTFS_IMG="debian10-lxde.rootfs.ext4"
+#ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
+#ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
+#ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4"
+#ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
+
+echo "External rootfs is ${ROOTFS_IMG}"
+
+if ! [ -e ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ]; then
+	cd ${BUILDROOT_HOME}/dl/
+	wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://178.57.91.238:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
+	if ! [ $? == 0 ]; then
+		wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://10.15.30.194:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
+	fi
+	cd -
+fi
+
+# Copy new or replace existing image to avoid impact of changes made earlier
+cp -f ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ${IMAGES}/ext.rootfs.ext4
+
+echo ""
+echo ""
+echo "WARNING!"
+echo "The following operations require privileged access."
+echo "To be assured that nothing dangerous is executed, you can observe the following file $0"
+echo ""
+echo ""
+# Unmount and remove mnt directory if it exists by any reasons
+mountpoint ${IMAGES}/mnt -q
+if [ $? == 0 ]; then
+	sudo umount ${IMAGES}/mnt
+fi
+sudo rm -rf ${IMAGES}/mnt
+
+mkdir ${IMAGES}/mnt
+sudo mount ${IMAGES}/ext.rootfs.ext4 ${IMAGES}/mnt
+if ! [ $? == 0 ]; then
+	exit 2
+fi
+
+sudo cp ${TARGET_DIR}/etc/fstab ${IMAGES}/mnt/etc/
+sudo cp -r ${TARGET_DIR}/lib/modules ${IMAGES}/mnt/lib/
+
+sudo umount ${IMAGES}/mnt
+sudo rm -rf ${IMAGES}/mnt
+
 # Pass an empty rootpath. genimage makes a full copy of the given rootpath to
 # ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
 # space. We don't rely on genimage to build the rootfs image, just to insert a
@@ -142,6 +194,7 @@ ${OUTPUT}/host/bin/genimage \
 	--config "${GENIMAGE_CFG}"
 
 mv ${IMAGES}/sdcard.img ${IMAGES}/${IMAGE_NAME}.img
+ls -lh ${IMAGES}/${IMAGE_NAME}.img
 
 if [ $? -eq 0 ]; then
 	echo
