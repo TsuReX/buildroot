@@ -120,9 +120,6 @@ cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
 # These images are stored in dl directory where all packages being used for building are stored.
-# But currently images of rootfs were placed there directly, it's a temporal trick.
-# It's crucial to implement aproach of images retreiving from external storage.
-echo "WARNING! Images were placed directly!!!"
 ROOTFS_IMG="debian10-lxde.rootfs.ext4"
 #ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
 #ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
@@ -133,15 +130,25 @@ echo "External rootfs is ${ROOTFS_IMG}"
 
 if ! [ -e ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ]; then
 	cd ${BUILDROOT_HOME}/dl/
-	wget --ftp-user=atbftp --ftp-password=atbftp ftp://10.15.30.153/${ROOTFS_IMG}
+	wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://178.57.91.238:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
+	if ! [ $? == 0 ]; then
+		wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://10.15.30.194:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
+	fi
 	cd -
 fi
 
 # Copy new or replace existing image to avoid impact of changes made earlier
 cp -f ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ${IMAGES}/ext.rootfs.ext4
 
+echo ""
+echo ""
+echo "WARNING!"
+echo "The following operations require privileged access."
+echo "To be assured that nothing dangerous is executed, you can observe the following file $0"
+echo ""
+echo ""
 # Unmount and remove mnt directory if it exists by any reasons
-mountpoint ${IMAGES}/mnt
+mountpoint ${IMAGES}/mnt -q
 if [ $? == 0 ]; then
 	sudo umount ${IMAGES}/mnt
 fi
