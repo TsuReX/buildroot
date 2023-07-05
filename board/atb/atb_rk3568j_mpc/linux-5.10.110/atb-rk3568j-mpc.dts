@@ -22,7 +22,7 @@
 	};
 
 	chosen: chosen {
-		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk1p2=rootfs rootfstype=ext4 ro rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=/dev/mmcblk1p2 rootfstype=ext4 ro rootwait";
 	};
 
 	fiq-debugger {
@@ -144,7 +144,7 @@
 
 /* SDMMC0 - X21 */
 &sdmmc0 {
-	max-frequency = <150000000>;
+	max-frequency = <50000000>;
 	supports-sd;
 	bus-width = <4>;
 	cap-mmc-highspeed;
