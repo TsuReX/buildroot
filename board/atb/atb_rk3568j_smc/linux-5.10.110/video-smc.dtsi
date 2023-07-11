@@ -1,28 +1,6 @@
 
 #include <dt-bindings/display/rockchip_vop.h>
 
-/ {
-
-	hdmi_sound: hdmi-sound {
-		compatible = "simple-audio-card";
-		simple-audio-card,format = "i2s";
-		simple-audio-card,mclk-fs = <128>;
-		simple-audio-card,name = "rockchip,hdmi";
-		status = "disabled";
-
-		simple-audio-card,cpu {
-				sound-dai = <&i2s0_8ch>;
-		};
-		simple-audio-card,codec {
-				sound-dai = <&hdmi>;
-		};
-	};
-};
-
-&hdmi_sound {
-	status = "disabled";
-};
-
 &gpu {
 	mali-supply = <&vdd_gpu>;
 	status = "okay";
