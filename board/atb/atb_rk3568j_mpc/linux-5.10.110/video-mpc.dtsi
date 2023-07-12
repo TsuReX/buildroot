@@ -4,6 +4,9 @@
 &gpu {
 	mali-supply = <&vdd_gpu>;
 	status = "okay";
+	gpu_power_model: power-model {
+		compatible = "arm,simple-power-model";
+	};
 };
 
 &display_subsystem {

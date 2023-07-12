@@ -120,11 +120,11 @@ cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
 
 # These images are stored in dl directory where all packages being used for building are stored.
-ROOTFS_IMG="debian10-lxde.rootfs.ext4"
+#ROOTFS_IMG="debian10-lxde.rootfs.ext4"
 #ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
 #ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
 #ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4"
-#ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
+ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
 
 echo "External rootfs is ${ROOTFS_IMG}"
 
