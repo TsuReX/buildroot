@@ -31,19 +31,15 @@ comment "X11 video driver needs X.org"
 
 config BR2_PACKAGE_SDL2_KMSDRM
 	bool "KMS/DRM video driver"
-	depends on BR2_TOOLCHAIN_HAS_THREADS  # libdrm
-	depends on BR2_PACKAGE_HAS_LIBGBM
-	depends on BR2_PACKAGE_HAS_LIBEGL
-	depends on BR2_PACKAGE_SDL2_OPENGL || BR2_PACKAGE_SDL2_OPENGLES
-	select BR2_PACKAGE_LIBDRM
+	depends on BR2_PACKAGE_LIBDRM
+	# requires libgbm from mesa3d
+	depends on BR2_PACKAGE_MESA3D_OPENGL_EGL
 
-comment "KMS/DRM video driver needs a toolchain w/ threads"
-	depends on !BR2_TOOLCHAIN_HAS_THREADS
+comment "KMS/DRM video driver needs libdrm"
+	depends on !BR2_PACKAGE_LIBDRM
 
-comment "KMS/DRM video driver needs a GBM provider, and OpenGL or OpenGLES+EGL"
-	depends on !BR2_PACKAGE_HAS_LIBGBM || \
-		!BR2_PACKAGE_HAS_LIBEGL || \
-		!(BR2_PACKAGE_SDL2_OPENGL || BR2_PACKAGE_SDL2_OPENGLES)
+comment "KMS/DRM video driver needs an OpenGL EGL backend provided by mesa3d"
+	depends on !BR2_PACKAGE_MESA3D_OPENGL_EGL
 
 config BR2_PACKAGE_SDL2_OPENGL
 	bool "OpenGL (GLX)"
@@ -62,6 +58,13 @@ config BR2_PACKAGE_SDL2_OPENGLES
 
 comment "OpenGL ES support needs an OpenGL ES provider"
 	depends on !BR2_PACKAGE_HAS_LIBGLES
+
+config BR2_PACKAGE_SDL2_MALI
+	bool "Mali video driver"
+	depends on BR2_PACKAGE_SDL2_OPENGLES
+
+comment "Mali video driver support needs an OpenGL ES"
+	depends on !BR2_PACKAGE_SDL2_OPENGLES
 
 endif
 

@@ -2160,6 +2160,7 @@ endmenu
 
 menu "Miscellaneous"
 	source "package/atb-app/Config.in"
+	source "package/sdl2-test-render/Config.in"
 	source "package/aespipe/Config.in"
 	source "package/bc/Config.in"
 	source "package/bitcoin/Config.in"

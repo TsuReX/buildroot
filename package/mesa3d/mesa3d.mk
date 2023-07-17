@@ -5,7 +5,7 @@
 ################################################################################
 
 # When updating the version, please also update mesa3d-headers
-MESA3D_VERSION = 22.2.2
+MESA3D_VERSION = 23.1.3
 MESA3D_SOURCE = mesa-$(MESA3D_VERSION).tar.xz
 MESA3D_SITE = https://archive.mesa3d.org
 MESA3D_LICENSE = MIT, SGI, Khronos
@@ -93,11 +93,11 @@ MESA3D_CONF_OPTS += \
 	-Dgallium-xa=disabled
 endif
 
-ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
-MESA3D_CONF_OPTS += -Dgallium-vc4-neon=auto
-else
-MESA3D_CONF_OPTS += -Dgallium-vc4-neon=disabled
-endif
+#ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
+#MESA3D_CONF_OPTS += -Dgallium-vc4-neon=auto
+#else
+#MESA3D_CONF_OPTS += -Dgallium-vc4-neon=disabled
+#endif
 
 # Drivers
 
@@ -212,12 +212,12 @@ else
 MESA3D_CONF_OPTS += -Dgles1=disabled -Dgles2=disabled
 endif
 
-ifeq ($(BR2_PACKAGE_MESA3D_XVMC),y)
-MESA3D_DEPENDENCIES += xlib_libXv xlib_libXvMC
-MESA3D_CONF_OPTS += -Dgallium-xvmc=enabled
-else
-MESA3D_CONF_OPTS += -Dgallium-xvmc=disabled
-endif
+#ifeq ($(BR2_PACKAGE_MESA3D_XVMC),y)
+#MESA3D_DEPENDENCIES += xlib_libXv xlib_libXvMC
+#MESA3D_CONF_OPTS += -Dgallium-xvmc=enabled
+#else
+#MESA3D_CONF_OPTS += -Dgallium-xvmc=disabled
+#endif
 
 ifeq ($(BR2_PACKAGE_VALGRIND),y)
 MESA3D_CONF_OPTS += -Dvalgrind=enabled

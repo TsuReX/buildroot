@@ -1,0 +1,5 @@
+config BR2_PACKAGE_SDL2_TEST_RENDER
+	bool "sdl2-test-render"
+	select BR2_PACKAGE_SDL2
+	help
+	  SDL2 test render
