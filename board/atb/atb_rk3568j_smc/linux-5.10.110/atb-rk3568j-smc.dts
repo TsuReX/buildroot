@@ -4,6 +4,7 @@
 #include <dt-bindings/pinctrl/rockchip.h>
 #include "rk3568.dtsi"
 
+#include "canfd-smc.dtsi"
 #include "ethernet-smc.dtsi"
 #include "pcie-smc.dtsi"
 #include "usb-sata-pcie-smc.dtsi"
