@@ -1,0 +1,51 @@
+
+&can1 {
+	compatible = "rockchip,canfd-1.0";
+	assigned-clocks = <&cru CLK_CAN1>;
+	assigned-clock-rates = <150000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&can1m1_pins>;
+	status = "okay";
+};
+
+&can2 {
+	compatible = "rockchip,canfd-1.0";
+	assigned-clocks = <&cru CLK_CAN2>;
+	assigned-clock-rates = <150000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&can2m1_pins>;
+	status = "okay";
+};
+
+/*
+can0: can@1 {
+	compatible = "microchip,mcp2515";
+	reg = <1>;
+	clocks = <&clk24m>;
+	interrupt-parent = <&gpio4>;
+	interrupts = <13 IRQ_TYPE_LEVEL_LOW>;
+	vdd-supply = <&reg5v0>;
+	xceiver-supply = <&reg5v0>;
+	gpio-controller;
+	#gpio-cells = <2>;
+};
+
+spi0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	can@0 {
+		compatible = "microchip,mcp251xfd";
+		reg = <0>;
+		clocks = <&can0_osc>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&can0_pins>;
+		spi-max-frequency = <20000000>;
+		interrupts-extended = <&gpio 13 IRQ_TYPE_LEVEL_LOW>;
+		microchip,rx-int-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+		vdd-supply = <&reg5v0>;
+		xceiver-supply = <&reg5v0>;
+	};
+};
+
+*/
