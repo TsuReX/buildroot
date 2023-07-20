@@ -6,9 +6,6 @@
 	status = "okay";
 	gpu_power_model: power-model {
 		compatible = "arm,simple-power-model";
-	};
-};
-
 &display_subsystem {
 	status = "okay";
 };
@@ -43,9 +40,6 @@
 };
 
 &edp_in_vp1 {
-	status = "disabled";
-};
-
 &route_edp {
 	status = "disabled";
 	connect = <&vp1_out_edp>;
