@@ -435,12 +435,6 @@
 	status = "okay";
 };
 
-&i2c3 {
-	pinctrl-0 = <&i2c3m0_xfer>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
 &i2c4 {
 	pinctrl-0 = <&i2c4m0_xfer>;
 	pinctrl-names = "default";
