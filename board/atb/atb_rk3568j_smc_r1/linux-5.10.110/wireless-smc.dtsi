@@ -1,0 +1,88 @@
+
+/ {
+	sdio_pwrseq: sdio-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		clocks = <&rtc_clock>; // <----------------------------------!!!
+		clock-names = "ext_clock"; // <----------------------------------!!!
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_pin>;
+
+		//post-power-on-delay-ms = <200>;   //CHECK_IT
+		// WLAN_EN
+		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+	};
+};
+/*
+&sdmmc2 {
+	max-frequency = <150000000>;
+	no-sd;
+	no-mmc;
+	bus-width = <4>;
+	disable-wp;
+	cap-sd-highspeed;
+	cap-sdio-irq;
+	keep-power-in-suspend;
+	//mmc-pwrseq = <&sdio_pwrseq>;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
+	//sd-uhs-sdr104;
+	//sd-uhs-sdr12;
+	//sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	//sd-uhs-ddr50;
+	rockchip,default-sample-phase = <90>;
+	status = "okay";
+};
+*/
+&sdmmc2 {
+    // WiFi & BT combo module Fn-Link 8223A-SR 
+	bus-width = <4>;
+	cap-sd-highspeed;
+	disable-wp;
+	non-removable;
+	mmc-pwrseq = <&sdio_pwrseq>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc_3v3>;
+	vqmmc-supply = <&vcc_1v8>;
+	rockchip,default-sample-phase = <90>;
+	status = "okay";
+};
+
+&pinctrl {
+	sdio-pwrseq {
+
+//		WLAN_EN is pulled down to GND via 169(10K)
+
+		wlan_en_pin: wlan-en-pin {
+			rockchip,pins = <3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wireless-bluetooth {
+//		BT_EN is pulled down to GND via R170(10K)  
+        bt_en_pin: bt-en-pin {
+			rockchip,pins = <4 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+	uart-has-rtscts;
+	status = "okay";
+
+	bluetooth {
+		compatible = "qcom,qca9377-bt";
+		clocks = <&rtc_clock>;
+		clock-names = "lpo";
+		enable-gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_HIGH>; // BT_RST
+		max-speed = <2000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_en_pin>;
+	};
+};
+

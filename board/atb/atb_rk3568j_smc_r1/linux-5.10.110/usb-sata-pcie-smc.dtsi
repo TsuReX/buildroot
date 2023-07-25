@@ -1,0 +1,195 @@
+/{
+/*
+	This is dummy regulator.
+	It is used to have ability to activate PCIE clock source for RK3568J SoC
+	USB_DISR -> R86 -> USB_DIS -> VT1-4(NMOS) -> (USB1_OC_ - USB4_OC_)
+	USB_DIS is pulled to GND via R67
+*/
+	usb_en: usb-en {
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_en_pin>;
+		regulator-name = "usb_en_pin";
+		enable-active-low;
+		regulator-always-on;
+		regulator-boot-on;
+    };
+};
+
+/*
+	USB2_HOST2
+*/
+
+/*
+	This controller is connected to USB1 pins on SMARC connector
+*/
+&usb_host0_ehci {
+	status = "okay";
+};
+
+/*
+	This controller is connected to USB1 pins on SMARC connector
+*/
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy0_host {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+/*
+	USB2_HOST3
+*/
+
+/*
+	This controller is connected to USB0 pins on SMARC connector
+*/
+&usb_host1_ehci {
+	status = "okay";
+};
+
+/*
+	This controller is connected to USB0 pins on SMARC connector
+*/
+&usb_host1_ohci {
+	status = "okay";
+};
+
+
+&u2phy1_host {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usb2phy1 {
+	status = "okay";
+};
+
+/*
+	USB3_OTG0 or SATA0
+*/
+
+/*
+	This controller is connected to USB3 pins on SMARC connector X1 (conga SMC1 lower X4)
+*/
+&usbdrd_dwc3 {
+	dr_mode = "host";
+	// If this controller is enabled, sata0 must be disabled
+	status = "okay";
+};
+
+&usbdrd30 {
+	status = "okay";
+};
+
+&sata0 {
+	// If this controller is enabled, usbdrd_dwc3 must be disabled
+	status = "disabled";
+};
+
+
+// This controller is phy for usbdrd_dwc3 and sata0 controllers
+&combphy0_us {
+	status = "okay";
+};
+
+/*
+	USB3_HOST1 or SATA1
+*/
+
+/*
+	This controller is connected to USB2 pins on SMARC connector X1 (conga SMC1 upper X4)
+*/
+&usbhost_dwc3 {
+	// If this controller is enabled, sata1 must be disabled
+	status = "okay";
+};
+
+&usbhost30 {
+	status = "okay";
+};
+
+// This board doesn't use this controller
+&sata1 {
+	// If this controller is enabled, usbhost_dwc3 must be disabled
+	status = "disabled";
+};
+
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1_usq {
+	status = "okay";
+};
+
+/*
+	PCIE2x1 or SATA2
+*/
+
+// This board doesn't use this controller
+&pcie2x1 {
+	status = "disabled";
+};
+
+/*
+	SATA2 lines are connected to SATA pins on SMARC connector X1
+*/
+&sata2 {
+	status = "okay";
+};
+
+// This controller is phy for pcie2x1 and sata2 controllers
+&combphy2_psq {
+	status = "okay";
+};
+
+&pinctrl {
+	usb {
+		usb_en_pin: usb_en_pin {
+/*
+			USB_DISR -> R86 -> USB_DIS -> VT1-4(NMOS) -> (USB1_OC_ - USB4_OC_)
+			USB_DIS is pulled to GND via R67
+*/
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		usb0_oc_pin: usb0_oc_pin {
+/*
+			USB0_OC_
+*/
+			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		usb1_oc_pin: usb1_oc_pin {
+/*
+			USB1_OC_
+*/
+			rockchip,pins = <4 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		usb2_oc_pin: usb2_oc_pin {
+/*
+			USB2_OC_
+*/
+			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		usb3_oc_pin: usb3_oc_pin {
+/*
+			USB3_OC_
+*/
+			rockchip,pins = <4 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
