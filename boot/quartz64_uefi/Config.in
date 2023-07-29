@@ -1,0 +1,31 @@
+config BR2_TARGET_QUARTZ64_UEFI_ARCH_SUPPORTS
+	bool
+	default y if BR2_aarch64
+
+config BR2_TARGET_QUARTZ64_UEFI
+	bool "QUARTZ64_UEFI"
+	depends on BR2_TARGET_QUARTZ64_UEFI_ARCH_SUPPORTS
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_5
+	help
+	  UEFI for Rockchip RK356X based Single Board Computers
+
+	  https://github.com/jaredmcneill/quartz64_uefi
+
+if BR2_TARGET_QUARTZ64_UEFI
+
+choice
+	prompt "Platform"
+	default BR2_TARGET_QUARTZ64_UEFI_PLATFORM_ARM_ATB_RK3568_SMC if BR2_aarch64
+
+config BR2_TARGET_QUARTZ64_UEFI_PLATFORM_ARM_ATB_RK3568_SMC
+	bool "ATB RK3568 SMC"
+	depends on BR2_aarch64
+	help
+	  Platform configuration for ATB RK3568 SMC board.
+	
+endchoice
+
+endif
+
+comment "EDK2 needs a toolchain w/ gcc >= 5"
+	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_5
