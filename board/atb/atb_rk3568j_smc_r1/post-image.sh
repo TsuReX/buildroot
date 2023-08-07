@@ -17,7 +17,7 @@ SOC=RK3568J
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
 GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
-IMAGE_NAME="$(basename -s .dtb $2)"
+IMAGE_NAME="$(basename -s .dtb $2)-usd"
 
 echo "argc = $#"
 echo "arg0 = $0"
