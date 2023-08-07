@@ -1,0 +1,38 @@
+diff --git a/board/atb/atb_rk3568j_smc_r1/overlay/etc/fstab b/board/atb/atb_rk3568j_smc_r1/overlay/etc/fstab
+index 5e3307c6a5..bd66a481fe 100644
+--- a/board/atb/atb_rk3568j_smc_r1/overlay/etc/fstab
++++ b/board/atb/atb_rk3568j_smc_r1/overlay/etc/fstab
+@@ -1,6 +1,6 @@
+ # <file system>		<mount pt>	<type>		<options>	<dump>	<pass>
+ 
+-/dev/mmcblk1p2		/			ext4		rw	0 1
++/dev/mmcblk0p2		/			ext4		rw	0 1
+ proc				/proc		proc		defaults	0	0
+ devpts				/dev/pts	devpts		defaults,gid=5,mode=620,ptmxmode=0666	0	0
+ tmpfs				/dev/shm	tmpfs		mode=0777	0	0
+diff --git a/board/atb/atb_rk3568j_smc_r1/uboot/atb_rk3568j_smc_r1_defconfig b/board/atb/atb_rk3568j_smc_r1/uboot/atb_rk3568j_smc_r1_defconfig
+index bef8681623..41c0217ab2 100644
+--- a/board/atb/atb_rk3568j_smc_r1/uboot/atb_rk3568j_smc_r1_defconfig
++++ b/board/atb/atb_rk3568j_smc_r1/uboot/atb_rk3568j_smc_r1_defconfig
+@@ -66,7 +66,7 @@ CONFIG_OF_LIVE=y
+ CONFIG_OF_SPL_REMOVE_PROPS="clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
+ CONFIG_ENV_IS_IN_FAT=y
+ CONFIG_ENV_FAT_INTERFACE="mmc"
+-CONFIG_ENV_FAT_DEVICE_AND_PART="1:1"
++CONFIG_ENV_FAT_DEVICE_AND_PART="0:1"
+ # CONFIG_NET_TFTP_VARS is not set
+ CONFIG_SPL_DM_SEQ_ALIAS=y
+ CONFIG_REGMAP=y
+diff --git a/board/atb/atb_rk3568j_smc_r1/post-image.sh b/board/atb/atb_rk3568j_smc_r1/post-image.sh
+index eb9f210342..79b402b830 100755
+--- a/board/atb/atb_rk3568j_smc_r1/post-image.sh
++++ b/board/atb/atb_rk3568j_smc_r1/post-image.sh
+@@ -17,7 +17,7 @@ SOC=RK3568J
+ BOARD_DIR="$(dirname $0)"
+ BOARD_NAME="$(basename ${BOARD_DIR})"
+ GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
+-IMAGE_NAME="$(basename -s .dtb $2)"
++IMAGE_NAME="$(basename -s .dtb $2)-emmc"
+ 
+ echo "argc = $#"
+ echo "arg0 = $0"
