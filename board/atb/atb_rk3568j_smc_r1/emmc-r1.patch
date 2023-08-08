@@ -31,7 +31,7 @@ index eb9f210342..79b402b830 100755
  BOARD_DIR="$(dirname $0)"
  BOARD_NAME="$(basename ${BOARD_DIR})"
  GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
--IMAGE_NAME="$(basename -s .dtb $2)"
+-IMAGE_NAME="$(basename -s .dtb $2)-usd"
 +IMAGE_NAME="$(basename -s .dtb $2)-emmc"
  
  echo "argc = $#"
