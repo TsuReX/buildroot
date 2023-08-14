@@ -49,7 +49,8 @@ fi
 PLAT=rk3568
 #SPL_BIN=rk356x_spl_nand_v1.07.bin
 #SPL_BIN=rk356x_spl_v1.08.bin
-SPL_BIN=rk356x_spl_v1.12.bin
+#SPL_BIN=rk356x_spl_v1.12.bin
+SPL_BIN=u-boot-spl.bin
 
 #TPL_BIN=rk3568_ddr_1056MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_1184MHz_v1.13.bin
@@ -71,7 +72,9 @@ TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 
-SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
+
+SPL_BIN_PATH=${IMAGES}/${SPL_BIN}
+#SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
 TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${TPL_BIN}
 
 UART_TPL_BIN=uart_115200_${TPL_BIN}
