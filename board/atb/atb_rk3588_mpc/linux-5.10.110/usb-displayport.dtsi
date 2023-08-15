@@ -1,0 +1,179 @@
+/{
+
+/*
+EN_USB2_0_PWR - page 14, block D9-6
+B25 -> R244
+enable power for usb20_host0, usb20_host1
+*/
+en_usb2_0_pwr: en_usb2_0_pwr {
+    compatible = "regulator-fixed";
+    regulator-name = "en_usb2_0_pwr";
+    regulator-boot-on;
+    regulator-always-on;
+	enable-active-high;
+    gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+// AK26 -> D19
+// EN_USB3_0_PWR - page 14, block D9-8
+en_usb3_0_pwr: en_usb3_0_pwr {
+    compatible = "regulator-fixed";
+    regulator-name = "en_usb3_0_pwr";
+    regulator-boot-on;
+    regulator-always-on;
+    enable-active-high;
+    gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+// EN_USB3_1_PWR - page 14, block D9-8
+// AM25 -> EN_USB3_1_PWR -> D19
+en_usb3_1_pwr: en_usb3_1_pwr {
+    compatible = "regulator-fixed";
+    regulator-name = "en_usb3_1_pwr";
+    regulator-boot-on;
+    regulator-always-on;
+    enable-active-high;
+    gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+/*
+disable reset on usb hubs for usb20_host0 and usb20_host1 
+usb20_host0_nreset - page 14, block D9-6
+E24 -> USBHUB_RSTn -> D20
+*/
+usbhub_rstn: usbhub_rstn {
+    compatible = "regulator-fixed";
+    regulator-name = "usbhub_rstn";
+    regulator-boot-on;
+    regulator-always-on;
+    enable-active-high;
+    gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+};
+
+/*
+	USB20_HOST0
+*/
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy2_host {
+	status = "okay";
+};
+/*
+	//USB20_HOST0
+*/
+
+/*
+	USB20_HOST1
+*/
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&u2phy3_host {
+	status = "okay";
+};
+/*
+	//USB20_HOST1
+*/
+
+/*
+	USBTYPEC0 OR DISPLAY_PORT
+*/
+
+
+&usbdrd_dwc3_0 {
+	status = "okay";
+	dr_mode = "host";
+	extcon = <&u2phy0>;
+};
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "disabled";
+};
+
+&usbdp_phy0 {
+	status = "okay";
+	/* #USB3.1/DP PHY0, just configure DP to use lane2/3, the driver will automatically assign lane0/1 to
+	USB3.1 Rx/Tx #If the hardware design DP uses lane0/1, then "rockchip,dp" should be configured
+	here -lane-mux =<0 1>*/
+	rockchip,dp-lane-mux = < 2 3 >; 
+};
+
+&usbdp_phy0_u3 {
+	status = "okay";
+};
+/*
+	//USBTYPEC0 OR DISPLAY_PORT
+*/
+
+/*
+	USBTYPEC1 OR DISPLAY_PORT
+*/
+&usbdrd_dwc3_1{
+	status = "okay";
+	dr_mode = "host";
+	extcon = <&u2phy1>;	
+};
+
+&usbdrd3_1{
+	status = "okay";
+};
+
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "disabled";
+};
+
+&usbdp_phy1 {
+	status = "okay";
+	/* #USB3.1/DP PHY0, just configure DP to use lane2/3, the driver will automatically assign lane0/1 to
+	USB3.1 Rx/Tx #If the hardware design DP uses lane0/1, then "rockchip,dp" should be configured
+	here -lane-mux =<0 1>*/
+	rockchip,dp-lane-mux = < 2 3 >; 
+};
+
+&usbdp_phy1_u3 {
+	status = "okay";
+};
+/*
+	//USBTYPEC1 OR DISPLAY_PORT
+*/

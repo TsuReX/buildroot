@@ -1,0 +1,82 @@
+/{
+
+//////////////////////////////////////////////
+/* 
+AC30 -> 1v8_ENA_HDD_+12v -> VT12  
+page 11, block D9-7
+Power on External SATA HDD
+*/
+vdd_hddext: vdd_hddext {
+    compatible = "regulator-fixed";
+    regulator-name = "vdd_hddext";
+    regulator-boot-on;
+    regulator-always-on;
+    // uncomment if hdd sata enable
+    enable-active-high;
+    gpios = <&gpio2 RK_PC4 GPIO_ACTIVE_HIGH>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+/* 
+A27 -> M2kB_PCIE_CFG1 -> D24
+page 11, block D9-7
+DEMUX between M2_SATA and M2_PCIe
+*/
+m2kb_pcie_cfg1: m2kb_pcie_cfg1 {
+    compatible = "regulator-fixed";
+    regulator-name = "vdd_hddext";
+    regulator-boot-on;
+    regulator-always-on;
+    //selected M2_SATA, for M2_PCIe -> enable-active-high
+    enable-active-low;
+    gpios = <&gpio1 RK_PA3 GPIO_ACTIVE_LOW>;
+    vin-supply = <&vcc5v0_sys>;
+    status = "okay";
+};
+
+};
+/*
+	pcie2x1l2 or sata0
+*/
+//	This controller is phy for sata0 or pcie2x1l2 controllers
+&combphy0_ps {
+	status = "okay";
+};
+
+//sata_hdd
+&sata0 {
+    //	If this controller is enabled, pcie2x1l2 must be disabled
+	status = "okay";
+};
+
+&pcie2x1l2 {
+    //	If this controller is enabled, sata0 must be disabled
+	status = "disabled";
+};
+/*
+	//pcie2x1l2 or sata0
+*/
+
+/*
+	pcie2x1l0 or sata1
+*/
+
+//	This controller is phy for sata1 or pcie2x1l0 controllers
+&combphy1_ps {
+	status = "okay";
+};
+
+//sata_m2
+&sata1 {
+    //	If this controller is enabled, pcie2x1l0 must be disabled
+	status = "okay";
+};
+
+&pcie2x1l0 {
+    //	If this controller is enabled, sata1 must be disabled
+	status = "disabled";
+};
+/*
+	//pcie2x1l0 or sata1
+*/
