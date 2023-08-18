@@ -179,10 +179,11 @@
 		};
 	};
 
-	// D18
+	// D11
 	vdd_cpu: regulator@1c {
 		compatible = "tcs,tcs452x";
 		reg = <0x1c>;
+		vsel-supply = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
 		fcs,suspend-voltage-selector = <1>;
 		regulator-name = "vdd_cpu";
 		regulator-always-on;
