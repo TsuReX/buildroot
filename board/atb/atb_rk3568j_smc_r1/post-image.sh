@@ -121,6 +121,10 @@ cp ${IMAGES}/${DTB} ${IMAGES}/dtb
 # 5. Rootfs
 cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
+if ! [ $? == 0 ]; then
+	echo "rootfs wasn't created due to error."
+	exit -2
+fi
 
 # These images are stored in dl directory where all packages being used for building are stored.
 #ROOTFS_IMG="debian10-lxde.rootfs.ext4"
@@ -157,7 +161,7 @@ sudo rm -rf ${IMAGES}/mnt
 mkdir ${IMAGES}/mnt
 sudo mount ${IMAGES}/ext.rootfs.ext4 ${IMAGES}/mnt
 if ! [ $? == 0 ]; then
-	exit 2
+	exit -3
 fi
 
 sudo cp ${TARGET_DIR}/etc/fstab ${IMAGES}/mnt/etc/
@@ -173,6 +177,11 @@ sudo rm -rf ${IMAGES}/mnt
 
 UBOOT_ENV_SIZE=0x8000
 ${BUILD}/uboot-${UBOOT_REPO}/tools/mkenvimage -s ${UBOOT_ENV_SIZE} -o ${IMAGES}/uboot.env ${BOARD_DIR}/uboot/uboot.env.txt
+
+if ! [ $? == 0 ]; then
+	echo "u-boot environment wasn't created due to error."
+	exit -4
+fi
 
 trap 'rm -rf "${ROOTPATH_TMP}"' EXIT
 ROOTPATH_TMP="$(mktemp -d)"
@@ -192,6 +201,11 @@ ${OUTPUT}/host/bin/genimage \
 	--inputpath "${BINARIES_DIR}"  \
 	--outputpath "${BINARIES_DIR}" \
 	--config "${GENIMAGE_CFG}"
+
+if ! [ $? == 0 ]; then
+	echo "Block device image wasn't created due to error."
+	exit -5
+fi
 
 mv ${IMAGES}/sdcard.img ${IMAGES}/${IMAGE_NAME}.img
 ls -lh ${IMAGES}/${IMAGE_NAME}.img
