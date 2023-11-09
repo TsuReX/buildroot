@@ -16,8 +16,9 @@
 #include "rk3588s.dtsi"
 #include "rk3588.dtsi"
 
-#include "sata-pcie.dtsi"
-#include "usb-displayport.dtsi"
+#include "ethernet-mpc.dtsi"
+#include "usb-sata-pcie-mpc.dtsi"
+#include "usb-displayport-mpc.dtsi"
 
 / {
 	model = "ATB RK3588";
@@ -353,7 +354,7 @@
 
 &sdmmc {
 	status = "okay";
-	max-frequency = <150000000>;
+	max-frequency = <50000000>;
 //	no-sdio;
 	no-mmc;
 	bus-width = <4>;
@@ -572,80 +573,7 @@
 };
 
 
-// === Ether setup ===
 
-&gmac0 {
-	status = "okay";
-	// Use rgmii-id mode, use both delays
-	phy-mode = "rgmii-id";
-	phy-mode = "rgmii";
-	clock_in_out = "input";
-	
-	// PHY hardware reset, active low
-	snps,reset-gpio = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
-	snps,reset-active-low;
-	
-	// Reset time is 20ms, 100ms for rtl8211f
-	snps,reset-delays-us = <0 20000 100000>;
-
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac0_miim
-			&gmac0_tx_bus2
-			&gmac0_rx_bus2
-			&gmac0_rgmii_clk
-			&gmac0_rgmii_bus
-			&gmac0_clkinout
-			&rgmii_phy0_reset_pin>;
-
-	tx_delay = <0x25>;
-	rx_delay = <0x25>;
-
-	phy-handle = <&rgmii_phy0>;
-};
-
-&mdio0 {
-	rgmii_phy0: phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-	};
-};
-
-
-&gmac1 {
-	status = "okay";
-	// Use rgmii-id mode, use both delays
-	phy-mode = "rgmii-id";
-//	phy-mode = "rgmii";
-	clock_in_out = "input";
-	
-	// PHY hardware reset, active low
-	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-	snps,reset-active-low;
-
-	// Reset time is 20ms, 100ms for rtl8211f 
-	snps,reset-delays-us = <0 20000 100000>;
-
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac1_miim
-			&gmac1_tx_bus2
-			&gmac1_rx_bus2
-			&gmac1_rgmii_clk
-			&gmac1_rgmii_bus
-			&gmac1_clkinout
-			&rgmii_phy1_reset_pin>;
-
-	tx_delay = <0x25>;
-	rx_delay = <0x25>; 
-
-	phy-handle = <&rgmii_phy1>;
-};
-
-&mdio1 {
-	rgmii_phy1: phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-	};
-};
 
 
 // === UART setup ===
@@ -1167,20 +1095,6 @@
 
 
 &pinctrl {
-
-
-	rgmii_phy0_reset {
-		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
-		rockchip,pins = <3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-    	rgmii_phy1_reset {
-		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
-		rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
 
 //	usb {
 //		vcc5v0_host_en: vcc5v0-host-en {
@@ -1975,7 +1889,7 @@
 	};
 
 	chosen: chosen {
-		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 irqchip.gicv3_pseudo_nmi=0 loglevel=7 root=/dev/mmcblk1p2 rw rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0";
 		stdout-path = "serial2:115200n8";
 	};
 

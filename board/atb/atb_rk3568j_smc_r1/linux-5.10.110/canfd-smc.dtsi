@@ -1,3 +1,12 @@
+/* This interface is multiplexed with I2C1, by default CAN0 is disabled */
+&can0 {
+	compatible = "rockchip,canfd-1.0";
+	assigned-clocks = <&cru CLK_CAN0>;
+	assigned-clock-rates = <150000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&can0m0_pins>;
+	status = "disabled";
+};
 
 &can1 {
 	compatible = "rockchip,canfd-1.0";
@@ -18,7 +27,7 @@
 };
 
 /*
-can0: can@1 {
+can3: can@1 {
 	compatible = "microchip,mcp2515";
 	reg = <1>;
 	clocks = <&clk24m>;
@@ -34,7 +43,7 @@ spi0 {
 	#address-cells = <1>;
 	#size-cells = <0>;
 
-	can@0 {
+	can@1 {
 		compatible = "microchip,mcp251xfd";
 		reg = <0>;
 		clocks = <&can0_osc>;
@@ -47,5 +56,4 @@ spi0 {
 		xceiver-supply = <&reg5v0>;
 	};
 };
-
 */

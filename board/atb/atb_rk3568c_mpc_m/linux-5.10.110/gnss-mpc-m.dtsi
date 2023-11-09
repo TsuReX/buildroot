@@ -1,0 +1,76 @@
+/ {
+	gnss_en: gnss_en {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// GPS_FORCE_ON
+		gpio = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gnss_en_pin>;
+		regulator-name = "gnss_en_pin";
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <100000>;
+    };
+    
+	gnss_prtrg: gnss_prtrg {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		// GPS_MODE
+		gpio = <&gpio0 RK_PC2 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gnss_prtrg_pin>;
+		regulator-name = "gnss_prtrg_pin";
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+// GPS_UART
+&uart0 {
+	pinctrl-0 = <&uart0_xfer>;
+	status = "okay";
+
+	// A2(TAU1103)
+	gnss {
+		compatible = "u-blox,neo-8";
+		vcc-supply = <&vcc3v3_sys>;
+		// GPS_PPS
+		timepulse-gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
+		// GPS_FORCE_ON
+		//enable-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gnss_en_pin &gnss_pps_pin>;
+		current-speed = <9600>;
+		status = "okay";
+	};
+};
+
+&pinctrl {
+
+	gnss {
+/*
+		GPS_MODE
+*/		
+		gnss_prtrg_pin: gnss-prtrg-pin {
+			rockchip,pins = <0 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+/*
+		GPS_FORCE_ON
+*/
+		gnss_en_pin: gnss-en-pin {
+			rockchip,pins = <0 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+/*
+		GPS_INT
+*/
+		gnss_int: gnss-int {
+			rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+/*
+		GPS_PPS
+*/
+		gnss_pps_pin: gnss-pps-pin  {
+			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# for debug
+mount -t debugfs debugfs /sys/kernel/debug
+

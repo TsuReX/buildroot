@@ -1,0 +1,182 @@
+/{
+	usb3_otg0_en: usb3_otg0_en {
+		compatible = "regulator-fixed";
+		// USB3_OTG0_EN
+		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb3_otg0_en_pin>;
+		regulator-name = "usb3_otg0_en_pin";
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+    };
+
+	usb3_host1_en: usb3_host1_en {
+		compatible = "regulator-fixed";
+		// USB3_HOST1_EN
+		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb3_host1_en_pin>;
+		regulator-name = "usb3_host1_en_pin";
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+    };
+};
+
+/*
+	USB2_HOST2
+*/
+
+/*
+	This controller is connected to USB hub D20
+*/
+&usb_host0_ehci {
+	status = "okay";
+};
+
+/*
+	This controller is connected to USB hub D20
+*/
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy0_host {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+/*
+	USB2_HOST3
+*/
+
+/*
+	This controller is connected to nowhere
+*/
+&usb_host1_ehci {
+	status = "disabled";
+};
+
+/*
+	This controller is connected to nowhere
+*/
+&usb_host1_ohci {
+	status = "disabled";
+};
+
+
+&u2phy1_host {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usb2phy1 {
+	status = "okay";
+};
+
+/*
+	USB3_OTG0
+*/
+
+/*
+	This controller is connected to X9
+*/
+&usbdrd_dwc3 {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbdrd30 {
+	status = "okay";
+};
+
+// This controller is phy for usbdrd_dwc3 and sata0 controllers
+&combphy0_us {
+	status = "okay";
+};
+
+/*
+	USB3_HOST1
+*/
+
+/*
+	This controller is connected to X8
+*/
+&usbhost_dwc3 {
+	status = "okay";
+};
+
+&usbhost30 {
+	status = "okay";
+};
+
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1_usq {
+	status = "okay";
+};
+
+/*
+	PCIE2x1 
+*/
+
+/*
+	This controller is connected to X16
+*/
+&pcie2x1 {
+//	TODO
+	// PCIE20_PERSTn
+	reset-gpios = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie2x1_reset_pin>;
+	status = "disabled";
+};
+
+// This controller is phy for pcie2x1 and sata2 controllers
+&combphy2_psq {
+	status = "okay";
+};
+
+&pinctrl {
+	usb {
+		usb3_otg0_en_pin: usb3_otg0_en_pin {
+/*
+			USB3_OTG0_EN
+			0 -> 0
+			1 -> 1
+*/
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		
+		usb3_host1_en_pin: usb3_host1_en_pin {
+/*
+			USB3_HOST1_EN
+			0 -> 0
+			1 -> 1
+*/
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	pcie2 {
+
+		pcie2x1_reset_pin: pcie2x1_reset_pin {
+/*
+			PCIE30_PERSTn
+			0 -> 0
+			1 -> 1
+*/
+			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};

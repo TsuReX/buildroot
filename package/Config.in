@@ -2159,6 +2159,7 @@ menu "Mail"
 endmenu
 
 menu "Miscellaneous"
+	source "package/eeupdatearm/Config.in"
 	source "package/atb-app/Config.in"
 	source "package/sdl2-test-render/Config.in"
 	source "package/aespipe/Config.in"

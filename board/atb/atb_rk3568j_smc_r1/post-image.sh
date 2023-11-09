@@ -6,25 +6,16 @@
 # This command is used to stop script execution after a command finished with non zero value
 #set -e
 
-BUILDROOT_HOME=$(pwd)
-#OUTPUT=`dirname ${1}`
-#OUTPUT=${BUILDROOT_HOME}/output
-#IMAGES=${1}
-#IMAGES=${OUTPUT}/images
-SOC=RK3568J
-#BUILD=${OUTPUT}/build
-#BINARIES_DIR=${OUTPUT}/images
-BOARD_DIR="$(dirname $0)"
-BOARD_NAME="$(basename ${BOARD_DIR})"
-GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}.cfg"
-IMAGE_NAME="$(basename -s .dtb $2)-usd"
+# ${0} - path to current script
+# ${1} - path to images directory
+# ${2} - being used dtd file
 
-echo "argc = $#"
-echo "arg0 = $0"
-echo "arg1 = $1"
-echo "arg2 = $2"
-
-UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
+DTB_NAME=$2
+BOARD_DIR=`dirname ${BR2_DL_DIR}`/`dirname $0`
+WORKING_DIR=`dirname ${BR2_CONFIG}`
+BUILD_DIR=${WORKING_DIR}/build
+TARGET_DIR=${WORKING_DIR}/target
+IMAGES_DIR=${WORKING_DIR}/images
 
 if ! [ $# == 2 ]; then
     echo "Invalid arguments"
@@ -32,21 +23,14 @@ if ! [ $# == 2 ]; then
     exit -1
 fi
 
-IMAGES=$1
-OUTPUT=${IMAGES}/..
-BUILD=${OUTPUT}/build
-TARGET_DIR=${OUTPUT}/target
-GENIMAGE_TMP="${IMAGES}/genimage.tmp"
-BINARIES_DIR=${OUTPUT}/images
-
-DTB=$2
-
-if ! [ -d ${BUILD}/rkbin ]; then
+if ! [ -d ${BUILD_DIR}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
-	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD}/rkbin
+	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD_DIR}/rkbin
 fi
 
-PLAT=rk3568
+##################################################################################
+# 1. Create idblock.bin
+
 #SPL_BIN=rk356x_spl_nand_v1.07.bin
 #SPL_BIN=rk356x_spl_v1.08.bin
 #SPL_BIN=rk356x_spl_v1.12.bin
@@ -58,7 +42,7 @@ SPL_BIN=u-boot-spl.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_780MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.13.bin
-TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_1332MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_1560MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_324MHz_v1.13.bin
@@ -70,158 +54,147 @@ TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 
+# SPL being compiled from sources
+SPL_BIN_PATH=${IMAGES_DIR}/${SPL_BIN}
 
-SPL_BIN_PATH=${IMAGES}/${SPL_BIN}
-#SPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${SPL_BIN}
-TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${TPL_BIN}
+# SPL binary from Rockchip
+#SPL_BIN_PATH=${BUILD_DIR}/rkbin/bin/rk35/${SPL_BIN}
+
+# TPL binary from Rockchip
+TPL_BIN_PATH=${BUILD_DIR}/rkbin/bin/rk35/${TPL_BIN}
 
 UART_TPL_BIN=uart_115200_${TPL_BIN}
-sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD}/rkbin/tools/ddrbin_param.txt > ${BUILD}/rkbin/tools/ddrbin_param_115200.txt
-cp ${TPL_BIN_PATH} ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
-${BUILD}/rkbin/tools/ddrbin_tool ${BUILD}/rkbin/tools/ddrbin_param_115200.txt ${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
-TPL_BIN_PATH=${BUILD}/rkbin/bin/rk35/${UART_TPL_BIN}
 
-echo "SPL_BIN_PATH ${SPL_BIN_PATH}"
-echo "TPL_BIN_PATH ${TPL_BIN_PATH}"
-echo "UART_TPL_BIN ${UART_TPL_BIN}"
+sed 's/uart baudrate=/uart baudrate=115200/g' ${BUILD_DIR}/rkbin/tools/ddrbin_param.txt > ${BUILD_DIR}/rkbin/tools/ddrbin_param_115200.txt
 
-# 1. Create idblock.bin
-${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -n ${PLAT} -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES}/idblock.bin
+cp ${TPL_BIN_PATH} ${BUILD_DIR}/rkbin/bin/rk35/${UART_TPL_BIN}
 
-# 2. Create uboot.img
-REVISON="U-Boot 2017.09""\(u-boot commit id: 02accb940fa124f562f99de3acb5cf14face82e5\)\(sdk version: rk356x_linux_release_20220726_v1.3.0a.xml\)-g02accb940f-dirty \$(pound)user for evb_rk3568 board"
-UBOOT_BIN=${BUILD}/u-boot.bin
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${OUTPUT}/build/uboot-${UBOOT_REPO}/bl31.elf
-cp ${BUILD}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${OUTPUT}/build/uboot-${UBOOT_REPO}/tee.bin
-cd ${BUILD}/uboot-${UBOOT_REPO}
+${BUILD_DIR}/rkbin/tools/ddrbin_tool ${BUILD_DIR}/rkbin/tools/ddrbin_param_115200.txt ${BUILD_DIR}/rkbin/bin/rk35/${UART_TPL_BIN}
 
-./arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
-#
-# Check if make_fit_atf.sh done his job Ok.
-# It will fail to create bl31_0x*.bin files if there
-# is no python2 in a system or because of another reason.
-#
-ls bl31_0x*.bin
-if ! [ $? ]; then
+TPL_BIN_PATH=${BUILD_DIR}/rkbin/bin/rk35/${UART_TPL_BIN}
+
+UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
+
+if ! [ -f ${TPL_BIN_PATH} ]; then
+	echo "File ${TPL_BIN_PATH} is absent."
 	exit -1
 fi
 
-./tools/mkimage -f u-boot.its -E u-boot.itb
-cp u-boot.itb ${IMAGES}/uboot.img
-cd -
+if ! [ -f ${SPL_BIN_PATH} ]; then
+	echo "File ${SPL_BIN_PATH} is absent."
+	exit -1
+fi
 
+${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3568" -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${IMAGES_DIR}/idblock.bin
+if ! [ $? == 0 ]; then
+	echo "idblock.bin can't be built."
+	exit -1
+fi
+
+##################################################################################
+# 2. Create uboot.img
+UBOOT_BIN=${BUILD_DIR}/u-boot.bin
+
+if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ]; then
+	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf is absent."
+	exit -1
+fi
+
+cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+
+if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ]; then
+	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin is absent."
+	exit -1
+fi
+
+cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
+
+# The script make_fit_atf.sh requires working directory u-boot
+cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
+
+arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
+
+ls bl31_0x*.bin
+
+if ! [ $? == 0 ]; then
+	echo "u-boot.its can't be built."
+	exit -1
+fi
+
+tools/mkimage -f u-boot.its -E ${IMAGES_DIR}/uboot.img
+
+cd ..
+
+##################################################################################
 # 3. Linux kernel
-cp ${IMAGES}/Image ${IMAGES}/linux
+cp ${IMAGES_DIR}/Image ${IMAGES_DIR}/linux
 
+##################################################################################
 # 4. Linux device tree blob
-cp ${IMAGES}/${DTB} ${IMAGES}/dtb
+cp ${IMAGES_DIR}/${DTB_NAME} ${IMAGES_DIR}/dtb
 
+##################################################################################
 # 5. Rootfs
-cp ${IMAGES}/rootfs.cpio.gz ${IMAGES}/rootfs
-${BUILD}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${OUTPUT}/images/rootfs.cpio.gz ${OUTPUT}/images/rootfs
+cp ${IMAGES_DIR}/rootfs.cpio.gz ${IMAGES_DIR}/rootfs
+
+${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${WORKING_DIR}/images/rootfs.cpio.gz ${WORKING_DIR}/images/rootfs
+
 if ! [ $? == 0 ]; then
 	echo "rootfs wasn't created due to error."
-	exit -2
+	exit -1
 fi
 
-# These images are stored in dl directory where all packages being used for building are stored.
-#ROOTFS_IMG="debian10-lxde.rootfs.ext4"
-#ROOTFS_IMG="debian10-xfce4.rootfs.ext4"
-#ROOTFS_IMG="ubuntu18.04-lxde.rootfs.ext4"
-#ROOTFS_IMG="ubuntu20.04-lxqt.rootfs.ext4"
-ROOTFS_IMG="ubuntu20.04-minimal.rootfs.ext4"
-
-echo "External rootfs is ${ROOTFS_IMG}"
-
-if ! [ -e ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ]; then
-	cd ${BUILDROOT_HOME}/dl/
-	wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://ftp.atb-e.ru:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
-	cd -
-fi
-
-# Copy new or replace existing image to avoid impact of changes made earlier
-cp -f ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ${IMAGES}/ext.rootfs.ext4
-
-echo ""
-echo ""
-echo "WARNING!"
-echo "The following operations require privileged access."
-echo "To be assured that nothing dangerous is executed, you can observe the following file $0"
-echo ""
-echo ""
-# Unmount and remove mnt directory if it exists by any reasons
-mountpoint ${IMAGES}/mnt -q
-if [ $? == 0 ]; then
-	sudo umount ${IMAGES}/mnt
-fi
-sudo rm -rf ${IMAGES}/mnt
-
-mkdir ${IMAGES}/mnt
-sudo mount ${IMAGES}/ext.rootfs.ext4 ${IMAGES}/mnt
-if ! [ $? == 0 ]; then
-	exit -3
-fi
-
-sudo cp ${TARGET_DIR}/etc/fstab ${IMAGES}/mnt/etc/
-sudo cp -r ${TARGET_DIR}/lib/modules ${IMAGES}/mnt/lib/
-
-sudo umount ${IMAGES}/mnt
-sudo rm -rf ${IMAGES}/mnt
-
-# Pass an empty rootpath. genimage makes a full copy of the given rootpath to
-# ${GENIMAGE_TMP}/root so passing TARGET_DIR would be a waste of time and disk
-# space. We don't rely on genimage to build the rootfs image, just to insert a
-# pre-built one in the disk image.
-
+##################################################################################
+# 6. Final image
 UBOOT_ENV_SIZE=0x8000
-${BUILD}/uboot-${UBOOT_REPO}/tools/mkenvimage -s ${UBOOT_ENV_SIZE} -o ${IMAGES}/uboot.env ${BOARD_DIR}/uboot/uboot.env.txt
+
+${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkenvimage -s ${UBOOT_ENV_SIZE} -o ${IMAGES_DIR}/uboot.env ${BOARD_DIR}/uboot/uboot.env.txt
 
 if ! [ $? == 0 ]; then
 	echo "u-boot environment wasn't created due to error."
-	exit -4
+	exit -1
 fi
 
-trap 'rm -rf "${ROOTPATH_TMP}"' EXIT
-ROOTPATH_TMP="$(mktemp -d)"
+ROOTPATH_TMP=`mktemp -d`
 
-rm -rf "${GENIMAGE_TMP}"
+GENIMAGE_TMP="${IMAGES_DIR}/genimage.tmp"
 
-echo ROOTPATH_TMP=${ROOTPATH_TMP}
-echo GENIMAGE_TMP=${GENIMAGE_TMP}
-echo BINARIES_DIR=${BINARIES_DIR}
-echo GENIMAGE_CFG=${GENIMAGE_CFG}
+rm -rf ${GENIMAGE_TMP}
 
-export PATH=$PATH:/sbin
-
-${OUTPUT}/host/bin/genimage \
-	--rootpath "${ROOTPATH_TMP}"   \
-	--tmppath "${GENIMAGE_TMP}"    \
-	--inputpath "${BINARIES_DIR}"  \
-	--outputpath "${BINARIES_DIR}" \
-	--config "${GENIMAGE_CFG}"
+${WORKING_DIR}/host/bin/genimage					\
+	--rootpath		${ROOTPATH_TMP}					\
+	--tmppath		"${IMAGES_DIR}/genimage.tmp"	\
+	--inputpath		${IMAGES_DIR}					\
+	--outputpath	${IMAGES_DIR}					\
+	--config		"${BOARD_DIR}/genimage.cfg"
 
 if ! [ $? == 0 ]; then
+	rm -rf ${ROOTPATH_TMP}
 	echo "Block device image wasn't created due to error."
-	exit -5
+	exit -1
 fi
 
-mv ${IMAGES}/sdcard.img ${IMAGES}/${IMAGE_NAME}.img
-ls -lh ${IMAGES}/${IMAGE_NAME}.img
+rm -rf ${ROOTPATH_TMP}
 
-if [ $? -eq 0 ]; then
-	echo
-	echo "Now file sdcard.img was created successfully. To make bootable sd-card put next"
-	echo "command to your terminal:"
-	echo
-	echo "		sudo dd if=${IMAGES}/${IMAGE_NAME}.img of=/dev/sdX status=progress bs=1M"
-	echo
-	echo "This bootable sd-card will contain MBR with U-Boot, boot fat32 partition with Linux kernel,"
-	echo "DTB file, rootfs-image and second ext2 partition with linux filesystem."
-	echo
-fi
+IMAGE_NAME=`basename -s .dtb ${DTB_NAME}`-usd
+
+mv ${IMAGES_DIR}/image.bin ${IMAGES_DIR}/${IMAGE_NAME}.img
+
+##################################################################################
+
+echo
+
+ls -lh ${IMAGES_DIR}/${IMAGE_NAME}.img
+
+echo
+echo "Now file ${IMAGE_NAME}.img was created successfully. To make bootable sd-card put next"
+echo "command to your terminal:"
+echo
+echo "		sudo dd if=${IMAGES_DIR}/${IMAGE_NAME}.img of=/dev/sdX status=progress bs=1M"
+echo
+echo
 
 lsblk
 echo
-exit $?

@@ -424,6 +424,7 @@
 	};
 };
 
+/* This interface is multiplexed with CAN0, by default CAN0 is disabled */
 &i2c1 {
 	pinctrl-0 = <&i2c1_xfer>;
 	pinctrl-names = "default";
@@ -562,6 +563,11 @@
 			spi-rx-bus-width = <4>;
 			spi-tx-bus-width = <1>;
 		};
+};
+
+&saradc {
+	vref-supply = <&vcca_1v8>;
+	status = "ok";
 };
 
 &pinctrl {

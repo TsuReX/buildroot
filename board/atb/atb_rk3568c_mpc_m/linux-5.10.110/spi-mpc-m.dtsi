@@ -1,0 +1,14 @@
+
+&spi3 {
+	max-freq = <48000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi3m1_pins &spi3m1_cs0>;
+
+	status = "okay";
+
+	spi3@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+	};
+};

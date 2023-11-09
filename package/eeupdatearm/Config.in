@@ -1,0 +1,4 @@
+config BR2_PACKAGE_EEUPDATEARM
+	bool "eeupdatearm"
+	help
+	Utility for manipulatig eeprom of i210, i211, 82574, x550, x553 chips.
