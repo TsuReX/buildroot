@@ -25,6 +25,9 @@ config BR2_TARGET_QUARTZ64_UEFI_PLATFORM_ARM_ATB_RK3568_SMC
 	
 endchoice
 
+config QUARTZ64_UEFI_BUILD_DEBUG
+	bool "Debug build"
+	default n
 endif
 
 comment "EDK2 needs a toolchain w/ gcc >= 5"
