@@ -8,8 +8,8 @@
 #include "video-mpc-m.dtsi"
 #include "usb-mpc-m.dtsi"
 #include "gnss-mpc-m.dtsi"
+#include "wireless-mpc-m.dtsi"
 // #include "pcie3-mpc-m.dtsi"
-// #include "wireless-mpc-m.dtsi"
 // #include "spi-mpc-m.dtsi"
 
 / {
@@ -168,7 +168,7 @@
 		};
 	};
 
-	// D4
+	// D14
 	rk809: pmic@20 {
 		compatible = "rockchip,rk809";
 		reg = <0x20>;
@@ -384,41 +384,21 @@
 			};
 		};
 	};
+
+	// D20
+	hym8563: rtc@51 {
+		compatible = "haoyu,hym8563";
+		reg = <0x51>;
+		#clock-cells = <0>;
+		clock-output-names = "rtc_32khz";
+
+		rtc_clock: rtc_clock {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
 };
-
-// mPCIe_I2C
-// &i2c1 {
-// 	pinctrl-0 = <&i2c1_xfer>;
-// 	pinctrl-names = "default";
-// 	status = "okay";
-// };
-
-// RTC_I2C5
-// &i2c5 {
-// 	pinctrl-0 = <&i2c5m0_xfer>;
-// 	pinctrl-names = "default";
-// 	status = "okay";
-
-// 	// D18
-// 	hym8563: rtc@51 {
-// 		compatible = "haoyu,hym8563";
-// 		reg = <0x51>;
-// 		interrupt-parent = <&gpio0>;
-// 		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
-// 		#clock-cells = <0>;
-// 		clock-output-names = "rtc_32khz";
-// 		pinctrl-names = "default";
-// 		// RTC_INT#
-// 		pinctrl-0 = <&rtc_int_pin>;
-// 		wakeup-source;
-
-// 		rtc_clock: rtc_clock {
-// 			compatible = "fixed-clock";
-// 			#clock-cells = <0>;
-// 			clock-frequency = <32768>;
-// 		};
-// 	};
-// };
 
 &saradc {
 	vref-supply = <&vcca_1v8>;
@@ -447,11 +427,4 @@
 			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
-	// rtc {
-	// 	rtc_int_pin: rtc-int-pin {
-	// 		// RTC_INT#
-	// 		rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
-	// 	};
-	// };
 };

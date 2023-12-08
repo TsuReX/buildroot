@@ -7,14 +7,15 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&wlan_en_pin>;
 
-		//post-power-on-delay-ms = <200>;   //CHECK_IT
+		//post-power-on-delay-ms = <200>; //CHECK_IT
+
 		// WL_EN
-		reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_LOW>;
 	};
 };
 
 &sdmmc2 {
-    // WiFi & BT combo module Fn-Link FG6233ASRB-01 / Fn-Link 8223A-SR
+	// WiFi & BT combo module Fn-Link FG6233ASRB-01 / Fn-Link 8223A-SR
 	mmc-pwrseq = <&sdio_pwrseq>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
@@ -45,64 +46,54 @@
 	};
 };
 
-&uart8 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn>;
-	uart-has-rtscts;
-	status = "okay";
+// &uart1 {
+// 	pinctrl-names = "default";
+// 	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+// 	uart-has-rtscts;
+// 	status = "okay";
 
-	bluetooth {
-//		TODO
-		// Fn-Link FG6233ASRB-01
-//		compatible = "realtek,rtl8723bs-bt";
-		// Fn-Link 8223A-SR
-		compatible = "qcom,qca9377-bt";
-		// BT_WAKE_HOST
-		device-wake-gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
-		// WL_HOST_WAKE
-		host-wake-gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
-		// BT_EN
-		enable-gpios = <&gpio3 RK_PA0 GPIO_ACTIVE_HIGH>;
-		max-speed = <2000000>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&bt_en_pin>;
-	};
-};
+// 	bluetooth {
+// //		TODO
+// 		// Fn-Link FG6233ASRB-01
+// //		compatible = "realtek,rtl8723bs-bt";
+// 		// Fn-Link 8223A-SR
+// 		compatible = "qcom,qca9377-bt";
+// 		// BT_WAKE_HOST
+// 		device-wake-gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
+// 		// WL_HOST_WAKE
+// 		host-wake-gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
+// 		// BT_EN
+// 		enable-gpios = <&gpio3 RK_PA0 GPIO_ACTIVE_HIGH>;
+// 		max-speed = <2000000>;
+// 		pinctrl-names = "default";
+// 		pinctrl-0 = <&bt_en_pin>;
+// 	};
+// };
 
 &pinctrl {
 
 	wireless {
 
-//		WL_EN
-
+		// WL_EN
 		wlan_en_pin: wlan-en-pin {
-			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-//		WL_HOST_WAKE
+		// //WAKE_BT - R232(15K) - HOST_WAKE_BT
+		// host_wake_bt_pin: host_wake_bt_pin {
+		// 	rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		// };
 
-		wl_host_wake_pin: wl_host_wake_pin {
-			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
+		// // BT_WAKE_HOST - VT7 - BT_WAKE
+		// bt_wake_host: bt_wake_host {
+		// 	rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		// };
 
-//		WAKE_BT - R232(15K) - HOST_WAKE_BT
-
-		host_wake_bt_pin: host_wake_bt_pin {
-			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-//		BT_WAKE_HOST - VT7 - BT_WAKE
-
-		bt_wake_host: bt_wake_host {
-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-//		BT_EN_HOST - R231(0R) - BT_EN
-
-		bt_en_pin: bt-en-pin {
-//			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up_drv_level_2>;
-		};
+		// // BT_EN_HOST - R231(0R) - BT_EN
+		// bt_en_pin: bt-en-pin {
+		// 	// rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+		// 	rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up_drv_level_2>;
+		// };
 	};
 };
 
