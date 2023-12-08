@@ -432,6 +432,22 @@
 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
+
+	leds {
+		led_red_pin: led_red_pin {
+			// active low
+			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		led_green_pin: led_green_pin {
+			// active low
+			rockchip,pins = <0 RK_PC2 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		led_blue_pin: led_blue_pin {
+			// active low
+			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
 	// rtc {
 	// 	rtc_int_pin: rtc-int-pin {
 	// 		// RTC_INT#
