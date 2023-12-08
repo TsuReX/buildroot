@@ -7,9 +7,9 @@
 #include "ethernet-mpc-m.dtsi"
 #include "video-mpc-m.dtsi"
 #include "usb-mpc-m.dtsi"
+#include "gnss-mpc-m.dtsi"
 // #include "pcie3-mpc-m.dtsi"
 // #include "wireless-mpc-m.dtsi"
-// #include "gnss-mpc-m.dtsi"
 // #include "spi-mpc-m.dtsi"
 
 / {
