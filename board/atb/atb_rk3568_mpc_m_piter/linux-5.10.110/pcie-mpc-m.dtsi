@@ -1,0 +1,49 @@
+
+&pcie30phy {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// This controller has one lane 0.
+// The lane 0 is connected to nowhere
+// If bifurcation mode is activated the lane 0 is controlled by pcie3x1.
+&pcie3x1 {
+	compatible = "rockchip,rk3568-pcie";
+	num-viewport = <4>;
+	rockchip,bifurcation;
+	rockchip,init-delay-ms = <100>;
+	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcieL0_reset_pin>;
+};
+
+//------------------------------------------------------------------------------
+// This controller has two lanes which can be organized in PCIE3 x2 mode or
+// in case of enabled bifurcation in PCIE3 x1 mode.
+// If bifurcation mode is activated the lane 1 is controlled by pcie3x1,
+// lane 0 is controlled by pcie3x2
+&pcie3x2 {
+	compatible = "rockchip,rk3568-pcie";
+	num-viewport = <4>;
+	rockchip,bifurcation;
+	reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcieL1_reset_pin>;
+};
+
+//------------------------------------------------------------------------------
+&pinctrl {
+	pcie {
+		pcieL0_reset_pin: pcieL0-reset-pin {
+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcieL1_reset_pin: pcieL1-reset-pin {
+			rockchip,pins = <0 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};

@@ -9,7 +9,7 @@
 #include "usb-mpc-m.dtsi"
 #include "gnss-mpc-m.dtsi"
 #include "wireless-mpc-m.dtsi"
-// #include "pcie3-mpc-m.dtsi"
+#include "pcie-mpc-m.dtsi"
 // #include "spi-mpc-m.dtsi"
 
 / {
