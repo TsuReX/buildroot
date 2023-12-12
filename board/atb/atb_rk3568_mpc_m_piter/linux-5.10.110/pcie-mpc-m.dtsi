@@ -1,3 +1,29 @@
+//------------------------------------------------------------------------------
+// PCI 2.0 + SATA
+//------------------------------------------------------------------------------
+
+// This controller is phy for pcie2x1 and sata2 controllers
+&combphy2_psq {
+	status = "okay";
+};
+
+// This controller is connected to X13
+&pcie2x1 {
+	compatible = "rockchip,rk3568-pcie";
+	num-viewport = <4>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie20_reset_pin>;
+	reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&sata2 {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// PCI 3.0
+//------------------------------------------------------------------------------
 
 &pcie30phy {
 	status = "okay";
@@ -16,7 +42,7 @@
 	status = "okay";
 
 	pinctrl-names = "default";
-	pinctrl-0 = <&pcieL0_reset_pin>;
+	pinctrl-0 = <&pcie30_L0_reset_pin>;
 };
 
 //------------------------------------------------------------------------------
@@ -32,18 +58,22 @@
 	status = "okay";
 
 	pinctrl-names = "default";
-	pinctrl-0 = <&pcieL1_reset_pin>;
+	pinctrl-0 = <&pcie30_L1_reset_pin>;
 };
 
 //------------------------------------------------------------------------------
 &pinctrl {
 	pcie {
-		pcieL0_reset_pin: pcieL0-reset-pin {
+		pcie30_L0_reset_pin: pcie30-L0-reset-pin {
 			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		pcieL1_reset_pin: pcieL1-reset-pin {
+		pcie30_L1_reset_pin: pcie30-L1-reset-pin {
 			rockchip,pins = <0 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie20_reset_pin: pcie20-reset-pin {
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
