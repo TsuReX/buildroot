@@ -1,0 +1,21 @@
+// GPS_UART
+&uart9 {
+	pinctrl-0 = <&uart9m2_xfer>;
+	status = "okay";
+};
+
+&pinctrl {
+
+	gnss {
+		// GPS_RESET
+		gnss_int: gnss-reset {
+			// active-low
+			rockchip,pins = <4 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// GPS_PPS
+		gnss_pps_pin: gnss-pps-pin  {
+			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
