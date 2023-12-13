@@ -2,25 +2,27 @@
 	usb_connector_x5_en: usb_connector_x5_en {
 		// USB3_OTG0
 		compatible = "regulator-fixed";
-		gpio = <&gpio1 RK_PA3 GPIO_ACTIVE_LOW>;
+		gpio = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&usb_connector_x5_en_pin>;
 		regulator-name = "usb_connector_x5_en_pin";
-		enable-active-low;
+		enable-active-high;
 		regulator-always-on;
 		regulator-boot-on;
+		vin-supply = <&vcc5v0_sys>;
 	};
 
 	usb_connector_x6_en: usb_connector_x6_en {
 		// USB3_HOST1
 		compatible = "regulator-fixed";
-		gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+		gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&usb_connector_x6_en_pin>;
 		regulator-name = "usb_connector_x6_en_pin";
-		enable-active-low;
+		enable-active-high;
 		regulator-always-on;
 		regulator-boot-on;
+		vin-supply = <&vcc5v0_sys>;
 	};
 };
 
