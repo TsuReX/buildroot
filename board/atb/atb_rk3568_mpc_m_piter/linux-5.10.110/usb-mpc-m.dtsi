@@ -1,0 +1,130 @@
+/{
+	usb_connector_x5_en: usb_connector_x5_en {
+		// USB3_OTG0
+		compatible = "regulator-fixed";
+		gpio = <&gpio1 RK_PA3 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_connector_x5_en_pin>;
+		regulator-name = "usb_connector_x5_en_pin";
+		enable-active-low;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	usb_connector_x6_en: usb_connector_x6_en {
+		// USB3_HOST1
+		compatible = "regulator-fixed";
+		gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_connector_x6_en_pin>;
+		regulator-name = "usb_connector_x6_en_pin";
+		enable-active-low;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+//------------------------------------------------------------------------------
+// USB2_HOST2 (HUB D17)
+
+// This controller is connected to USB hub D17
+&usb_host0_ehci {
+	status = "okay";
+};
+
+// This controller is connected to USB hub D17
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy0_host {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// USB2_HOST3 (HUB D18)
+
+// This controller is connected to USB hub D18
+&usb_host1_ehci {
+	status = "okay";
+};
+
+// This controller is connected to USB hub D18
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&u2phy1_host {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usb2phy1 {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// USB3_OTG0 (X5)
+
+// This controller is connected to X5
+&usbdrd_dwc3 {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbdrd30 {
+	status = "okay";
+};
+
+// This controller is phy for usbdrd_dwc3 and sata0 controllers
+&combphy0_us {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// USB3_HOST1 (X6)
+
+// This controller is connected to X6
+&usbhost_dwc3 {
+	status = "okay";
+};
+
+&usbhost30 {
+	status = "okay";
+};
+
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1_usq {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+&pinctrl {
+	usb {
+		usb_connector_x5_en_pin: usb_connector_x5_en_pin {
+			// active low
+			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		
+		usb_connector_x6_en_pin: usb_connector_x6_en_pin {
+			// active low
+			rockchip,pins = <3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		usb_hub_reset_pin: usb_hub_reset_pin {
+			// active low
+			rockchip,pins = <4 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
