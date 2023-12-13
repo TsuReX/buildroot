@@ -13,9 +13,9 @@
 // #include "spi-mpc-m.dtsi"
 
 / {
-	compatible = "atb,atb-rk3568-mpc-m-piter", "rockchip,rk3568";
+	compatible = "atb,atb-rk3568-mpc-m", "rockchip,rk3568";
 
-	model = "ATB-RK3568C-MPC-M";
+	model = "ATB-RK3568-MPC-M";
 
 	aliases {
 		ethernet0 = &gmac0;
