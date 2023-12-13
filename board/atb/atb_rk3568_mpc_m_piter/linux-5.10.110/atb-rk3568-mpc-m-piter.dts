@@ -5,12 +5,12 @@
 #include "rk3568.dtsi"
 
 #include "ethernet-mpc-m.dtsi"
-#include "pcie3-mpc-m.dtsi"
-#include "usb-pcie2-mpc-m.dtsi"
-#include "wireless-mpc-m.dtsi"
-#include "video-mpc-m.dtsi"
-#include "gnss-mpc-m.dtsi"
-#include "spi-mpc-m.dtsi"
+// #include "pcie3-mpc-m.dtsi"
+// #include "usb-pcie2-mpc-m.dtsi"
+// #include "wireless-mpc-m.dtsi"
+// #include "video-mpc-m.dtsi"
+// #include "gnss-mpc-m.dtsi"
+// #include "spi-mpc-m.dtsi"
 
 / {
 	compatible = "atb,atb-rk3568c-mpc-m", "rockchip,rk3568";
@@ -148,11 +148,11 @@
 
 	status = "okay";
 
-	// D6
+	// D15
 	vdd_cpu: regulator@1c {
 		compatible = "tcs,tcs452x";
 		reg = <0x1c>;
-//		PMIC_SLEEP_H
+		// PMIC_SLEEP_H
 		vsel-gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
 		fcs,suspend-voltage-selector = <1>;
 		regulator-name = "vdd_cpu";
@@ -387,38 +387,38 @@
 };
 
 // mPCIe_I2C
-&i2c1 {
-	pinctrl-0 = <&i2c1_xfer>;
-	pinctrl-names = "default";
-	status = "okay";
-};
+// &i2c1 {
+// 	pinctrl-0 = <&i2c1_xfer>;
+// 	pinctrl-names = "default";
+// 	status = "okay";
+// };
 
 // RTC_I2C5
-&i2c5 {
-	pinctrl-0 = <&i2c5m0_xfer>;
-	pinctrl-names = "default";
-	status = "okay";
+// &i2c5 {
+// 	pinctrl-0 = <&i2c5m0_xfer>;
+// 	pinctrl-names = "default";
+// 	status = "okay";
 
-	// D18
-	hym8563: rtc@51 {
-		compatible = "haoyu,hym8563";
-		reg = <0x51>;
-		interrupt-parent = <&gpio0>;
-		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
-		#clock-cells = <0>;
-		clock-output-names = "rtc_32khz";
-		pinctrl-names = "default";
-		// RTC_INT#
-		pinctrl-0 = <&rtc_int_pin>;
-		wakeup-source;
+// 	// D18
+// 	hym8563: rtc@51 {
+// 		compatible = "haoyu,hym8563";
+// 		reg = <0x51>;
+// 		interrupt-parent = <&gpio0>;
+// 		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
+// 		#clock-cells = <0>;
+// 		clock-output-names = "rtc_32khz";
+// 		pinctrl-names = "default";
+// 		// RTC_INT#
+// 		pinctrl-0 = <&rtc_int_pin>;
+// 		wakeup-source;
 
-		rtc_clock: rtc_clock {
-			compatible = "fixed-clock";
-			#clock-cells = <0>;
-			clock-frequency = <32768>;
-		};
-	};
-};
+// 		rtc_clock: rtc_clock {
+// 			compatible = "fixed-clock";
+// 			#clock-cells = <0>;
+// 			clock-frequency = <32768>;
+// 		};
+// 	};
+// };
 
 &saradc {
 	vref-supply = <&vcca_1v8>;
@@ -432,10 +432,10 @@
 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-	rtc {
-		rtc_int_pin: rtc-int-pin {
-			// RTC_INT#
-			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
+	// rtc {
+	// 	rtc_int_pin: rtc-int-pin {
+	// 		// RTC_INT#
+	// 		rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
+	// 	};
+	// };
 };

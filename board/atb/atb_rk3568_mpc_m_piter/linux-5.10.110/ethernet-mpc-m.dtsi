@@ -14,15 +14,14 @@
 					&gmac0_rgmii_bus
 					&gmac0_clkinout
 					&rgmii_phy0_reset_pin>;
-/*
-	PHY0_RSTn
-	0 -> 0
-	1 -> 1
-*/
-	snps,reset-gpio = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
+
+	// PHY0_RSTn
+	// 0 -> 0
+	// 1 -> 1
+	snps,reset-gpio = <&gpio3 RK_PD4 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 
-	/* Reset time is 20ms, 100ms for rtl8211f */
+	// Reset time is 20ms, 100ms for rtl8211f
 	snps,reset-delays-us = <0 20000 100000>;
 
 	tx_delay = <0x3c>;
@@ -40,22 +39,20 @@
 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
 
 	pinctrl-names = "default";
-	pinctrl-0 = <	&gmac1m1_miim
-					&gmac1m1_tx_bus2
-					&gmac1m1_rx_bus2
-					&gmac1m1_rgmii_clk
-					&gmac1m1_rgmii_bus
-					&gmac1m1_clkinout
+	pinctrl-0 = <	&gmac1m0_tx_bus2
+					&gmac1m0_rx_bus2
+					&gmac1m0_rgmii_clk
+					&gmac1m0_rgmii_bus
+					&gmac1m0_clkinout
 					&rgmii_phy1_reset_pin>;
-/*
-	PHY1_RSTn
-	0 -> 0
-	1 -> 1
-*/
-	snps,reset-gpio = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
+
+	// PHY1_RSTn
+	// 0 -> 0
+	// 1 -> 1
+	snps,reset-gpio = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 
-	/* Reset time is 20ms, 100ms for rtl8211f */
+	// Reset time is 20ms, 100ms for rtl8211f
 	snps,reset-delays-us = <0 20000 100000>;
 
 	tx_delay = <0x4f>;
@@ -71,35 +68,31 @@
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0x1>;
 	};
-};
 
-&mdio1 {
-	rgmii_phy1: ethernet-phy@1 {
+	rgmii_phy1: ethernet-phy@2 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
+		reg = <0x2>;
 	};
 };
 
 &pinctrl {
 	rgmii_phy0_reset {
 		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
-/*
-			PHY0_RSTn
-			0 -> 0
-			1 -> 1
-*/
-			rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
+
+			// PHY0_RSTn
+			// 0 -> 0
+			// 1 -> 1
+			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
-    rgmii_phy1_reset {
+	rgmii_phy1_reset {
 		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
-/*
-			PHY1_RSTn
-			0 -> 0
-			1 -> 1
-*/
-			rockchip,pins = <2 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+
+			// PHY1_RSTn
+			// 0 -> 0
+			// 1 -> 1
+			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
