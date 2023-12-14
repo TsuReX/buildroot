@@ -9,7 +9,7 @@
 	If bifurcation mode is cativated the lane 0 is controlled by pcie3x1.
 */
 &pcie3x1 {
-    compatible = "rockchip,rk3568-pcie";
+	compatible = "rockchip,rk3568-pcie";
 	num-viewport = <4>;
 	rockchip,bifurcation;
 	rockchip,init-delay-ms = <100>;
@@ -25,7 +25,7 @@
 	If bifurcation mode is cativated the lane 1 is controlled by pcie3x1, lane 0 is controlled by pcie3x2
 */
 &pcie3x2 {
-    compatible = "rockchip,rk3568-pcie";
+	compatible = "rockchip,rk3568-pcie";
 	num-viewport = <4>;
 	rockchip,bifurcation;
 	// PCIE30_PERSTn
