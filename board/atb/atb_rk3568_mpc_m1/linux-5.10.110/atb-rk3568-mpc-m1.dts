@@ -425,6 +425,10 @@
 	status = "okay";
 };
 
+&tsadc {
+	status = "okay";
+};
+
 &pinctrl {
 	pmic {
 		pmic_int_pin: pmic-int-pin {
