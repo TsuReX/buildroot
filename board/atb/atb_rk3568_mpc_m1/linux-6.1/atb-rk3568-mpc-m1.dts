@@ -29,6 +29,11 @@
 		ethernet1 = &gmac1;
 	};
 
+	chosen: chosen {
+		bootargs = "console=tty console=ttyS2,115200n8";
+		linux,stdout-path = "serial2:115200n8";
+	};
+
 	dc_12v: dc-12v {
 		compatible = "regulator-fixed";
 		regulator-name = "dc_12v";
@@ -68,10 +73,6 @@
 		};
 	};
 };
-
-// &crypto {
-// 	status = "okay";
-// };
 
 &uart2 {
 	status = "okay";
@@ -364,5 +365,14 @@
 	vqmmc-supply = <&vccio_sd>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+	status = "okay";
+};
+
+&saradc {
+	vref-supply = <&vcca_1v8>;
+	status = "okay";
+};
+
+&tsadc {
 	status = "okay";
 };
