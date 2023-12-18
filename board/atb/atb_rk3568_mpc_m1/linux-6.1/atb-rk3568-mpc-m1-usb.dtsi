@@ -41,24 +41,38 @@
 	};
 };
 
-// USB2_HOST2
+&combphy0 {
+	// used for USB3
+	status = "okay";
+};
 
-// This controller is connected to USB hub D20
+&combphy1 {
+	// used for USB3
+	status = "okay";
+};
+
 &usb_host0_ehci {
 	status = "okay";
 };
 
-
-// This controller is connected to USB hub D20
 &usb_host0_ohci {
 	status = "okay";
 };
 
-&usb2phy0_host {
+&usb_host0_xhci {
+	extcon = <&usb2phy0>;
 	status = "okay";
 };
 
-&usb2phy0_otg {
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&usb_host1_xhci {
 	status = "okay";
 };
 
@@ -66,25 +80,13 @@
 	status = "okay";
 };
 
-// USB2_HOST3
-
-// This controller is connected to nowhere
-&usb_host1_ehci {
-	status = "disabled";
-};
-
-
-// This controller is connected to nowhere
-&usb_host1_ohci {
-	status = "disabled";
-};
-
-
-&usb2phy1_host {
+&usb2phy0_host {
+	phy-supply = <&vcc5v0_usb_host>;
 	status = "okay";
 };
 
-&usb2phy1_otg {
+&usb2phy0_otg {
+	phy-supply = <&vcc5v0_usb_otg>;
 	status = "okay";
 };
 
@@ -92,37 +94,12 @@
 	status = "okay";
 };
 
-
-// USB3_OTG0
-
-// This controller is connected to X9
-&usb_host0_xhci {
-	// maximum-speed = "high-speed";
-	dr_mode = "host";
+&usb2phy1_host {
+	phy-supply = <&vcc5v0_usb_host>;
 	status = "okay";
 };
 
-
-// This controller is phy for usbdrd_dwc3 and sata0 controllers
-&combphy0 {
-	status = "okay";
-};
-
-
-// USB3_HOST1
-
-// This controller is connected to X8
-&usb_host1_xhci {
-	// maximum-speed = "high-speed";
-	status = "okay";
-};
-
-// ???
-// &usbhost30 {
-// 	status = "okay";
-// };
-
-// This controller is phy for usbhost_dwc3 and sata1 controllers
-&combphy1 {
+&usb2phy1_otg {
+	phy-supply = <&vcc5v0_usb_host>;
 	status = "okay";
 };
