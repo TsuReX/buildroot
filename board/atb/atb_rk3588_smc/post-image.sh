@@ -141,7 +141,7 @@ echo "External rootfs is ${ROOTFS_IMG}"
 
 if ! [ -e ${BUILDROOT_HOME}/dl/${ROOTFS_IMG} ]; then
 	cd ${BUILDROOT_HOME}/dl/
-	wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://ftp.atb-e.ru:2121/ATB_FTP/buildroot/${ROOTFS_IMG}
+	wget -T 1 --ftp-user='atbftp_user' --ftp-password='32Vj_hy%c@gR' ftp://ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl/${ROOTFS_IMG}
 	cd -
 fi
 
