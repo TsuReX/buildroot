@@ -1,0 +1,128 @@
+/{
+	vcc5v0_usb_host: vcc5v0-usb-host {
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_usb_host_en>;
+		regulator-name = "vcc5v0_usb_host";
+		// regulator-min-microvolt = <5000000>;
+		// regulator-max-microvolt = <5000000>;
+		// vin-supply = <&vcc5v0_usb>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+
+	};
+
+	vcc5v0_usb_otg: vcc5v0-usb-otg {
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_usb_otg_en>;
+		regulator-name = "vcc5v0_usb_otg";
+		// regulator-min-microvolt = <5000000>;
+		// regulator-max-microvolt = <5000000>;
+		// vin-supply = <&vcc5v0_usb>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+
+	};
+};
+
+&pinctrl {
+	usb {
+		vcc5v0_usb_host_en: vcc5v0_usb_host_en {
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+// USB2_HOST2
+
+// This controller is connected to USB hub D20
+&usb_host0_ehci {
+	status = "okay";
+};
+
+
+// This controller is connected to USB hub D20
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb2phy0_host {
+	status = "okay";
+};
+
+&usb2phy0_otg {
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+// USB2_HOST3
+
+// This controller is connected to nowhere
+&usb_host1_ehci {
+	status = "disabled";
+};
+
+
+// This controller is connected to nowhere
+&usb_host1_ohci {
+	status = "disabled";
+};
+
+
+&usb2phy1_host {
+	status = "okay";
+};
+
+&usb2phy1_otg {
+	status = "okay";
+};
+
+&usb2phy1 {
+	status = "okay";
+};
+
+
+// USB3_OTG0
+
+// This controller is connected to X9
+&usb_host0_xhci {
+	// maximum-speed = "high-speed";
+	dr_mode = "host";
+	status = "okay";
+};
+
+
+// This controller is phy for usbdrd_dwc3 and sata0 controllers
+&combphy0 {
+	status = "okay";
+};
+
+
+// USB3_HOST1
+
+// This controller is connected to X8
+&usb_host1_xhci {
+	// maximum-speed = "high-speed";
+	status = "okay";
+};
+
+// ???
+// &usbhost30 {
+// 	status = "okay";
+// };
+
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1 {
+	status = "okay";
+};
