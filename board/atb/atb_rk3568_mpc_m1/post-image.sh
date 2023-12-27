@@ -12,10 +12,10 @@
 
 DTB_NAME=$2
 BOARD_DIR=`dirname ${BR2_DL_DIR}`/`dirname $0`
-WORKING_DIR=`dirname ${BR2_CONFIG}`
-BUILD_DIR=${WORKING_DIR}/build
-TARGET_DIR=${WORKING_DIR}/target
-IMAGES_DIR=${WORKING_DIR}/images
+
+# BUILD_DIR - is a buildroot environment variable
+# TARGET_DIR - - is a buildroot environment variable
+IMAGES_DIR=${BINARIES_DIR}
 
 if ! [ $# == 2 ]; then
     echo "Invalid arguments"
@@ -139,7 +139,7 @@ cp ${IMAGES_DIR}/${DTB_NAME} ${IMAGES_DIR}/dtb
 # 5. Rootfs
 cp ${IMAGES_DIR}/rootfs.cpio.gz ${IMAGES_DIR}/rootfs
 
-${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${WORKING_DIR}/images/rootfs.cpio.gz ${WORKING_DIR}/images/rootfs
+${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${IMAGES_DIR}/rootfs.cpio.gz ${IMAGES_DIR}/rootfs
 
 if ! [ $? == 0 ]; then
 	echo "rootfs wasn't created due to error."
@@ -163,7 +163,7 @@ GENIMAGE_TMP="${IMAGES_DIR}/genimage.tmp"
 
 rm -rf ${GENIMAGE_TMP}
 
-${WORKING_DIR}/host/bin/genimage					\
+${HOST_DIR}/bin/genimage							\
 	--rootpath		${ROOTPATH_TMP}					\
 	--tmppath		"${IMAGES_DIR}/genimage.tmp"	\
 	--inputpath		${IMAGES_DIR}					\
