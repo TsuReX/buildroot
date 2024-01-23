@@ -1,0 +1,34 @@
+atb_rk3568_mpc_m1_linux-5.10.110:
+  stage: build
+  tags: [buildroot]
+  image: ubuntu:22.04
+  timeout: 24h
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt update
+    - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
+    - apt install -y python2 python3 unzip wget bzip2 curlftpfs dosfstools
+  script:
+    - mkdir -p dl
+    - curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl dl
+    - make atb_rk3568_mpc_m1_linux-5.10.110_defconfig
+    - make
+  artifacts:
+    name: "atb_rk3568_mpc_m1_linux-5.10.110"
+    paths:
+      - output/target
+      - output/images/idblock.bin
+      - output/images/uboot.img
+      - output/images/Image
+      - output/images/atb-rk3568-mpc-m1.dtb
+      - output/images/rootfs.cpio.gz
+  rules:
+    - if: ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
+      changes:
+        - .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.110.yml
+        - configs/atb_rk3568_mpc_m1_linux-5.10.110_defconfig
+        - board/atb/atb_rk3568_mpc_m1/linux-5.10.110/*
+        - board/atb/atb_rk3568_mpc_m1/uboot/*
+        - board/atb/atb_rk3568_mpc_m1/overlay/*
+        - board/atb/atb_rk3568_mpc_m1/genimage.cfg
+        - board/atb/atb_rk3568_mpc_m1/post-image.sh
