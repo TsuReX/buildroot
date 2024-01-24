@@ -25,7 +25,8 @@ fi
 
 if ! [ -d ${BUILD_DIR}/rkbin ]; then
 	# Copying necessary files into output/images/rkbin form git repository
-	git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD_DIR}/rkbin
+	#git clone --single-branch --branch rk356x/linux_release_v1.3.0a https://gitlab.com/firefly-linux/rkbin ${BUILD_DIR}/rkbin
+	git clone --single-branch --branch master https://github.com/rockchip-linux/rkbin.git ${BUILD_DIR}/rkbin
 fi
 
 ##################################################################################
@@ -54,7 +55,8 @@ SPL_BIN=u-boot-spl.bin
 #TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
 #TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
 #TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
-TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
+TPL_BIN=rk3568_ddr_1560MHz_v1.18.bin
 
 # SPL being compiled from sources
 SPL_BIN_PATH=${IMAGES_DIR}/${SPL_BIN}
@@ -97,19 +99,19 @@ fi
 # 2. Create uboot.img
 UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 
-if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ]; then
-	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf is absent."
+if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.43.elf ]; then
+	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.43.elf is absent."
 	exit -1
 fi
 
-cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.33.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl31_v1.43.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
 
-if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ]; then
-	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin is absent."
+if ! [ -f ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.10.bin ]; then
+	echo "File ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.10.bin is absent."
 	exit -1
 fi
 
-cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.08.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
+cp ${BUILD_DIR}/rkbin/bin/rk35/rk3568_bl32_v2.10.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
 
 # The script make_fit_atf.sh requires working directory u-boot
 cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
