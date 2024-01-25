@@ -135,15 +135,13 @@
 	};
 	
 	//D13
-    eMMc_FSPI_Mux: eMMc-FSPI-Mux {
+    eMMC_MUX_ENA: eMMC_MUX_ENA {
 		compatible = "regulator-fixed";
-		regulator-name = "eMMc_FSPI_Mux";
+		regulator-name = "eMMC_MUX_ENA";
 		regulator-always-on;
 		regulator-boot-on;
-		enable-active-high;
-		//FSPI
-		//gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_LOW>;
-		//eMMC
+		enable-active-low;    //FSPI
+		//enable-active-high; //eMMC
 		gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc3v3>;
 	};
@@ -1033,11 +1031,11 @@
 //=============================================================================
 //  //SPI FLASH //Muxed with eMMC   //Control by D13 (TS3A27518ERTWR)
 //=============================================================================
-//CHECK_IT TS3A275?
-/*
+//eMMc_FSPI_Mux
 &sfc {
 	status = "okay";
-	max-freq = <50000000>;
+	//max-freq = <50000000>;
+	max-freq = <20000000>;
 	#address-cells = <1>;
 	#size-cells = <0>;
 	pinctrl-names = "default";
@@ -1049,29 +1047,34 @@
 		#size-cells = <0>;
 		compatible = "jedec,spi-nor";
 		reg = <0x0>;
-		spi-max-frequency = <50000000>;
+		//spi-max-frequency = <50000000>;
+		spi-max-frequency = <20000000>;
 		spi-tx-bus-width = <1>;
-		spi-rx-bus-width = <4>;
+		//spi-rx-bus-width = <4>;
+		spi-rx-bus-width = <1>;
 		status = "okay";
-
+/*
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			loader@0 {
-				label = "loader";
-				reg = <0x0 0x1000000>;
+			all@0 {
+				label = "all";
+				reg = <0x0 0x2000000>;
 			};
 		};
+*/		
 	};
 };
-*/
+
 
 //=============================================================================
 //  SDIO SD eMMC
 //=============================================================================
 //D11   //eMMC
+/*
+//eMMC_MUX_ENA
 &sdhci {
 	bus-width = <8>;
 	no-sdio;
@@ -1082,7 +1085,7 @@
 	mmc-hs400-enhanced-strobe;
 	status = "okay";
 };
-
+*/
 //SD Card
 &sdmmc {
 	max-frequency = <200000000>;
