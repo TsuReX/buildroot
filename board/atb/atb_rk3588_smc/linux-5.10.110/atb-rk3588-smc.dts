@@ -16,7 +16,8 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "dt-bindings/usb/pd.h"
-#include "rockchip/rk3588.dtsi"
+//#include "rockchip/rk3588.dtsi"
+#include "rk3588.dtsi"
 
 / {
 	model = "ATB RK3588 SMC";
@@ -31,7 +32,7 @@
 	
     chosen: chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0";
-		stdout-path = "serial3:115200n8";
+		stdout-path = "serial2:115200n8";
 	};
 
     //CHECK_IT //DEBUG ON UART3    //MUST be fixed to UART2!!!
