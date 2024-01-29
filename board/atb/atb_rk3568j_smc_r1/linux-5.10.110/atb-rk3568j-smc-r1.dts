@@ -167,10 +167,10 @@
 	};
 
 	// D13
-	pcf85063: rtc@51 {
-		compatible = "nxp,pcf85063a";
+	pcf8563: rtc@51 {
+		compatible = "nxp,pcf8563";
 		reg = <0x51>;
-		quartz-load-femtofarads = <12500>;
+		#clock-cells = <0>;
 
 		rtc_clock: rtc_clock {
 			compatible = "fixed-clock";
