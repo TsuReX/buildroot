@@ -16,7 +16,8 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "dt-bindings/usb/pd.h"
-#include "rockchip/rk3588.dtsi"
+#include "rk3588.dtsi"
+#include "rk3588-smc-pcie-sata.dtsi"
 
 / {
 	model = "ATB RK3588 SMC";
@@ -31,7 +32,7 @@
 	
     chosen: chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0";
-		stdout-path = "serial3:115200n8";
+		stdout-path = "serial2:115200n8";
 	};
 
     //CHECK_IT //DEBUG ON UART3    //MUST be fixed to UART2!!!
@@ -1004,121 +1005,7 @@
 
 };
 
-//=============================================================================
-//  //PCIE SATA
-//============================================================================
-//-----------------------------------------------------------------------------
-//          PCIe20_0 muxing with SATA30_0
-//pcie2x1l2 is PCIe20_0
-//pcie2x1l2 can use COMBO_PHY_0_LANE0 only
 
-//SATA_0_
-&combphy0_ps {
-	status = "okay";
-};
-&pcie2x1l2 {
-	status = "disabled";
-};
-&sata0 {
-	status = "okay";
-};
-//-----------------------------------------------------------------------------
-//          PCIe20_1 muxing with SATA30_1
-//is PCIe20_1
-//pcie2x1l0 can use PCIE30_PORT0_LANE1 or COMBO_PHY_1_LANE0. Controlled by pcie30-phymode.
-
-//	This controller is phy for sata1 or pcie2x1l0 controllers
-&combphy1_ps {
-	status = "okay";
-};
-//SATA_1
-&sata1 {
-    //	If this controller is enabled, pcie2x1l0 must be disabled
-	status = "disabled";
-};
-
-
-//RTL8125 on COMBO_PHY_1_LANE0
-//	If this controller is enabled, sata1 must be disabled
-&pcie2x1l0 {
-    //LAN0_PE_RST-
-    reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
-    rockchip,perst-inactive-ms = <100>;
-	rockchip,init-delay-ms = <100>;
-	vpcie3v3-supply = <&vcc_3v3>;
-    pinctrl-names = "default";
-	pinctrl-0 = <&lan0_pe_rst_pin>;
-			
-	status = "okay";
-};
-
-//-----------------------------------------------------------------------------
-//          PCIe20_2 muxing with SATA30_2 and USB30_2 (usbhost3_0)
-//pcie2x1l1 is PCIe20_2
-//pcie2x1l1 can use PCIE30_PORT1_LANE1 or COMBO_PHY_2_LANE0. Controlled by pcie30-phymode.
-
-//PCIe20_2 is disabled now
-&combphy2_psu {
-	status = "okay";
-};
-&usbhost3_0 {
-	status = "disabled";
-};
-&usbhost_dwc3_0 {
-	status = "disabled";
-};
-&sata2 {
-	status = "disabled";
-};
-
-//PCIe20_2
-//OUT Lane D on PCIE30_PORT1_LANE1  
-&pcie2x1l1 {
-    //PCIe_RST_
-	vpcie3v3-supply = <&vcc_3v3>;	
-	//CHECK_IT //Enable in rev1
-	//status = "okay";
-	status = "disabled";
-};
-//-----------------------------------------------------------------------------
-//=============================================================================
-//  //PCIe3X4   //PCIE30_PORT0  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
-//PCIe3X4 can use:
-//    x1: PCIE30_PORT0_LANE0
-//    x2: PCIE30_PORT0_LANE0 PCIE30_PORT0_LANE1
-//    x4: PCIE30_PORT0_LANE0 PCIE30_PORT0_LANE1 PCIE30_PORT1_LANE0 PCIE30_PORT1_LANE1
-
-&pcie30phy {
-//PHY_MODE_PCIE_AGGREGATION 4	/* PCIe3x4 */
-//PHY_MODE_PCIE_NANBNB	0	/* P1:PCIe3x2  +  P0:PCIe3x2 */
-//PHY_MODE_PCIE_NANBBI	1	/* P1:PCIe3x2  +  P0:PCIe3x1*2 */
-//PHY_MODE_PCIE_NABINB	2	/* P1:PCIe3x1*2 + P0:PCIe3x2 */
-//PHY_MODE_PCIE_NABIBI	3	/* P1:PCIe3x1*2 + P0:PCIe3x1*2 */
-    rockchip,pcie30-phymode = <PHY_MODE_PCIE_NABINB>;   //rtl8125
-    //rockchip,pcie30-phymode = <PHY_MODE_PCIE_NABIBI>; //M.2 E
-	status = "okay";
-};
-
-//OUT Lane A.
-&pcie3x4 {
-	vpcie3v3-supply = <&vcc_3v3>;
-	status = "okay";
-};
-//=============================================================================
-//  //PCIe3X2   //PCIE30_PORT1  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
-//PCIe3X2 can use:
-//    x1: PCIE30_PORT1_LANE0
-//    x2: PCIE30_PORT1_LANE0 PCIE30_PORT1_LANE1
-    
-//OUT Lane C and Lane D.
-&pcie3x2 {
-    vpcie3v3-supply = <&vcc_3v3>;
-	status = "okay";
-};
 //=============================================================================
 //  //ETHERNET (GMAC)
 //=============================================================================
