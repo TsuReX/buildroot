@@ -59,7 +59,15 @@
 };
 
 //------------------------------------------------------------------------------
-&mpp_srv {
+&iep {
+	status = "okay";
+};
+
+&iep_mmu {
+	status = "okay";
+};
+
+&rk_rga {
 	status = "okay";
 };
 
@@ -71,16 +79,24 @@
 	status = "okay";
 };
 
-&rk_rga {
-	status = "okay";
-};
-
 &rkvenc {
 	venc-supply = <&vdd_logic>;
 	status = "okay";
 };
 
 &rkvenc_mmu {
+	status = "okay";
+};
+
+&jpegd {
+	status = "okay";
+};
+
+&jpegd_mmu {
+	status = "okay";
+};
+
+&mpp_srv {
 	status = "okay";
 };
 
