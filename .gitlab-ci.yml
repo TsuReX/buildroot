@@ -4,3 +4,4 @@ stages:
 include:
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-6.1.yml
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.110.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.160.yml
