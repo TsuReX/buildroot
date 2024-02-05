@@ -1,0 +1,34 @@
+diff --git a/drivers/mfd/rk808.c b/drivers/mfd/rk808.c
+index 720b167018e0..75fa92bcdd20 100644
+--- a/drivers/mfd/rk808.c
++++ b/drivers/mfd/rk808.c
+@@ -762,6 +762,10 @@ static void rk8xx_device_shutdown(void)
+ 		reg = RK808_DEVCTRL_REG,
+ 		bit = DEV_OFF_RST;
+ 		break;
++	case RK809_ID:
++		reg = RK817_SYS_CFG(3),
++		bit = DEV_OFF;
++		break;
+ 	case RK816_ID:
+ 		reg = RK816_DEV_CTRL_REG;
+ 		bit = DEV_OFF;
+@@ -812,8 +816,8 @@ static void rk8xx_syscore_shutdown(void)
+ 		if (rk808->variant == RK809_ID || rk808->variant == RK817_ID) {
+ 			ret = regmap_update_bits(rk808->regmap,
+ 						 RK817_SYS_CFG(3),
+-						 RK817_SLPPIN_FUNC_MSK,
+-						 SLPPIN_DN_FUN);
++						 DEV_OFF,
++						 DEV_OFF);
+ 			if (ret) {
+ 				dev_warn(&rk808_i2c_client->dev,
+ 					 "Cannot switch to power down function\n");
+@@ -1240,6 +1244,7 @@ static int rk808_probe(struct i2c_client *client,
+ 		rk808->pm_pwroff_prep_fn = rk817_shutdown_prepare;
+ 		of_property_prepare_fn = rk817_of_property_prepare;
+ 		pinctrl_init = rk817_pinctrl_init;
++		device_shutdown_fn = rk8xx_device_shutdown;
+ 		break;
+ 	default:
+ 		dev_err(&client->dev, "Unsupported RK8XX ID %lu\n",
