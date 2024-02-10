@@ -12,10 +12,10 @@
 
 DTB_NAME=$2
 BOARD_DIR=`dirname ${BR2_DL_DIR}`/`dirname $0`
-WORKING_DIR=`dirname ${BR2_CONFIG}`
-BUILD_DIR=${WORKING_DIR}/build
-TARGET_DIR=${WORKING_DIR}/target
-IMAGES_DIR=${WORKING_DIR}/images
+
+# BUILD_DIR - is a buildroot environment variable
+# TARGET_DIR - - is a buildroot environment variable
+IMAGES_DIR=${BINARIES_DIR}
 
 if ! [ $# == 2 ]; then
     echo "Invalid arguments"
@@ -32,30 +32,8 @@ fi
 ##################################################################################
 # 1. Create idblock.bin
 
-#SPL_BIN=rk356x_spl_nand_v1.07.bin
-#SPL_BIN=rk356x_spl_v1.08.bin
-#SPL_BIN=rk356x_spl_v1.12.bin
 SPL_BIN=u-boot-spl.bin
 
-#TPL_BIN=rk3568_ddr_1056MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1184MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_528MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_780MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_920MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1056MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1332MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_324MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_630MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_780MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1184MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1332MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.05-firefly.bin
-#TPL_BIN=rk3568_ddr_528MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_630MHz_v1.13.bin
-#TPL_BIN=rk3568_ddr_920MHz_v1.05.bin
-#TPL_BIN=rk3568_ddr_1560MHz_v1.13.bin
 TPL_BIN=rk3568_ddr_1560MHz_v1.18.bin
 
 # SPL being compiled from sources
@@ -128,75 +106,3 @@ fi
 tools/mkimage -f u-boot.its -E ${IMAGES_DIR}/uboot.img
 
 cd ..
-
-##################################################################################
-# 3. Linux kernel
-cp ${IMAGES_DIR}/Image ${IMAGES_DIR}/linux
-
-##################################################################################
-# 4. Linux device tree blob
-cp ${IMAGES_DIR}/${DTB_NAME} ${IMAGES_DIR}/dtb
-
-##################################################################################
-# 5. Rootfs
-cp ${IMAGES_DIR}/rootfs.cpio.gz ${IMAGES_DIR}/rootfs
-
-${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -A arm -T ramdisk -C gzip -d ${WORKING_DIR}/images/rootfs.cpio.gz ${WORKING_DIR}/images/rootfs
-
-if ! [ $? == 0 ]; then
-	echo "rootfs wasn't created due to error."
-	exit -1
-fi
-
-##################################################################################
-# 6. Final image
-UBOOT_ENV_SIZE=0x8000
-
-${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkenvimage -s ${UBOOT_ENV_SIZE} -o ${IMAGES_DIR}/uboot.env ${BOARD_DIR}/uboot/uboot.env.txt
-
-if ! [ $? == 0 ]; then
-	echo "u-boot environment wasn't created due to error."
-	exit -1
-fi
-
-ROOTPATH_TMP=`mktemp -d`
-
-GENIMAGE_TMP="${IMAGES_DIR}/genimage.tmp"
-
-rm -rf ${GENIMAGE_TMP}
-
-${WORKING_DIR}/host/bin/genimage					\
-	--rootpath		${ROOTPATH_TMP}					\
-	--tmppath		"${IMAGES_DIR}/genimage.tmp"	\
-	--inputpath		${IMAGES_DIR}					\
-	--outputpath	${IMAGES_DIR}					\
-	--config		"${BOARD_DIR}/genimage.cfg"
-
-if ! [ $? == 0 ]; then
-	rm -rf ${ROOTPATH_TMP}
-	echo "Block device image wasn't created due to error."
-	exit -1
-fi
-
-rm -rf ${ROOTPATH_TMP}
-
-IMAGE_NAME=`basename -s .dtb ${DTB_NAME}`-usd
-
-mv ${IMAGES_DIR}/image.bin ${IMAGES_DIR}/${IMAGE_NAME}.img
-
-##################################################################################
-
-echo
-
-ls -lh ${IMAGES_DIR}/${IMAGE_NAME}.img
-
-echo
-echo "Now file ${IMAGE_NAME}.img was created successfully. To make bootable sd-card put next"
-echo "command to your terminal:"
-echo
-echo "		sudo dd if=${IMAGES_DIR}/${IMAGE_NAME}.img of=/dev/sdX status=progress bs=1M"
-echo
-echo
-
-lsblk
-echo
