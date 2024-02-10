@@ -1,4 +1,4 @@
-atb_rk3568_mpc_m1_linux-5.10.160:
+atb_rk3568j_smc_r1_linux-5.10.110:
   stage: build
   tags: [buildroot]
   image: ubuntu:22.04
@@ -11,23 +11,23 @@ atb_rk3568_mpc_m1_linux-5.10.160:
   script:
     - mkdir -p dl
     - curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl dl
-    - make atb_rk3568_mpc_m1_linux-5.10.160_defconfig
+    - make atb_rk3568j_smc_r1_linux-5.10.110_defconfig
     - make
   artifacts:
-    name: "atb_rk3568_mpc_m1_linux-5.10.160"
+    name: "atb_rk3568j_smc_r1_linux-5.10.110"
     paths:
       - output/target
       - output/images/idblock.bin
       - output/images/uboot.img
       - output/images/Image
-      - output/images/atb-rk3568-mpc-m1.dtb
+      - output/images/atb-rk3568j-smc-r1.dtb
       - output/images/rootfs.cpio.gz
   rules:
 #    - if: ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
-      - changes:
-        - .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.160.yml
-        - configs/atb_rk3568_mpc_m1_linux-5.10.160_defconfig
-        - board/atb/atb_rk3568_mpc_m1/linux-5.10.160/*
-        - board/atb/atb_rk3568_mpc_m1/uboot/*
-        - board/atb/atb_rk3568_mpc_m1/overlay/*
+      changes:
+        - .gitlab-ci/atb_rk3568j_smc_r1_linux-5.10.110.yml
+        - configs/atb_rk3568j_smc_r1_linux-5.10.110_defconfig
+        - board/atb/atb_rk3568j_smc_r1/linux-5.10.110/*
+        - board/atb/atb_rk3568j_smc_r1/uboot/*
+        - board/atb/atb_rk3568j_smc_r1/overlay/*
         - board/atb/common/rk3568-post-image.sh

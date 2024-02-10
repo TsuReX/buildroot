@@ -2,6 +2,16 @@ stages:
   - build
 
 include:
-  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-6.1.yml
+  - local: .gitlab-ci/atb_rk3568j_mpc_linux-5.10.110.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_r1_linux-5.10.110_uefi.yml
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.110.yml
+  - local: .gitlab-ci/atb_rk3588_matx_linux-5.10.160.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_linux-5.10.110_uefi.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_r1_linux-5.10.110.yml
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.160.yml
+  - local: .gitlab-ci/atb_rk3588_mpc_linux-5.10.160.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_linux-5.10.110.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m0_linux-5.10.110.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-6.1.yml
+  - local: .gitlab-ci/atb_rk3588_smc_linux-5.10.160.yml
+
