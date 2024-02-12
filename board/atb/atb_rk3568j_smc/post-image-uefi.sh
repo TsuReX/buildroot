@@ -6,7 +6,7 @@ BUILDROOT_HOME=$(pwd)
 SOC=RK3568J
 BOARD_DIR="$(dirname $0)"
 BOARD_NAME="$(basename ${BOARD_DIR})"
-GENIMAGE_CFG="${BOARD_DIR}/genimage-${BOARD_NAME}_uefi.cfg"
+GENIMAGE_CFG="${BOARD_DIR}/genimage-uefi.cfg"
 IMAGE_NAME="$(basename -s .dtb $2)"
 
 echo "argc = $#"
