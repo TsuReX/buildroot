@@ -23,11 +23,10 @@ atb_rk3568j_mpc_linux-5.10.110:
       - output/images/atb-rk3568j-mpc.dtb
       - output/images/rootfs.cpio.gz
   rules:
-#    - if: ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
-      changes:
-        - .gitlab-ci/atb_rk3568j_mpc_linux-5.10.110.yml
-        - configs/atb_rk3568j_mpc_linux-5.10.110_defconfig
-        - board/atb/atb_rk3568j_mpc/linux-5.10.110/*
-        - board/atb/atb_rk3568j_mpc/uboot/*
-        - board/atb/atb_rk3568j_mpc/overlay/*
-        - board/atb/common/rk3568-post-image.sh
+    - changes:
+      - .gitlab-ci/atb_rk3568j_mpc_linux-5.10.110.yml
+      - configs/atb_rk3568j_mpc_linux-5.10.110_defconfig
+      - board/atb/atb_rk3568j_mpc/linux-5.10.110/*
+      - board/atb/atb_rk3568j_mpc/uboot/*
+      - board/atb/atb_rk3568j_mpc/overlay/*
+      - board/atb/common/rk3568-post-image.sh

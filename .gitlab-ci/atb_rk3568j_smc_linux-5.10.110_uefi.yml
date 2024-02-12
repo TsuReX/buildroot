@@ -23,12 +23,11 @@ atb_rk3568j_smc_linux-5.10.110_uefi:
       - output/images/atb-rk3568j-smc.dtb
       - output/images/rootfs.cpio.gz
   rules:
-#    - if: ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
-      changes:
-        - .gitlab-ci/atb_rk3568j_smc_linux-5.10.110_uefi.yml
-        - configs/atb_rk3568j_smc_linux-5.10.110_uefi_defconfig
-        - board/atb/atb_rk3568j_smc/linux-5.10.110/*
-        - board/atb/atb_rk3568j_smc/uboot/*
-        - board/atb/atb_rk3568j_smc/overlay/*
-        - board/atb/atb_rk3568j_smc/genimage-uefi.cfg
-        - board/atb/atb_rk3568j_smc/post-image-uefi.sh
+    - changes:
+      - .gitlab-ci/atb_rk3568j_smc_linux-5.10.110_uefi.yml
+      - configs/atb_rk3568j_smc_linux-5.10.110_uefi_defconfig
+      - board/atb/atb_rk3568j_smc/linux-5.10.110/*
+      - board/atb/atb_rk3568j_smc/uboot/*
+      - board/atb/atb_rk3568j_smc/overlay/*
+      - board/atb/atb_rk3568j_smc/genimage-uefi.cfg
+      - board/atb/atb_rk3568j_smc/post-image-uefi.sh
