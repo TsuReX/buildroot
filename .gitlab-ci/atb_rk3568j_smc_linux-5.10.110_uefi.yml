@@ -18,7 +18,8 @@ atb_rk3568j_smc_linux-5.10.110_uefi:
     paths:
       - output/target
       - output/images/idblock.bin
-      - output/images/uboot.img
+      - output/images/uefi.img
+      - output/images/efi-part
       - output/images/Image
       - output/images/atb-rk3568j-smc.dtb
       - output/images/rootfs.cpio.gz
