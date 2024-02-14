@@ -1,4 +1,4 @@
-atb_rk3588_mpc_linux-5.10.160:
+atb_rk3588_mpc_linux-5.10.160_build:
   stage: build
   tags: [buildroot]
   image: ubuntu:22.04
@@ -11,8 +11,29 @@ atb_rk3588_mpc_linux-5.10.160:
   script:
     - mkdir -p dl
     - curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl dl
+    - rm -rf output
     - make atb_rk3588_mpc_linux-5.10.160_defconfig
     - make
+  cache:
+    key: atb_rk3588_mpc_linux-5.10.160
+    paths:
+    - output
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual
+
+atb_rk3588_mpc_linux-5.10.160_artifact:
+  stage: artifact
+  tags: [buildroot]
+  needs: ["atb_rk3588_mpc_linux-5.10.160_build"]
+  script:
+    - echo
+  cache:
+    key: atb_rk3588_mpc_linux-5.10.160
+    paths:
+    - output
   artifacts:
     name: "atb_rk3588_mpc_linux-5.10.160"
     paths:
@@ -22,8 +43,4 @@ atb_rk3588_mpc_linux-5.10.160:
       - output/images/Image
       - output/images/atb-rk3588-mpc.dtb
       - output/images/rootfs.cpio.gz
-  rules:
-    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
-      when: always
-    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
-      when: manual
+  when: manual
