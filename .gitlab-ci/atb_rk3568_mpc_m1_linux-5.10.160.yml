@@ -23,10 +23,7 @@ atb_rk3568_mpc_m1_linux-5.10.160:
       - output/images/atb-rk3568-mpc-m1.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - changes:
-      - .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.160.yml
-      - configs/atb_rk3568_mpc_m1_linux-5.10.160_defconfig
-      - board/atb/atb_rk3568_mpc_m1/linux-5.10.160/*
-      - board/atb/atb_rk3568_mpc_m1/uboot/*
-      - board/atb/atb_rk3568_mpc_m1/overlay/*
-      - board/atb/common/rk3568-post-image.sh
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual

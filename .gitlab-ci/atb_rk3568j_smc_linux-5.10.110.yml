@@ -23,10 +23,7 @@ atb_rk3568j_smc_linux-5.10.110:
       - output/images/atb-rk3568j-smc.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - changes:
-      - .gitlab-ci/atb_rk3568j_smc_linux-5.10.110.yml
-      - configs/atb_rk3568j_smc_linux-5.10.110_defconfig
-      - board/atb/atb_rk3568j_smc/linux-5.10.110/*
-      - board/atb/atb_rk3568j_smc/uboot/*
-      - board/atb/atb_rk3568j_smc/overlay/*
-      - board/atb/common/rk3568-post-image.sh
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual

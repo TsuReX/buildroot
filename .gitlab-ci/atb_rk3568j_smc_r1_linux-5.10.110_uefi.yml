@@ -23,11 +23,7 @@ atb_rk3568j_smc_r1_linux-5.10.110_uefi:
       - output/images/atb-rk3568j-smc-r1.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - changes:
-      - .gitlab-ci/atb_rk3568j_smc_r1_linux-5.10.110_uefi.yml
-      - configs/atb_rk3568j_smc_r1_linux-5.10.110_uefi_defconfig
-      - board/atb/atb_rk3568j_smc_r1/linux-5.10.110/*
-      - board/atb/atb_rk3568j_smc_r1/uboot/*
-      - board/atb/atb_rk3568j_smc_r1/overlay/*
-      - board/atb/atb_rk3568j_smc_r1/genimage-uefi.cfg
-      - board/atb/atb_rk3568j_smc_r1/post-image-uefi.sh
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual
