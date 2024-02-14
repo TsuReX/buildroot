@@ -1,4 +1,4 @@
-atb_rk3568_mpc_m1_linux_6.1_build:
+atb_rk3568_mpc_m1_linux_6_1_build:
   stage: build
   tags: [buildroot]
   image: ubuntu:22.04
@@ -15,7 +15,7 @@ atb_rk3568_mpc_m1_linux_6.1_build:
     - make atb_rk3568_mpc_m1_linux-6.1_defconfig
     - make
   cache:
-    key: atb_rk3568_mpc_m1_linux_6.1
+    key: atb_rk3568_mpc_m1_linux_6_1
     paths:
     - output
   rules:
@@ -24,18 +24,19 @@ atb_rk3568_mpc_m1_linux_6.1_build:
     - if: $CI_PROJECT_NAME != "atb-buildroot-main"
       when: manual
 
-atb_rk3568_mpc_m1_linux_6.1_artifact:
+atb_rk3568_mpc_m1_linux_6_1_artifact:
   stage: artifact
   tags: [buildroot]
-  needs: ["atb_rk3568_mpc_m1_linux_6.1_build"]
+  needs: ["atb_rk3568_mpc_m1_linux_6_1_build"]
   script:
-    - echo
+    - ls output
+    - ls output/images
   cache:
-    key: atb_rk3568_mpc_m1_linux_6.1
+    key: atb_rk3568_mpc_m1_linux_6_1
     paths:
     - output
   artifacts:
-    name: "atb_rk3568_mpc_m1_linux_6.1"
+    name: "atb_rk3568_mpc_m1_linux_6_1"
     paths:
       - output/target
       - output/images/idblock.bin
@@ -43,4 +44,8 @@ atb_rk3568_mpc_m1_linux_6.1_artifact:
       - output/images/Image
       - output/images/atb-rk3568-mpc-m1.dtb
       - output/images/rootfs.cpio.gz
-  when: manual
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual
