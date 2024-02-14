@@ -17,7 +17,8 @@ atb_rk3568_mpc_m1_linux_5_10_160_build:
   cache:
     key: atb_rk3568_mpc_m1_linux_5_10_160
     paths:
-    - output
+    - output/images
+    - output/target
   rules:
     - if: $CI_PROJECT_NAME == "atb-buildroot-main"
       when: always
@@ -29,12 +30,13 @@ atb_rk3568_mpc_m1_linux_5_10_160_artifact:
   tags: [buildroot]
   needs: ["atb_rk3568_mpc_m1_linux_5_10_160_build"]
   script:
-    - ls output
     - ls output/images
+    - ls output/target
   cache:
     key: atb_rk3568_mpc_m1_linux_5_10_160
     paths:
-    - output
+    - output/images
+    - output/target
   artifacts:
     name: atb_rk3568_mpc_m1_linux_5_10_160
     paths:
