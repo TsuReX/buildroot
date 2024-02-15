@@ -7,10 +7,9 @@ atb_rk3568j_smc_r1_linux_5_10_110_uefi_build:
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
     - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
-    - apt install -y python2 python3 unzip wget bzip2 curlftpfs dosfstools
+    - apt install -y python2 python3 unzip wget bzip2 dosfstools
   script:
-    - mkdir -p dl
-    - curlftpfs -o user="atbftp_user:32Vj_hy%c@gR" ftp.atb-e.ru:2121/ATB_FTP/buildroot/dl dl
+    - ln -s /buildroot/dl dl
     - rm -rf output
     - make atb_rk3568j_smc_r1_linux-5.10.110_uefi_defconfig
     - make
