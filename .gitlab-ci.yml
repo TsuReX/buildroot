@@ -1,6 +1,7 @@
 stages:
   - build
-  - artifact
+  - upload_artifact
+  - clean
 
 include:
 

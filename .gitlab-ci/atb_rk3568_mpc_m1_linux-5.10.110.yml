@@ -10,33 +10,23 @@ atb_rk3568_mpc_m1_linux_5_10_110_build:
     - apt install -y python2 python3 unzip wget bzip2 dosfstools
   script:
     - ln -s /buildroot/dl dl
-    - rm -rf output
     - make atb_rk3568_mpc_m1_linux-5.10.110_defconfig
     - make source
     - make
-  cache:
-    key: atb_rk3568_mpc_m1_linux_5_10_110
-    paths:
-    - output/images
-    - output/target
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_110.tar.gz
+    - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_110.tar.gz output/target output/images
   rules:
     - if: $CI_PROJECT_NAME == "atb-buildroot-main"
       when: always
     - if: $CI_PROJECT_NAME != "atb-buildroot-main"
       when: manual
 
-atb_rk3568_mpc_m1_linux_5_10_110_artifact:
-  stage: artifact
+atb_rk3568_mpc_m1_linux_5_10_110_upload_artifact:
+  stage: upload_artifact
   tags: [buildroot]
   needs: ["atb_rk3568_mpc_m1_linux_5_10_110_build"]
   script:
-    - ls output/images
-    - ls output/target
-  cache:
-    key: atb_rk3568_mpc_m1_linux_5_10_110
-    paths:
-    - output/images
-    - output/target
+    - tar -xf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_110.tar.gz
   artifacts:
     name: atb_rk3568_mpc_m1_linux_5_10_110
     paths:
@@ -46,6 +36,18 @@ atb_rk3568_mpc_m1_linux_5_10_110_artifact:
       - output/images/Image
       - output/images/atb-rk3568-mpc-m1.dtb
       - output/images/rootfs.cpio.gz
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: manual
+
+atb_rk3568_mpc_m1_linux_5_10_110_clean:
+  stage: clean
+  tags: [buildroot]
+  needs: ["atb_rk3568_mpc_m1_linux_5_10_110_upload_artifact"]
+  script:
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_110.tar.gz
   rules:
     - if: $CI_PROJECT_NAME == "atb-buildroot-main"
       when: always
