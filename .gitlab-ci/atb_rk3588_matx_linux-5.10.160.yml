@@ -13,6 +13,7 @@ atb_rk3588_matx_linux_5_10_160_build:
     - make atb_rk3588_matx_linux-5.10.160_defconfig
     - make source
     - make
+    - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3588_matx_linux_5_10_160.tar.gz
     - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3588_matx_linux_5_10_160.tar.gz output/target output/images
   rules:

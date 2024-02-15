@@ -13,6 +13,7 @@ atb_rk3568_mpc_m1_linux_6_1_build:
     - make atb_rk3568_mpc_m1_linux-6.1_defconfig
     - make source
     - make
+    - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_6_1.tar.gz
     - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_6_1.tar.gz output/target output/images
   rules:

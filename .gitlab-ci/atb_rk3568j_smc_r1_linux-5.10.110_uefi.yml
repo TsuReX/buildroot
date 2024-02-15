@@ -13,6 +13,7 @@ atb_rk3568j_smc_r1_linux_5_10_110_uefi_build:
     - make atb_rk3568j_smc_r1_linux-5.10.110_uefi_defconfig
     - make source
     - make
+    - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz
     - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz output/target output/images
   rules:
