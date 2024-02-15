@@ -12,6 +12,7 @@ atb_rk3568j_smc_linux_5_10_110_uefi_build:
     - ln -s /buildroot/dl dl
     - rm -rf output
     - make atb_rk3568j_smc_linux-5.10.110_uefi_defconfig
+    - make source
     - make
   cache:
     key: atb_rk3568j_smc_linux_5_10_110_uefi

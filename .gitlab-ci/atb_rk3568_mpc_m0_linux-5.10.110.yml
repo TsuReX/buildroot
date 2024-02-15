@@ -12,6 +12,7 @@ atb_rk3568_mpc_m0_linux_5_10_110_build:
     - ln -s /buildroot/dl dl
     - rm -rf output
     - make atb_rk3568_mpc_m0_linux-5.10.110_defconfig
+    - make source
     - make
   cache:
     key: atb_rk3568_mpc_m0_linux_5_10_110
