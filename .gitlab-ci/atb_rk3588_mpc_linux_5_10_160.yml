@@ -16,9 +16,17 @@ atb_rk3588_mpc_linux_5_10_160_build:
     - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3588_mpc_linux_5_10_160.tar.gz
     - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3588_mpc_linux_5_10_160.tar.gz output/target output/images
-  # rules:
-  #   - if: $CI_PROJECT_NAME != "atb-buildroot-main"
-  #     changes:
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      changes:
+        - .gitlab-ci/atb_rk3588_mpc_linux_5_10_160.yml
+        - configs/atb_rk3588_mpc_linux-5.10.160_defconfig
+        - board/atb/atb_rk3588_mpc/linux-5.10.160/*
+        - board/atb/atb_rk3588_mpc/uboot/*
+        - board/atb/atb_rk3588_mpc/overlay/*
+        - board/atb/common/rk3588-post-image.sh
 
 atb_rk3588_mpc_linux_5_10_160_upload_artifact:
   stage: upload_artifact
@@ -35,7 +43,7 @@ atb_rk3588_mpc_linux_5_10_160_upload_artifact:
       - output/images/atb-rk3588-mpc.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+    - if: ($CI_PROJECT_NAME == "atb-buildroot-main") && ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
       when: on_success
 
 atb_rk3588_mpc_linux_5_10_160_clean:
