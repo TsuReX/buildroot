@@ -21,7 +21,7 @@ atb_rk3588_smc_linux_5_10_160_build:
       when: always
     - if: $CI_PROJECT_NAME != "atb-buildroot-main"
       changes:
-        - .gitlab-ci/atb_rk3588_smc_linux_5_10_160.yml
+      - .gitlab-ci/atb_rk3588_smc_linux_5_10_160.yml
       - configs/atb_rk3588_smc_linux-5.10.160_defconfig
       - board/atb/atb_rk3588_smc/linux-5.10.160/*
       - board/atb/atb_rk3588_smc/uboot/*
