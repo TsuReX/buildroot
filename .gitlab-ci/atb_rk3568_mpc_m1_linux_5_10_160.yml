@@ -43,7 +43,7 @@ atb_rk3568_mpc_m1_linux_5_10_160_upload_artifact:
       - output/images/atb-rk3568-mpc-m1.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - if: ($CI_PROJECT_NAME == "atb-buildroot-main") && ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "prerelease" || $CI_COMMIT_REF_NAME == "develop")
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main" && $CI_COMMIT_REF_PROTECTED == "true"
       when: on_success
 
 atb_rk3568_mpc_m1_linux_5_10_160_clean:

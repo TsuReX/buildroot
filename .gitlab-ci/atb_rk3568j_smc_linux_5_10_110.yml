@@ -43,7 +43,7 @@ atb_rk3568j_smc_linux_5_10_110_upload_artifact:
       - output/images/atb-rk3568j-smc.dtb
       - output/images/rootfs.cpio.gz
   rules:
-    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main" && $CI_COMMIT_REF_PROTECTED == "true"
       when: on_success
 
 atb_rk3568j_smc_linux_5_10_110_clean:
