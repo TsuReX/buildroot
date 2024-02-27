@@ -1,0 +1,54 @@
+//------------------------------------------------------------------------------
+// PCI 2.0 + SATA
+//------------------------------------------------------------------------------
+
+// This controller is phy for pcie2x1 and sata2 controllers
+&combphy2_psq {
+	status = "okay";
+};
+
+// This controller is connected to X13
+&pcie2x1 {
+	vpcie3v3-supply = <&vcc3v3_sys>;
+	compatible = "rockchip,rk3568-pcie";
+	reset-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&sata2 {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// PCI 3.0
+//------------------------------------------------------------------------------
+
+&pcie30phy {
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// This controller has one lane 0.
+// The lane 0 is connected to nowhere
+// If bifurcation mode is activated the lane 0 is controlled by pcie3x1.
+&pcie3x1 {
+	vpcie3v3-supply = <&vcc3v3_sys>;
+	compatible = "rockchip,rk3568-pcie";
+	rockchip,bifurcation;
+	rockchip,init-delay-ms = <100>;
+	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+//------------------------------------------------------------------------------
+// This controller has two lanes which can be organized in PCIE3 x2 mode or
+// in case of enabled bifurcation in PCIE3 x1 mode.
+// If bifurcation mode is activated the lane 1 is controlled by pcie3x1,
+// lane 0 is controlled by pcie3x2
+&pcie3x2 {
+	vpcie3v3-supply = <&vcc3v3_sys>;
+	compatible = "rockchip,rk3568-pcie";
+	rockchip,bifurcation;
+	reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
