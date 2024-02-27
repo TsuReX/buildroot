@@ -16,9 +16,10 @@
 #include <dt-bindings/power/rk3568-power.h>
 
 
-#include "atb-rk3568-mpc-m-ethernet.dtsi"
-#include "atb-rk3568-mpc-m-usb.dtsi"
-#include "atb-rk3568-mpc-m-video.dtsi"
+#include "atb-rk3568-mpc-m2-ethernet.dtsi"
+#include "atb-rk3568-mpc-m2-usb.dtsi"
+#include "atb-rk3568-mpc-m2-video.dtsi"
+#include "atb-rk3568-mpc-m2-pcie.dtsi"
 
 / {
 	model = "ATB-RK3568 Board";
@@ -153,7 +154,7 @@
 				regulator-ramp-delay = <6001>;
 
 				regulator-state-mem {
-					regulator-off-in-suspend;
+					regulator-on-in-suspend;
 				};
 			};
 
@@ -168,7 +169,7 @@
 				regulator-ramp-delay = <6001>;
 
 				regulator-state-mem {
-					regulator-off-in-suspend;
+					regulator-on-in-suspend;
 				};
 			};
 
@@ -176,7 +177,10 @@
 				regulator-name = "vcc_ddr";
 				regulator-always-on;
 				regulator-boot-on;
+				regulator-init-microvolt = <1100000>;
 				regulator-initial-mode = <0x2>;
+				regulator-min-microvolt = <1100000>;
+				regulator-max-microvolt = <1100000>;
 
 				regulator-state-mem {
 					regulator-on-in-suspend;
@@ -206,7 +210,7 @@
 				regulator-max-microvolt = <1800000>;
 
 				regulator-state-mem {
-					regulator-off-in-suspend;
+					regulator-on-in-suspend;
 				};
 			};
 
@@ -327,7 +331,7 @@
 				regulator-max-microvolt = <3300000>;
 
 				regulator-state-mem {
-					regulator-off-in-suspend;
+					regulator-on-in-suspend;
 				};
 			};
 
@@ -339,7 +343,7 @@
 				regulator-max-microvolt = <3300000>;
 
 				regulator-state-mem {
-					regulator-off-in-suspend;
+					regulator-on-in-suspend;
 				};
 			};
 		};
