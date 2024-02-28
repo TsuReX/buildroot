@@ -8,6 +8,7 @@
 #include "atb-rk3568-mpc-m2-pcie.dtsi"
 #include "atb-rk3568-mpc-m2-usb.dtsi"
 #include "atb-rk3568-mpc-m2-video.dtsi"
+#include "atb-rk3568-mpc-m2-wireless.dtsi"
 
 / {
 	model = "ATB-RK3568 Board";
@@ -73,6 +74,32 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&dc_12v>;
 	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-red {
+			label = "led-red";
+			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+		};
+
+		led-green {
+			label = "led-green";
+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+		};
+
+		led-blue {
+			label = "led-blue-heartbeat";
+			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
+	};
 };
 
 &pinctrl {
@@ -82,10 +109,19 @@
 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-	rtc {
-		rtc_int_pin: rtc-int-pin {
-			// RTC_INT#
-			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
+
+	leds {
+		led_red_pin: led_red_pin {
+			// active low
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		led_green_pin: led_green_pin {
+			// active low
+			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		led_blue_pin: led_blue_pin {
+			// active low
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -406,14 +442,8 @@
 	hym8563: rtc@51 {
 		compatible = "haoyu,hym8563";
 		reg = <0x51>;
-		interrupt-parent = <&gpio0>;
-		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
 		#clock-cells = <0>;
 		clock-output-names = "rtc_32khz";
-		pinctrl-names = "default";
-		// RTC_INT#
-		pinctrl-0 = <&rtc_int_pin>;
-		wakeup-source;
 
 		rtc_clock: rtc_clock {
 			compatible = "fixed-clock";
