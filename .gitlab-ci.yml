@@ -27,8 +27,8 @@ include:
 #   Mini PC board based on RK3588 SoC
   - local: .gitlab-ci/atb_rk3588_mpc_linux_5_10_160.yml
 
-#   Mini ATX board based on RK3588 SoC
-  - local: .gitlab-ci/atb_rk3588_matx_linux_5_10_160.yml
+#   Mini ITX board based on RK3588 SoC
+  - local: .gitlab-ci/atb_rk3588_mitx_linux_5_10_160.yml
 
 #   SMARCv2_1 module of revision 0 based on RK3588 SoC
   - local: .gitlab-ci/atb_rk3588_smc_linux_5_10_160.yml
