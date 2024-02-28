@@ -140,8 +140,8 @@
 		regulator-name = "eMMC_MUX_ENA";
 		regulator-always-on;
 		regulator-boot-on;
-		enable-active-low;    //FSPI
-		//enable-active-high; //eMMC
+		//enable-active-low;    //FSPI
+		enable-active-high; //eMMC
 		gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc3v3>;
 	};
@@ -1031,7 +1031,8 @@
 //=============================================================================
 //  //SPI FLASH //Muxed with eMMC   //Control by D13 (TS3A27518ERTWR)
 //=============================================================================
-//eMMc_FSPI_Mux
+//eMMC_MUX_ENA
+/*
 &sfc {
 	status = "okay";
 	//max-freq = <50000000>;
@@ -1053,28 +1054,15 @@
 		//spi-rx-bus-width = <4>;
 		spi-rx-bus-width = <1>;
 		status = "okay";
-/*
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			all@0 {
-				label = "all";
-				reg = <0x0 0x2000000>;
-			};
-		};
-*/		
 	};
 };
-
-
+*/
 //=============================================================================
 //  SDIO SD eMMC
 //=============================================================================
 //D11   //eMMC
-/*
 //eMMC_MUX_ENA
+
 &sdhci {
 	bus-width = <8>;
 	no-sdio;
@@ -1085,7 +1073,7 @@
 	mmc-hs400-enhanced-strobe;
 	status = "okay";
 };
-*/
+
 //SD Card
 &sdmmc {
 	max-frequency = <200000000>;
@@ -1311,8 +1299,8 @@
 //X20   M.2 Key B SATA
 &sata1 {
     //	If this controller is enabled, pcie2x1l0 must be disabled
-	//status = "disabled";
-	status = "okay";
+	status = "disabled";
+	//status = "okay";
 };
 
 //PCIE
@@ -1321,8 +1309,8 @@
 &pcie2x1l0 {
 //M2kB_PCIE_RSTn
 	vpcie3v3-supply = <&vcc_3v3>;			
-	status = "disabled";
-	//status = "okay";
+	//status = "disabled";
+	status = "okay";
 };
 
 //-----------------------------------------------------------------------------
@@ -1348,9 +1336,8 @@
 //OUT Lane D on PCIE30_PORT1_LANE1  
 //x21 MiniPCIe
 &pcie2x1l1 {
-    //CHECK_IT  //Set this
     //miniPCIe_RST_
-    //reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
+    //reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
     //pinctrl-names = "default";
 	//pinctrl-0 = <&minipcie_rst_pin>;
 	vpcie3v3-supply = <&vcc_3v3>;	
@@ -1806,7 +1793,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&hdmim0_tx0_hpd>;
 	#sound-dai-cells = <1>;
-    //force-hpd;
+    force-hpd;
     
 	ports {
 		port@1 {
