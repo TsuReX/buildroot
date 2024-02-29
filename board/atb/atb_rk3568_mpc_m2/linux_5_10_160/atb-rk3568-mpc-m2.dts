@@ -93,7 +93,7 @@
 		};
 
 		led-blue {
-			label = "led-blue-heartbeat";
+			label = "led-blue";
 			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 			default-state = "on";
