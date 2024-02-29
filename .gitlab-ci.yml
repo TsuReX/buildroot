@@ -1,7 +1,34 @@
 stages:
   - build
+  - upload_artifact
+  - clean
 
 include:
-  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-6.1.yml
-  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.110.yml
-  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux-5.10.160.yml
+
+#   Mini PC board based on RK3568J SoC
+  - local: .gitlab-ci/atb_rk3568j_mpc_linux_5_10_110.yml
+
+#   Mini PC board with extensions based on RK3568J SoC
+  - local: .gitlab-ci/atb_rk3568_mpc_m0_linux_5_10_110.yml
+
+#   Mini PC board with extensions based on RK3568J SoC
+  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_5_10_110.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_5_10_160.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_6_1.yml
+
+#   SMARCv2_1 module of revision 0 based on RK3568J SoC
+  - local: .gitlab-ci/atb_rk3568j_smc_linux_5_10_110.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_linux_5_10_110_uefi.yml
+
+#   SMARCv2_1 module of revision 1 based on RK3568J SoC
+  - local: .gitlab-ci/atb_rk3568j_smc_r1_linux_5_10_110.yml
+  - local: .gitlab-ci/atb_rk3568j_smc_r1_linux_5_10_110_uefi.yml
+
+#   Mini PC board based on RK3588 SoC
+  - local: .gitlab-ci/atb_rk3588_mpc_linux_5_10_160.yml
+
+#   Mini ITX board based on RK3588 SoC
+  - local: .gitlab-ci/atb_rk3588_mitx_linux_5_10_160.yml
+
+#   SMARCv2_1 module of revision 0 based on RK3588 SoC
+  - local: .gitlab-ci/atb_rk3588_smc_linux_5_10_160.yml
