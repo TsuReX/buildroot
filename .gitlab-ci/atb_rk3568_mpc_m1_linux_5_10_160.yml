@@ -1,0 +1,54 @@
+atb_rk3568_mpc_m1_linux_5_10_160_build:
+  stage: build
+  tags: [buildroot]
+  image: ubuntu:22.04
+  timeout: 24h
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt update
+    - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
+    - apt install -y python2 python3 unzip wget bzip2 dosfstools
+  script:
+    - ln -s /buildroot/dl dl
+    - make atb_rk3568_mpc_m1_linux-5.10.160_defconfig
+    - make source
+    - make
+    - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_160.tar.gz
+    - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_160.tar.gz output/target output/images
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      changes:
+        - .gitlab-ci/atb_rk3568_mpc_m1_linux_5_10_160.yml
+        - configs/atb_rk3568_mpc_m1_linux-5.10.160_defconfig
+        - board/atb/atb_rk3568_mpc_m1/linux-5.10.160/*
+        - board/atb/atb_rk3568_mpc_m1/uboot/*
+        - board/atb/atb_rk3568_mpc_m1/overlay/*
+        - board/atb/common/rk3568-post-image.sh
+
+atb_rk3568_mpc_m1_linux_5_10_160_upload_artifact:
+  stage: upload_artifact
+  tags: [buildroot]
+  script:
+    - tar -xf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_160.tar.gz
+  artifacts:
+    name: atb_rk3568_mpc_m1_linux_5_10_160
+    paths:
+      - output/target
+      - output/images/idblock.bin
+      - output/images/uboot.img
+      - output/images/Image
+      - output/images/atb-rk3568-mpc-m1.dtb
+      - output/images/rootfs.cpio.gz
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main" && $CI_COMMIT_REF_PROTECTED == "true"
+      when: on_success
+
+atb_rk3568_mpc_m1_linux_5_10_160_clean:
+  stage: clean
+  tags: [buildroot]
+  script:
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_160.tar.gz
+  when: always

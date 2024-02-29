@@ -1,0 +1,57 @@
+atb_rk3568j_smc_r1_linux_5_10_110_uefi_build:
+  stage: build
+  tags: [buildroot]
+  image: ubuntu:22.04
+  timeout: 24h
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt update
+    - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
+    - apt install -y python2 python3 unzip wget bzip2 dosfstools
+  script:
+    - ln -s /buildroot/dl dl
+    - make atb_rk3568j_smc_r1_linux-5.10.110_uefi_defconfig
+    - make source
+    - make
+    - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz
+    - tar -czf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz output/target output/images
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      changes:
+        - .gitlab-ci/atb_rk3568j_smc_r1_linux_5_10_110_uefi.yml
+        - configs/atb_rk3568j_smc_r1_linux-5.10.110_uefi_defconfig
+        - board/atb/atb_rk3568j_smc_r1/linux-5.10.110/*
+        - board/atb/atb_rk3568j_smc_r1/overlay/*
+        - board/atb/atb_rk3568j_smc_r1/grub.cfg
+        - board/atb/atb_rk3568j_smc_r1/uefi.its
+        - board/atb/atb_rk3568j_smc_r1/genimage-uefi.cfg
+        - board/atb/atb_rk3568j_smc_r1/post-image-uefi.sh
+
+atb_rk3568j_smc_r1_linux_5_10_110_uefi_upload_artifact:
+  stage: upload_artifact
+  tags: [buildroot]
+  script:
+    - tar -xf /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz
+  artifacts:
+    name: atb_rk3568j_smc_r1_linux_5_10_110_uefi
+    paths:
+      - output/target
+      - output/images/idblock.bin
+      - output/images/uefi.img
+      - output/images/efi-part
+      - output/images/Image
+      - output/images/atb-rk3568j-smc-r1.dtb
+      - output/images/rootfs.cpio.gz
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main" && $CI_COMMIT_REF_PROTECTED == "true"
+      when: on_success
+
+atb_rk3568j_smc_r1_linux_5_10_110_uefi_clean:
+  stage: clean
+  tags: [buildroot]
+  script:
+    - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz
+  when: always
