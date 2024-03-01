@@ -108,7 +108,7 @@
 	cpu-supply = <&vdd_cpu>;
 };
 
-/* EMMC0 - D11 */
+// EMMC0 - D11
 &sdhci {
 	bus-width = <8>;
 	max-frequency = <200000000>;
@@ -118,7 +118,7 @@
 	status = "okay";
 };
 
-/* SDMMC0 - X6 */
+// SDMMC0 - X6
 &sdmmc0 {
 	max-frequency = <150000000>;
 	supports-sd;
@@ -134,12 +134,27 @@
 	status = "okay";
 };
 
+// QSPI
+&sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
+	status = "okay";
+
+	// Flash - D26
+	flash@0 {
+		compatible = "winbond,w25q128", "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <100000000>;
+	};
+};
+
 
 &i2c3 {
 	pinctrl-0 = <&i2c3m0_xfer>;
 	pinctrl-names = "default";
 	status = "okay";
 
+	// EEPROM - D28
 	eeprom@50 {
 		compatible = "atmel,24c08";
 		reg = <0x50>;
