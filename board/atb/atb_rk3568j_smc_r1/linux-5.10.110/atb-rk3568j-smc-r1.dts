@@ -123,7 +123,7 @@
 	vccio3-supply = <&vccio_sd>;
 	vccio4-supply = <&vcc_1v8>;
 	vccio5-supply = <&vcc_1v8>;
-	vccio6-supply = <&vcc_1v8>;
+	vccio6-supply = <&vcc3v3_sd>;
 	vccio7-supply = <&vcc_1v8>;
 	status = "okay";
 };
@@ -438,7 +438,7 @@
 };
 
 &i2c4 {
-	pinctrl-0 = <&i2c4m0_xfer>;
+	pinctrl-0 = <&i2c4m1_xfer>;
 	pinctrl-names = "default";
 	status = "okay";
 };
