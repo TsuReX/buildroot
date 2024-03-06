@@ -15,6 +15,7 @@ include:
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_5_10_110.yml
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_5_10_160.yml
   - local: .gitlab-ci/atb_rk3568_mpc_m1_linux_6_1.yml
+  - local: .gitlab-ci/atb_rk3568_mpc_m2_linux_5_10_160.yml
 
 #   SMARCv2_1 module of revision 0 based on RK3568J SoC
   - local: .gitlab-ci/atb_rk3568j_smc_linux_5_10_110.yml
