@@ -43,7 +43,7 @@
 	pmuio1-supply = <&vcc3v3_pmu>;	// 3.3V_VCC_PMU
 	pmuio2-supply = <&vcc3v3_pmu>;	// 3.3V_VCC_PMU
 	vccio1-supply = <&vccio_3v3>;	// 3.3V_VCCIO
-	vccio2-supply = <&vcc_3v3>;		// 1.8V_VCC
+	vccio2-supply = <&vcc_1v8>;		// 1.8V_VCC
 	vccio3-supply = <&vccio_sd>;	// 3.3V_VCCIO_SD
 	vccio4-supply = <&vcc_1v8>;		// 1.8V_VCC
 	vccio5-supply = <&vcc_3v3>;		// 3.3V_VCC
