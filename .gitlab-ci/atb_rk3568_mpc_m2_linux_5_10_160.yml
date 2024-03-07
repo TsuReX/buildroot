@@ -10,7 +10,7 @@ atb_rk3568_mpc_m2_linux_5_10_160_build:
     - apt install -y python2 python3 unzip wget bzip2 dosfstools
   script:
     - ln -s /buildroot/dl dl
-    - make atb_rk3568_mpc_m1_linux-5.10.160_defconfig
+    - make atb_rk3568_mpc_m2_linux-5.10.160_defconfig
     - make source
     - make
     - mkdir -p /buildroot/artifacts/$CI_PIPELINE_ID
@@ -22,11 +22,9 @@ atb_rk3568_mpc_m2_linux_5_10_160_build:
     - if: $CI_PROJECT_NAME != "atb-buildroot-main"
       changes:
         - .gitlab-ci/atb_rk3568_mpc_m2_linux_5_10_160.yml
-        - configs/atb_rk3568_mpc_m1_linux-5.10.160_defconfig
-        - board/atb/atb_rk3568_mpc_m1/linux-5.10.160/*
-        - board/atb/atb_rk3568_mpc_m1/uboot/*
-        - board/atb/atb_rk3568_mpc_m1/overlay/*
-        - board/atb/common/rk3568-post-image.sh
+        - configs/atb_rk3568_mpc_m2_linux-5.10.160_defconfig
+        - board/atb/atb_rk3568_mpc_2/linux_5_10_160/*
+        - board/atb/atb_rk3568_mpc_m2/uboot/*
 
 atb_rk3568_mpc_m2_linux_5_10_160_upload_artifact:
   stage: upload_artifact
