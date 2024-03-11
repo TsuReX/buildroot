@@ -6,8 +6,10 @@ atb_rk3568_mpc_m2_linux_5_10_160_build:
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
-    - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
-    - apt install -y python2 python3 unzip wget bzip2 dosfstools
+    - apt install -y autoconf bc bison bzip2 cmake cpio dosfstools file flex 
+                     g++ gcc genext2fs git libconfuse-dev libncurses-dev 
+                     libssl-dev make mtools pkg-config python2 python3 rsync 
+                     swig unzip wget
   script:
     - ln -s /buildroot/dl dl
     - make atb_rk3568_mpc_m2_linux-5.10.160_defconfig
