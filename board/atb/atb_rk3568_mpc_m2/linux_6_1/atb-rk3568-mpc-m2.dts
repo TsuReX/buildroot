@@ -19,6 +19,7 @@
 #include "atb-rk3568-mpc-m2-usb.dtsi"
 #include "atb-rk3568-mpc-m2-video.dtsi"
 #include "atb-rk3568-mpc-m2-pcie.dtsi"
+#include "atb-rk3568-mpc-m2-wireless.dtsi"
 #include "atb-rk3568-mpc-m2-power.dtsi"
 
 / {
