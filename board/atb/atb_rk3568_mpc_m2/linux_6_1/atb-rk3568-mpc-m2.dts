@@ -6,14 +6,9 @@
 
 /dts-v1/;
 #include "rk3568.dtsi"
-#include <dt-bindings/clock/rk3568-cru.h>
 #include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/interrupt-controller/arm-gic.h>
-#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/rockchip.h>
-#include <dt-bindings/soc/rockchip,boot-mode.h>
-#include <dt-bindings/phy/phy.h>
-#include <dt-bindings/power/rk3568-power.h>
 
 #include "atb-rk3568-mpc-m2-ethernet.dtsi"
 #include "atb-rk3568-mpc-m2-usb.dtsi"
@@ -36,6 +31,32 @@
 	chosen: chosen {
 		bootargs = "console=tty console=ttyS2,1500000n8";
 		linux,stdout-path = "serial2:1500000n8";
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-red {
+			label = "led-red";
+			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+		};
+
+		led-green {
+			label = "led-green";
+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+		};
+
+		led-blue {
+			label = "led-blue";
+			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
 	};
 };
 
