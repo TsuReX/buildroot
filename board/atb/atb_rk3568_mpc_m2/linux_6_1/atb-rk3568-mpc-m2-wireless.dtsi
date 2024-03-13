@@ -3,7 +3,7 @@
 / {
 	wifi_pwrseq: wifi-pwrseq {
 		compatible = "mmc-pwrseq-simple";
-		clocks = <&rtc_clock>;
+		clocks = <&hym8563>;
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wlan_en_pin>;
@@ -24,7 +24,7 @@
 	vqmmc-supply = <&vcc_1v8>;
 
 	bus-width = <4>;
-	max-frequency = <50000000>;
+	max-frequency = <150000000>;
 	drv-type = <2>;
 	cap-sd-highspeed;
 	sd-uhs-sdr50;

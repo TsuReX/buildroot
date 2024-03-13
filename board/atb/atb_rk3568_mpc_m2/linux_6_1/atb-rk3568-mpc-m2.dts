@@ -126,12 +126,6 @@
 		reg = <0x51>;
 		#clock-cells = <0>;
 		clock-output-names = "rtc_32khz";
-
-		rtc_clock: rtc_clock {
-			compatible = "fixed-clock";
-			#clock-cells = <0>;
-			clock-frequency = <32768>;
-		};
 	};
 };
 
