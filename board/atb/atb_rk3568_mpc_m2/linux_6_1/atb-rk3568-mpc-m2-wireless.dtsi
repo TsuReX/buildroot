@@ -7,6 +7,8 @@
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wlan_en_pin>;
+
+		/* Toggle WIFI_ENABLE to reset the chip. */
 		reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
 	};
 };
@@ -17,23 +19,25 @@
 
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
-	
+
 	vmmc-supply = <&vcc3v3_sd>;
-	vqmmc-supply = <&vccio_sd>;
+	vqmmc-supply = <&vcc_1v8>;
 
 	bus-width = <4>;
-	max-frequency = <200000000>;
+	max-frequency = <50000000>;
+	drv-type = <2>;
 	cap-sd-highspeed;
-	cap-sdio-irq;
-	keep-power-in-suspend;
-	non-removable;
-
 	sd-uhs-sdr50;
 	sd-uhs-sdr104;
+	keep-power-in-suspend;
 	enable-sdio-wakeup;
+	cap-sdio-irq;
+	non-removable;
 	no-mmc;
 	no-sd;
 
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
 	qca_wifi: qca-wifi@1 {
@@ -59,7 +63,6 @@
 };
 
 &pinctrl {
-
 	wireless {
 		wlan_en_pin: wlan-en-pin {
 			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
