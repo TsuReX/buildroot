@@ -25,7 +25,7 @@ atb_rk3568_mpc_m2_linux_6_1_build:
       changes:
         - .gitlab-ci/atb_rk3568_mpc_m2_linux_6_1.yml
         - configs/atb_rk3568_mpc_m2_linux-6.1_defconfig
-        - board/atb/atb_rk3568_mpc_2/linux_6_1/*
+        - board/atb/atb_rk3568_mpc_m2/linux_6_1/*
         - board/atb/atb_rk3568_mpc_m2/uboot/*
 
 atb_rk3568_mpc_m2_linux_6_1_upload_artifact:
