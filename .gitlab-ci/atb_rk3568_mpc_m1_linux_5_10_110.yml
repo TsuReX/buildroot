@@ -51,4 +51,8 @@ atb_rk3568_mpc_m1_linux_5_10_110_clean:
   tags: [buildroot]
   script:
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568_mpc_m1_linux_5_10_110.tar.gz
-  when: always
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: always
