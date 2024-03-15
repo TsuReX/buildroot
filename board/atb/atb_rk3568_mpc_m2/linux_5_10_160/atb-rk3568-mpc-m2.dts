@@ -1,0 +1,192 @@
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include "rk3568.dtsi"
+
+#include "atb-rk3568-mpc-m2-ethernet.dtsi"
+#include "atb-rk3568-mpc-m2-pcie.dtsi"
+#include "atb-rk3568-mpc-m2-usb.dtsi"
+#include "atb-rk3568-mpc-m2-video.dtsi"
+#include "atb-rk3568-mpc-m2-wireless.dtsi"
+#include "atb-rk3568-mpc-m2-power.dtsi"
+
+/ {
+	model = "ATB-RK3568 Board";
+	compatible = "rockchip,rk3568";
+
+	aliases {
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc0;
+	};
+
+	chosen: chosen {
+		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0";
+	};
+
+	fiq-debugger {
+		compatible = "rockchip,fiq-debugger";
+		rockchip,serial-id = <2>;
+		rockchip,wake-irq = <0>;
+		/* If enable uart uses irq instead of fiq */
+		rockchip,irq-mode-enable = <1>;
+		rockchip,baudrate = <1500000>;  /* Only 115200 and 1500000 */
+		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart2m0_xfer>;
+		status = "okay";
+	};
+
+	debug: debug@fd904000 {
+		compatible = "rockchip,debug";
+		reg = <0x0 0xfd904000 0x0 0x1000>,
+			<0x0 0xfd905000 0x0 0x1000>,
+			<0x0 0xfd906000 0x0 0x1000>,
+			<0x0 0xfd907000 0x0 0x1000>;
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-red {
+			label = "led-red";
+			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+		};
+
+		led-green {
+			label = "led-green";
+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+		};
+
+		led-blue {
+			label = "led-blue";
+			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
+	};
+};
+
+&pinctrl {
+
+	leds {
+		led_red_pin: led_red_pin {
+			// active low
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		led_green_pin: led_green_pin {
+			// active low
+			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		led_blue_pin: led_blue_pin {
+			// active low
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&cpu0 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu1 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu2 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+&cpu3 {
+	cpu-supply = <&vdd_cpu>;
+};
+
+// EMMC0 - D11
+&sdhci {
+	bus-width = <8>;
+	max-frequency = <200000000>;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
+	status = "okay";
+};
+
+// SDMMC0 - X6
+&sdmmc0 {
+	max-frequency = <150000000>;
+	supports-sd;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc3v3_sd>;
+	vqmmc-supply = <&vccio_sd>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+	status = "okay";
+};
+
+// QSPI
+&sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
+	status = "okay";
+
+	// Flash - D26
+	flash@0 {
+		compatible = "winbond,w25q128", "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <100000000>;
+	};
+};
+
+
+&i2c3 {
+	pinctrl-0 = <&i2c3m0_xfer>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	// EEPROM - D28
+	eeprom@50 {
+		compatible = "atmel,24c08";
+		reg = <0x50>;
+		pagesize = <16>;
+	};
+};
+
+&i2c5 {
+	pinctrl-0 = <&i2c5m0_xfer>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	// D18
+	hym8563: rtc@51 {
+		compatible = "haoyu,hym8563";
+		reg = <0x51>;
+		#clock-cells = <0>;
+		clock-output-names = "rtc_32khz";
+
+		rtc_clock: rtc_clock {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <32768>;
+		};
+	};
+};
+
+&saradc {
+	vref-supply = <&vcca_1v8>;
+	status = "okay";
+};
+
+&tsadc {
+	status = "okay";
+};

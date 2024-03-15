@@ -1,0 +1,99 @@
+/{
+	usb_host_power: usb-host-switch {
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_host_power_en>;
+		regulator-name = "usb_host_power";
+		vin-supply = <&vcc5v0_sys>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	usb_otg_power: usb-otg-switch {
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_otg_power_en>;
+		regulator-name = "usb_otg_power";
+		vin-supply = <&vcc5v0_sys>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+&pinctrl {
+	usb {
+		usb_host_power_en: usb_host_power_en {
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		usb_otg_power_en: usb_otg_power_en {
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&combphy0 {
+	// used for USB3
+	status = "okay";
+};
+
+&combphy1 {
+	// used for USB3
+	status = "okay";
+};
+
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb_host0_xhci {
+	extcon = <&usb2phy0>;
+	status = "okay";
+};
+
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&usb_host1_xhci {
+	status = "okay";
+};
+
+&usb2phy0 {
+	status = "okay";
+};
+
+&usb2phy0_host {
+	phy-supply = <&usb_host_power>;
+	status = "okay";
+};
+
+&usb2phy0_otg {
+	phy-supply = <&usb_otg_power>;
+	status = "okay";
+};
+
+&usb2phy1 {
+	status = "okay";
+};
+
+&usb2phy1_host {
+	phy-supply = <&usb_host_power>;
+	status = "okay";
+};
+
+&usb2phy1_otg {
+	phy-supply = <&usb_otg_power>;
+	status = "okay";
+};

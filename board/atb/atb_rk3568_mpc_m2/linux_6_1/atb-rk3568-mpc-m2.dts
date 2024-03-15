@@ -1,0 +1,141 @@
+/*
+ * SPDX-License-Identifier:     GPL-2.0+
+ *
+ * (C) Copyright 2020 Rockchip Electronics Co., Ltd
+ */
+
+/dts-v1/;
+#include "rk3568.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+
+#include "atb-rk3568-mpc-m2-ethernet.dtsi"
+#include "atb-rk3568-mpc-m2-usb.dtsi"
+#include "atb-rk3568-mpc-m2-video.dtsi"
+#include "atb-rk3568-mpc-m2-pcie.dtsi"
+#include "atb-rk3568-mpc-m2-wireless.dtsi"
+#include "atb-rk3568-mpc-m2-power.dtsi"
+
+/ {
+	model = "ATB-RK3568 Board";
+	compatible = "rockchip,rk3568";
+
+	aliases {
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc0;
+		mmc2 = &sdmmc1;
+		mmc3 = &sdmmc2;
+	};
+
+	chosen: chosen {
+		bootargs = "console=tty console=ttyS2,1500000n8";
+		linux,stdout-path = "serial2:1500000n8";
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-red {
+			label = "led-red";
+			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+		};
+
+		led-green {
+			label = "led-green";
+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+		};
+
+		led-blue {
+			label = "led-blue";
+			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
+	};
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&sdhci {
+	bus-width = <8>;
+	max-frequency = <200000000>;
+	non-removable;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
+	status = "okay";
+};
+
+&sdmmc0 {
+	bus-width = <4>;
+	cap-sd-highspeed;
+	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+	disable-wp;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+	sd-uhs-sdr50;
+	vmmc-supply = <&vcc3v3_sd>;
+	vqmmc-supply = <&vccio_sd>;
+	status = "okay";
+};
+
+// QSPI
+&sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
+	status = "okay";
+
+	// Flash - D26
+	flash@0 {
+		compatible = "winbond,w25q128fw", "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <100000000>;
+	};
+};
+
+&i2c3 {
+	pinctrl-0 = <&i2c3m0_xfer>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	// EEPROM - D28
+	eeprom@50 {
+		compatible = "atmel,24c08";
+		reg = <0x50>;
+		pagesize = <16>;
+	};
+};
+
+&i2c5 {
+	pinctrl-0 = <&i2c5m0_xfer>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	// D18
+	hym8563: rtc@51 {
+		compatible = "haoyu,hym8563";
+		reg = <0x51>;
+		#clock-cells = <0>;
+		clock-output-names = "rtc_32khz";
+	};
+};
+
+&saradc {
+	vref-supply = <&vcca_1v8>;
+	status = "okay";
+};
+
+&tsadc {
+	rockchip,hw-tshut-mode = <1>;
+	rockchip,hw-tshut-polarity = <0>;
+	status = "okay";
+};

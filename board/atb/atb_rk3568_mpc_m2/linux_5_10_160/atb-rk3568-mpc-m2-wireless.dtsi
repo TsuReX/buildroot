@@ -1,0 +1,97 @@
+#include <dt-bindings/input/input.h>
+
+/ {
+	wifi_pwrseq: wifi-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		clocks = <&rtc_clock>;
+		clock-names = "ext_clock";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_pin>;
+
+		/* Toggle WIFI_ENABLE to reset the chip. */
+		reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
+	};
+
+	wifi_wakeup: wifi-wakeup {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_wakeup_pin>;
+
+		wowlan {
+			label = "Wake on WiFi";
+			gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_WAKEUP>;
+			wakeup-source;
+		};
+	};
+};
+
+&sdmmc2 {
+	// WiFi & BT combo module Fn-Link FG6233ASRB-01 / Fn-Link 8223A-SR
+	mmc-pwrseq = <&wifi_pwrseq>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
+	vmmc-supply = <&vcc3v3_sd>;
+	vqmmc-supply = <&vccio_sd>;
+
+	bus-width = <4>;
+	max-frequency = <200000000>;
+	drv-type = <2>;
+	cap-sd-highspeed;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	keep-power-in-suspend;
+	enable-sdio-wakeup;
+	cap-sdio-irq;
+	non-removable;
+	no-mmc;
+	no-sd;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	rockchip,default-sample-phase = <90>;
+	status = "okay";
+
+	qca_wifi: qca-wifi@1 {
+		reg = <1>;
+		compatible = "qcom,ath10k";
+	};
+};
+
+&uart8 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn>;
+	uart-has-rtscts;
+	status = "okay";
+
+	bluetooth {
+		compatible = "qcom,qca9377-bt";
+
+		// BT_EN
+		enable-gpios = <&gpio3 RK_PA0 GPIO_ACTIVE_HIGH>;
+		max-speed = <2000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_en_pin>;
+	};
+};
+
+&pinctrl {
+
+	wireless {
+
+		// wifiL_EN
+		wlan_en_pin: wlan-en-pin {
+			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// wifi wakeup
+		wlan_wakeup_pin: wlan-wakeup-pin {
+			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// BT_EN
+		bt_en_pin: bt-en-pin {
+			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
