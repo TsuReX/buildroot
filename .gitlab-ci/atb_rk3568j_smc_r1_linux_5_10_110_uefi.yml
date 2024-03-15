@@ -54,4 +54,8 @@ atb_rk3568j_smc_r1_linux_5_10_110_uefi_clean:
   tags: [buildroot]
   script:
     - rm -f /buildroot/artifacts/$CI_PIPELINE_ID/atb_rk3568j_smc_r1_linux_5_10_110_uefi.tar.gz
-  when: always
+  rules:
+    - if: $CI_PROJECT_NAME == "atb-buildroot-main"
+      when: always
+    - if: $CI_PROJECT_NAME != "atb-buildroot-main"
+      when: always
