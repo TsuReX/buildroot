@@ -60,7 +60,7 @@ check_file ${SPL_BIN_PATH}
 ${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3588" -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${BINARIES_DIR}/idblock.bin
 
 ################################################################################
-# 2. Create uboot.img
+# 2. Create u-boot.itb
 UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 
 check_file ${RKBIN_DIR}/bin/rk35/rk3588_bl31_v1.40.elf
@@ -74,4 +74,4 @@ cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
 
 arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
 
-tools/mkimage -f u-boot.its -E ${BINARIES_DIR}/uboot.img
+tools/mkimage -f u-boot.its -E ${BINARIES_DIR}/u-boot.itb
