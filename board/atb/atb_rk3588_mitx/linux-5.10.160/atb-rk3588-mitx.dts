@@ -22,20 +22,20 @@
 	model = "ATB RK3588 MATX";
 	compatible = "atb,rk3588-matx", "rockchip,rk3588";
 
-    aliases {
+	aliases {
 		ethernet0 = &gmac0;
 		ethernet1 = &gmac1;
-        mmc0 = &sdhci;
+		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
 	};
 	
-    chosen: chosen {
+	chosen: chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0";
 		stdout-path = "serial2:115200n8";
 	};
 
-    //DEBUG ON UART2
-    fiq_debugger: fiq-debugger {
+	//DEBUG ON UART2
+	fiq_debugger: fiq-debugger {
 		compatible = "rockchip,fiq-debugger";
 		rockchip,serial-id = <2>;
 		rockchip,wake-irq = <0>;
@@ -48,31 +48,31 @@
 		status = "okay";
 	};
 	
-    cspmu: cspmu@fd10c000 {
+	cspmu: cspmu@fd10c000 {
 		compatible = "rockchip,cspmu";
 		reg = <0x0 0xfd10c000 0x0 0x1000>,
-		      <0x0 0xfd10d000 0x0 0x1000>,
-		      <0x0 0xfd10e000 0x0 0x1000>,
-		      <0x0 0xfd10f000 0x0 0x1000>,
-		      <0x0 0xfd12c000 0x0 0x1000>,
-		      <0x0 0xfd12d000 0x0 0x1000>,
-		      <0x0 0xfd12e000 0x0 0x1000>,
-		      <0x0 0xfd12f000 0x0 0x1000>;
+			  <0x0 0xfd10d000 0x0 0x1000>,
+			  <0x0 0xfd10e000 0x0 0x1000>,
+			  <0x0 0xfd10f000 0x0 0x1000>,
+			  <0x0 0xfd12c000 0x0 0x1000>,
+			  <0x0 0xfd12d000 0x0 0x1000>,
+			  <0x0 0xfd12e000 0x0 0x1000>,
+			  <0x0 0xfd12f000 0x0 0x1000>;
 	};
 
 	debug: debug@fd104000 {
 		compatible = "rockchip,debug";
 		reg = <0x0 0xfd104000 0x0 0x1000>,
-		      <0x0 0xfd105000 0x0 0x1000>,
-		      <0x0 0xfd106000 0x0 0x1000>,
-		      <0x0 0xfd107000 0x0 0x1000>,
-		      <0x0 0xfd124000 0x0 0x1000>,
-		      <0x0 0xfd125000 0x0 0x1000>,
-		      <0x0 0xfd126000 0x0 0x1000>,
-		      <0x0 0xfd127000 0x0 0x1000>;
+			  <0x0 0xfd105000 0x0 0x1000>,
+			  <0x0 0xfd106000 0x0 0x1000>,
+			  <0x0 0xfd107000 0x0 0x1000>,
+			  <0x0 0xfd124000 0x0 0x1000>,
+			  <0x0 0xfd125000 0x0 0x1000>,
+			  <0x0 0xfd126000 0x0 0x1000>,
+			  <0x0 0xfd127000 0x0 0x1000>;
 	};
 	
-    firmware {
+	firmware {
 		optee: optee {
 			compatible = "linaro,optee-tz";
 			method = "smc";
@@ -91,7 +91,7 @@
 		regulator-max-microvolt = <12000000>;
 	};
 	
-    //D6
+	//D6
 	vcc4v0_sys: vcc4v0-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc4v0_sys";
@@ -123,8 +123,8 @@
 		vin-supply = <&vcc12v_dcin>;
 	};
 	
-    //D5
-    vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
+	//D5
+	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_1v1_nldo_s3";
 		regulator-always-on;
@@ -135,7 +135,7 @@
 	};
 	
 	//D13
-    eMMC_MUX_ENA: eMMC_MUX_ENA {
+	eMMC_MUX_ENA: eMMC_MUX_ENA {
 		compatible = "regulator-fixed";
 		regulator-name = "eMMC_MUX_ENA";
 		regulator-always-on;
@@ -148,65 +148,65 @@
 
 	//D16
 	//EN_USB2_0_PWR
-    usb2_0_vcc: usb2_0_vcc {
-        compatible = "regulator-fixed";
-        regulator-name = "en_usb2_0_vcc";
-        regulator-boot-on;
-        regulator-always-on;
-        enable-active-high;
-        gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
-        vin-supply = <&vcc5v0>;
-        status = "okay";
-    };
-    
-    //D17
-    //EN_USB3_0_PWR
-    usb3_0_vcc: usb3_0_vcc {
-        compatible = "regulator-fixed";
-        regulator-name = "en_usb3_0_vcc";
-        regulator-boot-on;
-        regulator-always-on;
-        enable-active-high;
-        gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
-        vin-supply = <&vcc5v0>;
-        status = "okay";
-    };
-    
-    //D18
-    //EN_USB3_1_PWR
-    usb3_1_vcc: usb3_1_vcc {
-        compatible = "regulator-fixed";
-        regulator-name = "en_usb3_1_vcc";
-        regulator-boot-on;
-        regulator-always-on;
-        enable-active-high;
-        gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
-        vin-supply = <&vcc5v0>;
-        status = "okay";
-    };
-    
-    //D19 //D20
-    //USBHUB_RSTn
-    usbhub_rstn: usbhub_rstn {
-        compatible = "regulator-fixed";
-        regulator-name = "usbhub_rstn";
-        regulator-boot-on;
-        regulator-always-on;
-        enable-active-high;
-        gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
-        vin-supply = <&vcc_3v3>;
-        status = "okay";
-    };
-    
-    //D21 USBHUB0_PWR //Always enable
-    //D22 USBHUB1_PWR //Always enable
-    
-    //CHECK_IT //Как это работает?
-    //D23 M2kB_PCIE_CFG1 //Автовыбор
-    //D24 M2kB_PCIE_CFG1 //Автовыбор
-    
-    //D25
-    miniPCIe_1_5v: miniPCIe_1_5v {
+	usb2_0_vcc: usb2_0_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb2_0_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	//D17
+	//EN_USB3_0_PWR
+	usb3_0_vcc: usb3_0_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb3_0_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	//D18
+	//EN_USB3_1_PWR
+	usb3_1_vcc: usb3_1_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb3_1_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	//D19 //D20
+	//USBHUB_RSTn
+	usbhub_rstn: usbhub_rstn {
+		compatible = "regulator-fixed";
+		regulator-name = "usbhub_rstn";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc_3v3>;
+		status = "okay";
+	};
+
+	//D21 USBHUB0_PWR //Always enable
+	//D22 USBHUB1_PWR //Always enable
+
+	//CHECK_IT //Как это работает?
+	//D23 M2kB_PCIE_CFG1 //Автовыбор
+	//D24 M2kB_PCIE_CFG1 //Автовыбор
+
+	//D25
+	miniPCIe_1_5v: miniPCIe_1_5v {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_miniPCIe_1_5v";
 		regulator-always-on;
@@ -220,7 +220,7 @@
 	//CHECK_IT //TEST
 	/*
 	watchdog {
-        compatible = "linux,wdt-gpio";
+		compatible = "linux,wdt-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_watchdog_gpio>;
 		always-running;
@@ -233,7 +233,7 @@
 	};
 	*/
 	
-    sound {
+	sound {
 		compatible = "audio-graph-card";
 		label = "rockchip,es8388-codec";
 		widgets = "Microphone", "Mic Jack",
@@ -244,7 +244,7 @@
 		dais = <&i2s0_8ch_p0>;
 	};
 	
-    sdio_pwrseq: sdio-pwrseq {
+	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		clocks = <&rtc_clock>; // <----------------------------------!!!
 		clock-names = "ext_clock"; // <----------------------------------!!!
@@ -256,10 +256,10 @@
 		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
 	};
 	
-    //D45
-    //mPCIE_m2_SEL  //ВХОД! Рулится джампером X37
-    /*
-    PciE20_1_Sata_Mux: PciE20_1_Sata_Mux {
+	//D45
+	//mPCIE_m2_SEL  //ВХОД! Рулится джампером X37
+	/*
+	PciE20_1_Sata_Mux: PciE20_1_Sata_Mux {
 		compatible = "regulator-fixed";
 		regulator-name = "PciE20_1_Sata_Mux";
 		regulator-always-on;
@@ -273,7 +273,7 @@
 	};
 	*/
 
-    // Pcie host power.
+	// Pcie host power.
 	PCIE_EXT_PWREN_: PCIE_EXT_PWREN_ {
 		compatible = "regulator-fixed";
 		regulator-name = "PCIE_EXT_PWREN_";
@@ -308,7 +308,7 @@
 		status = "okay";
 	};
 	
-    // Pcie reset.
+	// Pcie reset.
 	PCIe_RST_: PCIe-RST- {
 		compatible = "regulator-fixed";
 		regulator-name = "PCIe_RST_";
@@ -347,7 +347,7 @@
 	};
 	
 
-    hdmi1_sound: hdmi1-sound {
+	hdmi1_sound: hdmi1-sound {
 		status = "okay";
 		compatible = "rockchip,hdmi";
 		rockchip,mclk-fs = <128>;
@@ -357,7 +357,7 @@
 		rockchip,jack-det;
 	};
 	
-    // If hdmirx node is disabled, delete the reserved-memory node here. 
+	// If hdmirx node is disabled, delete the reserved-memory node here. 
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -390,7 +390,7 @@
 		};
 	};
 	
-    hdmiin_dc: hdmiin-dc {
+	hdmiin_dc: hdmiin-dc {
 		compatible = "rockchip,dummy-codec";
 		#sound-dai-cells = <0>;
 	};
@@ -408,10 +408,10 @@
 		};
 	};
 	
-    dp-con {
+	dp-con {
 		compatible = "dp-connector";
 		status = "okay";
-    
+
 		port {
 			dp_con_in_edp0: endpoint {
 				remote-endpoint = <&edp0_out_dp_con>;
@@ -419,7 +419,7 @@
 		};
 	};
 	
-    test-power {
+	test-power {
 		status = "okay";
 	};
 	
@@ -442,7 +442,7 @@
 	pinctrl-0 = <&spi2m2_cs0 &spi2m2_pins>;
 	num-cs = <1>;
 	
-    //D1 //PMIC
+	//D1 //PMIC
 	rk806: rk806@0 {
 		compatible = "rockchip,rk806";
 		spi-max-frequency = <1000000>;
@@ -750,7 +750,7 @@
 					regulator-off-in-suspend;
 				};
 			};
-            
+
 			vcc_1v8_s3_PLDO6: PLDO_REG6 {
 				regulator-always-on;
 				regulator-boot-on;
@@ -831,8 +831,8 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0m2_xfer>;
-    
-    //D2
+
+	//D2
 	vdd_cpu_big0_s0: vdd_cpu_big0_mem_s0: rk8602@42 {
 		compatible = "rockchip,rk8602";
 		reg = <0x42>;
@@ -873,8 +873,8 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1m2_xfer>;
-    
-    //D3
+
+	//D3
 	vdd_npu_s0: vdd_npu_mem_s0: rk8602@42 {
 		compatible = "rockchip,rk8602";
 		reg = <0x42>;
@@ -905,21 +905,21 @@
 
 	//D37  //Serial AT24C02C-SSHM-T
 	//CHECK_IT //FIx addr
-    eeprom@50 {
-        compatible = "atmel,24c02";
-        reg = <0x52>;
-    };
-    
-    //D38   //Temp Sensor TMP102
-    tmp102: tmp102@48{
+	eeprom@50 {
+		compatible = "atmel,24c02";
+		reg = <0x52>;
+	};
+
+	//D38   //Temp Sensor TMP102
+	tmp102: tmp102@48{
 		compatible = "ti,tmp102";
 		reg = <0x48>;
-        interrupt-parent = <&gpio3>;
+		interrupt-parent = <&gpio3>;
 		interrupts = <RK_PD3 IRQ_TYPE_LEVEL_LOW>;
 		#thermal-sensor-cells = <0>;
 	};
 	
-    // D43
+	// D43
 	hym8563: rtc@51 {
 		compatible = "haoyu,hym8563";
 		reg = <0x51>;
@@ -971,10 +971,10 @@
 &i2s0_8ch {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2s0_lrck
-		     &i2s0_mclk
-		     &i2s0_sclk
-		     &i2s0_sdi0
-		     &i2s0_sdo0>;
+			 &i2s0_mclk
+			 &i2s0_sclk
+			 &i2s0_sdi0
+			 &i2s0_sdo0>;
 	status = "okay";
 
 	i2s0_8ch_p0: port {
@@ -1093,7 +1093,7 @@
 /*
 //A1 //Muxing with SD Card
 &sdmmc {
-    // WiFi & BT combo module Fn-Link 8223A-SR 
+	// WiFi & BT combo module Fn-Link 8223A-SR 
 	bus-width = <4>;
 	cap-sd-highspeed;
 	disable-wp;
@@ -1221,7 +1221,7 @@
 		};
 	};
 	
-    ethernet {
+	ethernet {
 		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
 			rockchip,pins = <3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
@@ -1231,31 +1231,30 @@
 	};
 	
 	watchdog{
-        watchdog_gpio_wdi{
-            rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        watchdog_disable{
-            rockchip,pins = <4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
+		watchdog_gpio_wdi{
+			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		watchdog_disable{
+			rockchip,pins = <4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 	};
 	
-    sdio-pwrseq {
+	sdio-pwrseq {
 		wlan_en_pin: wlan-en-pin {
 			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 	
-    pcie {
-        //miniPCIe_RST_
-        minipcie_rst_pin: minipcie_rst_pin {
-            rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        //PCIe_RST_
-        pcie_rst_pin: pcie_rst_pin {
-            rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        
-    };
+	pcie {
+		//miniPCIe_RST_
+		minipcie_rst_pin: minipcie_rst_pin {
+			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		//PCIe_RST_
+		pcie_rst_pin: pcie_rst_pin {
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
 };
 
@@ -1295,10 +1294,10 @@
 &combphy1_ps {
 	status = "okay";
 };
-//SATA_1    
+//SATA_1
 //X20   M.2 Key B SATA
 &sata1 {
-    //	If this controller is enabled, pcie2x1l0 must be disabled
+	//	If this controller is enabled, pcie2x1l0 must be disabled
 	status = "disabled";
 	//status = "okay";
 };
@@ -1336,9 +1335,9 @@
 //OUT Lane D on PCIE30_PORT1_LANE1  
 //x21 MiniPCIe
 &pcie2x1l1 {
-    //miniPCIe_RST_
-    //reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
-    //pinctrl-names = "default";
+	//miniPCIe_RST_
+	//reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
+	//pinctrl-names = "default";
 	//pinctrl-0 = <&minipcie_rst_pin>;
 	vpcie3v3-supply = <&vcc_3v3>;	
 	status = "okay";
@@ -1354,16 +1353,16 @@
 //PHY_MODE_PCIE_NANBBI	1	/* P1:PCIe3x2  +  P0:PCIe3x1*2 */
 //PHY_MODE_PCIE_NABINB	2	/* P1:PCIe3x1*2 + P0:PCIe3x2 */
 //PHY_MODE_PCIE_NABIBI	3	/* P1:PCIe3x1*2 + P0:PCIe3x1*2 */
-    rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;   
+	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;   
 	status = "okay";
 };
 
 //X22 pcie slot
 &pcie3x4 {
-    //CHECK_IT  //Set this
-    //PCIe_RST_
-    //reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-    //pinctrl-names = "default";
+	//CHECK_IT  //Set this
+	//PCIe_RST_
+	//reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+	//pinctrl-names = "default";
 	//pinctrl-0 = <&pcie_rst_pin>;
 	vpcie3v3-supply = <&vcc_3v3>;
 	status = "okay";
@@ -1373,7 +1372,7 @@
 //  //PCIe_RST_
 //=============================================================================
 &pcie3x2 {
-    vpcie3v3-supply = <&vcc_3v3>;
+	vpcie3v3-supply = <&vcc_3v3>;
 	status = "disabled";
 };
 
@@ -1611,9 +1610,6 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
-	
-
-    
 };
 
 //=============================================================================
@@ -1624,8 +1620,8 @@
 	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
 	uart-has-rtscts;
 	status = "okay";
-    
-    //A1    //8223A-SR
+
+	//A1    //8223A-SR
 	bluetooth {
 		compatible = "qcom,qca9377-bt";
 		clocks = <&rtc_clock>;
@@ -1755,7 +1751,7 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&hdmim0_tx1_hpd &hdmim1_tx1_scl &hdmim1_tx1_sda>;
-    cec-enable = "false";
+	cec-enable = "false";
 };
 
 &hdmi1_in_vp0 {
@@ -1793,8 +1789,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&hdmim0_tx0_hpd>;
 	#sound-dai-cells = <1>;
-    force-hpd;
-    
+	force-hpd;
+
 	ports {
 		port@1 {
 			reg = <1>;
@@ -1987,7 +1983,7 @@
 //Fan Speed Control
 //CPU_PWM
 &pwm12 {
-    status = "okay";
+	status = "okay";
 	pinctrl-0 = <&pwm12m1_pins>;
 	
 };
@@ -2000,7 +1996,7 @@
 &can1 {
 	status = "okay";
 	compatible = "rockchip,canfd-1.0";
-    //compatible = "rockchip,can-2.0";
+	//compatible = "rockchip,can-2.0";
 	pinctrl-names = "default";
 	pinctrl-0 = <&can1m1_pins>;
 	assigned-clocks = <&cru CLK_CAN1>;
@@ -2035,7 +2031,7 @@
 //=============================================================================
 // watchdog
 &wdt {
-    status = "okay";
+	status = "okay";
 };
 
 //CHECK_IT
