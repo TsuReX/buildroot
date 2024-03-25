@@ -28,7 +28,7 @@ tar -xf ${BR2_DL_DIR}/rkbin/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23.tar.g
 RKBIN_DIR=${BUILD_DIR}/rkbin
 
 ################################################################################
-# 1. Create idblock.bin
+# 1. Create idbloader.img
 
 SPL_BIN=u-boot-spl.bin
 TPL_BIN=rk3568_ddr_1560MHz_v1.18.bin
@@ -57,10 +57,10 @@ UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -
 check_file ${TPL_BIN_PATH}
 check_file ${SPL_BIN_PATH}
 
-${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3568" -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${BINARIES_DIR}/idblock.bin
+${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3568" -T rksd -d ${TPL_BIN_PATH}:${SPL_BIN_PATH} ${BINARIES_DIR}/idbloader.img
 
 ################################################################################
-# 2. Create uboot.img
+# 2. Create u-boot.itb
 UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 
 check_file ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf
@@ -74,4 +74,4 @@ cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
 
 arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
 
-tools/mkimage -f u-boot.its -E ${BINARIES_DIR}/uboot.img
+tools/mkimage -f u-boot.its -E ${BINARIES_DIR}/u-boot.itb
