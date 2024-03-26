@@ -37,8 +37,8 @@ atb_rk3588_smc_linux_5_10_160_upload_artifact:
     name: atb_rk3588_smc_linux_5_10_160
     paths:
       - output/target
-      - output/images/idblock.bin
-      - output/images/uboot.img
+      - output/images/idbloader.img
+      - output/images/u-boot.itb
       - output/images/Image
       - output/images/atb-rk3588-smc.dtb
       - output/images/rootfs.cpio.gz
