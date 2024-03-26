@@ -35,19 +35,19 @@
 	CPU_DP_HDP
 */
 	hpd-gpios = <&gpio0 RK_PC2 GPIO_ACTIVE_HIGH>;
-	status = "disabled";
+	status = "okay";
 };
 
 &edp_phy  {
-	status = "disabled";
+	status = "okay";
 };
 
 &edp_in_vp1 {
-	status = "disabled";
+	status = "okay";
 };
 
 &route_edp {
-	status = "disabled";
+	status = "okay";
 	connect = <&vp1_out_edp>;
 };
 
