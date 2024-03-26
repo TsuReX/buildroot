@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2022 Rockchip Electronics Co., Ltd.
- * Copyright (c) 2022 Radxa Limited
- *
- */
-
 /dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -16,7 +9,14 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "dt-bindings/usb/pd.h"
-#include "rk3588.dtsi"
+#include "rockchip/rk3588.dtsi"
+
+#include "atb-rk3588-mitx-codecs.dtsi"
+#include "atb-rk3588-mitx-ethernet.dtsi"
+#include "atb-rk3588-mitx-pci.dtsi"
+#include "atb-rk3588-mitx-power.dtsi"
+#include "atb-rk3588-mitx-usb.dtsi"
+#include "atb-rk3588-mitx-video.dtsi"
 
 / {
 	model = "ATB RK3588 MITX";
@@ -80,7 +80,7 @@
 		};
 	};
 
-	//D13
+	// D13
 	eMMC_MUX_ENA: eMMC_MUX_ENA {
 		compatible = "regulator-fixed";
 		regulator-name = "eMMC_MUX_ENA";
@@ -92,7 +92,7 @@
 		vin-supply = <&vcc3v3>;
 	};
 
-	//D16
+	// D16
 	//EN_USB2_0_PWR
 	usb2_0_vcc: usb2_0_vcc {
 		compatible = "regulator-fixed";
@@ -291,18 +291,7 @@
 		vin-supply = <&vcc4v0_sys>;
 		status = "okay";
 	};
-	
 
-	hdmi1_sound: hdmi1-sound {
-		status = "okay";
-		compatible = "rockchip,hdmi";
-		rockchip,mclk-fs = <128>;
-		rockchip,card-name = "rockchip-hdmi1";
-		rockchip,cpu = <&i2s6_8ch>;
-		rockchip,codec = <&hdmi1>;
-		rockchip,jack-det;
-	};
-	
 	// If hdmirx node is disabled, delete the reserved-memory node here. 
 	reserved-memory {
 		#address-cells = <2>;
@@ -333,35 +322,6 @@
 			console-size = <0x80000>;
 			ftrace-size = <0x00000>;
 			pmsg-size = <0x50000>;
-		};
-	};
-	
-	hdmiin_dc: hdmiin-dc {
-		compatible = "rockchip,dummy-codec";
-		#sound-dai-cells = <0>;
-	};
-	
-	edp0_sound: edp0-sound {
-		status = "okay";
-		compatible = "simple-audio-card";
-		simple-audio-card,name = "rockchip-edp-sound";
-
-		simple-audio-card,cpu {
-			sound-dai = <&spdif_tx3>;
-		};
-		simple-audio-card,codec {
-			sound-dai = <&edp0 1>;
-		};
-	};
-	
-	dp-con {
-		compatible = "dp-connector";
-		status = "okay";
-
-		port {
-			dp_con_in_edp0: endpoint {
-				remote-endpoint = <&edp0_out_dp_con>;
-			};
 		};
 	};
 	
@@ -574,93 +534,9 @@
 };
 
 //=============================================================================
-//  //ETHERNET (GMAC)
-//=============================================================================
-//D14   //GMAC0 PHY //RTL8211FI
-&gmac0 {
-	status = "okay";
-	// Use rgmii-id mode, use both delays
-	phy-mode = "rgmii-id";
-	clock_in_out = "input";
-
-	// PHY hardware reset, active low
-	snps,reset-gpio = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
-	snps,reset-active-low;
-
-	// Reset time is 20ms, 100ms for rtl8211f
-	snps,reset-delays-us = <0 20000 100000>;
-
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac0_miim
-			&gmac0_tx_bus2
-			&gmac0_rx_bus2
-			&gmac0_rgmii_clk
-			&gmac0_rgmii_bus
-			&gmac0_clkinout
-			&rgmii_phy0_reset_pin>;
-
-	tx_delay = <0x25>;
-	rx_delay = <0x25>; 
-
-	phy-handle = <&rgmii_phy0>;
-};
-
-&mdio0 {
-	rgmii_phy0: phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-	};
-};
-
-//D15   //GMAC1 PHY //RTL8211FI
-&gmac1 {
-	status = "okay";
-	// Use rgmii-id mode, use both delays
-	phy-mode = "rgmii-id";
-	clock_in_out = "input";
-
-	// PHY hardware reset, active low
-	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-	snps,reset-active-low;
-
-	// Reset time is 20ms, 100ms for rtl8211f
-	snps,reset-delays-us = <0 20000 100000>;
-
-	pinctrl-names = "default";
-	pinctrl-0 = <&gmac1_miim
-			&gmac1_tx_bus2
-			&gmac1_rx_bus2
-			&gmac1_rgmii_clk
-			&gmac1_rgmii_bus
-			&gmac1_clkinout
-			&rgmii_phy1_reset_pin>;
-
-	tx_delay = <0x25>;
-	rx_delay = <0x25>; 
-
-	phy-handle = <&rgmii_phy1>;
-};
-
-&mdio1 {
-	rgmii_phy1: phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-	};
-};
-
-//=============================================================================
 //  PINCTL
 //=============================================================================
 &pinctrl {
-	ethernet {
-		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
-			rockchip,pins = <3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
-			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-	
 	watchdog{
 		watchdog_gpio_wdi{
 			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -675,226 +551,9 @@
 			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-	
-	pcie {
-		//miniPCIe_RST_
-		minipcie_rst_pin: minipcie_rst_pin {
-			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-		//PCIe_RST_
-		pcie_rst_pin: pcie_rst_pin {
-			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
 };
 
 &rng {
-	status = "okay";
-};
-
-//=============================================================================
-//  //PCIE SATA
-//============================================================================
-//-----------------------------------------------------------------------------
-//          PCIe20_0 muxing with SATA30_0
-//pcie2x1l2 is PCIe20_0
-//pcie2x1l2 can use COMBO_PHY_0_LANE0 only
-
-//SATA_0_
-&combphy0_ps {
-	status = "okay";
-};
-&pcie2x1l2 {
-	status = "disabled";
-};
-&sata0 {
-	status = "okay";
-};
-//-----------------------------------------------------------------------------
-//          PCIe20_1 muxing with SATA30_1
-//is PCIe20_1
-//pcie2x1l0 can use PCIE30_PORT0_LANE1 or COMBO_PHY_1_LANE0. Controlled by pcie30-phymode.
-
-//	This controller is phy for sata1 or pcie2x1l0 controllers
-&combphy1_ps {
-	status = "okay";
-};
-//SATA_1
-//X20   M.2 Key B SATA
-&sata1 {
-	//	If this controller is enabled, pcie2x1l0 must be disabled
-	status = "disabled";
-	//status = "okay";
-};
-
-//PCIE
-//X38 miniPCIe on COMBO_PHY_1_LANE0
-//	If this controller is enabled, sata1 must be disabled
-&pcie2x1l0 {
-//M2kB_PCIE_RSTn
-	vpcie3v3-supply = <&vcc_3v3>;			
-	//status = "disabled";
-	status = "okay";
-};
-
-//-----------------------------------------------------------------------------
-//          PCIe20_2 muxing with SATA30_2 and USB30_2 (usbhost3_0)
-//pcie2x1l1 is PCIe20_2
-//pcie2x1l1 can use PCIE30_PORT1_LANE1 or COMBO_PHY_2_LANE0. Controlled by pcie30-phymode.
-
-//PCIe20_2 is disabled now
-&combphy2_psu {
-	status = "okay";
-};
-&usbhost3_0 {
-	status = "disabled";
-};
-&usbhost_dwc3_0 {
-	status = "disabled";
-};
-&sata2 {
-	status = "disabled";
-};
-
-//PCIe20_2
-//OUT Lane D on PCIE30_PORT1_LANE1  
-//x21 MiniPCIe
-&pcie2x1l1 {
-	//miniPCIe_RST_
-	//reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
-	//pinctrl-names = "default";
-	//pinctrl-0 = <&minipcie_rst_pin>;
-	vpcie3v3-supply = <&vcc_3v3>;	
-	status = "okay";
-};
-
-//=============================================================================
-//  //PCIe3X4   //PCIE30_PORT0  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
-&pcie30phy {
-//PHY_MODE_PCIE_AGGREGATION 4	/* PCIe3x4 */
-//PHY_MODE_PCIE_NANBNB	0	/* P1:PCIe3x2  +  P0:PCIe3x2 */
-//PHY_MODE_PCIE_NANBBI	1	/* P1:PCIe3x2  +  P0:PCIe3x1*2 */
-//PHY_MODE_PCIE_NABINB	2	/* P1:PCIe3x1*2 + P0:PCIe3x2 */
-//PHY_MODE_PCIE_NABIBI	3	/* P1:PCIe3x1*2 + P0:PCIe3x1*2 */
-	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;   
-	status = "okay";
-};
-
-//X22 pcie slot
-&pcie3x4 {
-	//CHECK_IT  //Set this
-	//PCIe_RST_
-	//reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-	//pinctrl-names = "default";
-	//pinctrl-0 = <&pcie_rst_pin>;
-	vpcie3v3-supply = <&vcc_3v3>;
-	status = "okay";
-};
-//=============================================================================
-//  //PCIe3X2   //PCIE30_PORT1  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
-&pcie3x2 {
-	vpcie3v3-supply = <&vcc_3v3>;
-	status = "disabled";
-};
-
-//=============================================================================
-//  //USB 2.0
-//=============================================================================
-
-////USB20_HOST0
-&usb_host0_ehci {
-	status = "okay";
-};
-
-&usb_host0_ohci {
-	status = "okay";
-};
-
-&u2phy2 {
-	status = "okay";
-};
-
-&u2phy2_host {
-	status = "okay";
-};
-
-//USB20_HOST1
-&usb_host1_ehci {
-	status = "okay";
-};
-
-&usb_host1_ohci {
-	status = "okay";
-};
-
-&u2phy3 {
-	status = "okay";
-};
-
-&u2phy3_host {
-	status = "okay";
-};
-
-
-//=============================================================================
-//  //USB 3.0
-//=============================================================================
-&u2phy1 {
-	status = "okay";
-};
-
-&u2phy1_otg {
-	status = "okay";
-};
-
-&usbdrd3_1{
-	status = "okay";
-};
-
-&usbdrd_dwc3_1{
-	status = "okay";
-};
-
-&usbdp_phy1 {
-	status = "okay";
-};
-
-&usbdp_phy1_u3 {
-	status = "okay";
-};
-
-//=============================================================================
-//  USB 3.0
-//=============================================================================
-
-&u2phy0 {
-	status = "okay";
-};
-
-&u2phy0_otg {
-	rockchip,typec-vbus-det;
-	status = "okay";
-};
-
-&usbdrd3_0 {
-	status = "okay";
-};
-
-&usbdp_phy0 {
-	status = "okay";
-};
-
-&usbdrd_dwc3_0 {
-	//dr_mode = "otg";
-	dr_mode = "host";
-	status = "okay";
-};
-
-&usbdp_phy0_u3 {
 	status = "okay";
 };
 
@@ -1087,176 +746,6 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart9m2_xfer>;
-};
-
-
-//=============================================================================
-//  VIDEO   HDMI    DP
-//=============================================================================
-
-&gpu {
-	mali-supply = <&vdd_gpu_s0>;
-	mem-supply = <&vdd_gpu_mem_s0>;
-	status = "okay";
-};
-
-&vop {
-	status = "okay";
-	disable-win-move;
-	assigned-clocks = <&cru ACLK_VOP>;
-	assigned-clock-rates = <800000000>;
-};
-
-&vop_mmu {
-	status = "okay";
-};
-
-&vepu {
-	status = "okay";
-};
-
-// vp0 & vp1 splice for 8K output
-&vp0 {
-	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER0 | 1 << ROCKCHIP_VOP2_ESMART0)>;
-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART0>;
-};
-
-&vp1 {
-	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER1 | 1 << ROCKCHIP_VOP2_ESMART1)>;
-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART1>;
-};
-
-&vp2 {
-	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER2 | 1 << ROCKCHIP_VOP2_ESMART2)>;
-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART2>;
-};
-
-&vp3 {
-	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
-	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART3>;
-};
-
-&display_subsystem {
-	memory-region = <&drm_logo>;
-	memory-region-names = "drm-logo";
-	
-	clocks = <&hdptxphy_hdmi_clk0>,<&hdptxphy_hdmi_clk1>;
-	clock-names = "hdmi0_phy_pll", "hdmi1_phy_pll";
-	
-	ports = <&vop_out>;
-
-	route {
-		route_edp0: route-edp0 {
-			status = "okay";
-			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
-			logo,mode = "center";
-			charge_logo,mode = "center";
-			connect = <&vp0_out_edp0>;
-		};
-
-		route_hdmi1: route-hdmi1 {
-			status = "okay";
-			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
-			logo,mode = "center";
-			charge_logo,mode = "center";
-			connect = <&vp2_out_hdmi1>;
-			force-output;
-		};
-	};
-};
-//----------    HDMO1   ----------
-
-&hdptxphy_hdmi_clk1 {
-	status = "okay";
-};
-
-&hdmi1 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&hdmim0_tx1_hpd &hdmim1_tx1_scl &hdmim1_tx1_sda>;
-	cec-enable = "false";
-};
-
-&hdmi1_in_vp0 {
-	status = "disabled";
-};
-
-&hdmi1_in_vp1 {
-	status = "disabled";
-};
-
-&hdmi1_in_vp2 {
-	status = "okay";
-};
-
-&route_hdmi1 {
-	status = "okay";
-	force-output;
-	connect = <&vp2_out_hdmi1>;
-};
-
-&hdmi1_sound {
-	status = "okay";
-};
-
-&hdptxphy_hdmi1 {
-	status = "okay";
-};
-//----------    EDP0   ----------
-&hdptxphy_hdmi_clk0 {
-	status = "okay";
-};
-
-&edp0 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&hdmim0_tx0_hpd>;
-	#sound-dai-cells = <1>;
-	force-hpd;
-
-	ports {
-		port@1 {
-			reg = <1>;
-
-			edp0_out_dp_con: endpoint {
-				remote-endpoint = <&dp_con_in_edp0>;
-			};
-		};
-	};
-
-//	support-psr;
-};
-
-&hdptxphy0 {
-	status = "okay";
-};
-
-&edp0_sound {
-	status = "okay";
-};
-
-&spdif_tx3{
-	status = "okay";
-};
-
-&edp0_in_vp0 {
-	status = "okay";
-};
-
-&edp0_in_vp1 {
-	status = "disabled";
-};
-
-&edp0_in_vp2 {
-	status = "disabled";
-};
-
-&route_edp0 {
-	status = "okay";
-	force-output;
-	connect = <&vp0_out_edp0>;
 };
 
 //=============================================================================

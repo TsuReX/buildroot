@@ -1,0 +1,96 @@
+//=============================================================================
+//  //USB 2.0
+//=============================================================================
+
+////USB20_HOST0
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy2_host {
+	status = "okay";
+};
+
+//USB20_HOST1
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&u2phy3_host {
+	status = "okay";
+};
+
+
+//=============================================================================
+//  //USB 3.0
+//=============================================================================
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usbdrd3_1{
+	status = "okay";
+};
+
+&usbdrd_dwc3_1{
+	status = "okay";
+};
+
+&usbdp_phy1 {
+	status = "okay";
+};
+
+&usbdp_phy1_u3 {
+	status = "okay";
+};
+
+//=============================================================================
+//  USB 3.0
+//=============================================================================
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	rockchip,typec-vbus-det;
+	status = "okay";
+};
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&usbdp_phy0 {
+	status = "okay";
+};
+
+&usbdrd_dwc3_0 {
+	//dr_mode = "otg";
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbdp_phy0_u3 {
+	status = "okay";
+};
