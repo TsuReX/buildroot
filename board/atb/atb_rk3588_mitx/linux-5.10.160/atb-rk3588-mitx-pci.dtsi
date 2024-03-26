@@ -1,5 +1,113 @@
+/ {
+	// D25
+	miniPCIe_1_5v: miniPCIe_1_5v {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_miniPCIe_1_5v";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <1500000>;
+		regulator-max-microvolt = <1500000>;
+		vin-supply = <&vcc3v3>;
+	};
+
+	// Pcie host power.
+	PCIE_EXT_PWREN_: PCIE_EXT_PWREN_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE_EXT_PWREN_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio1 RK_PB3 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+
+	// Pcie host clock.
+	PCIE_x4_CLK_ENA_: PCIE_x4_CLK_ENA_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE_x4_CLK_ENA_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+
+	// Pcie host clock.
+	PCIE30_CPU_CLK_ENA_: PCIE30_CPU_CLK_ENA_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE30_CPU_CLK_ENA_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+	
+	// Pcie reset.
+	PCIe_RST_: PCIe-RST- {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIe_RST_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+	
+	// X21
+	// m.2 and miniPCIe reset 
+	miniPCIe_RST_: miniPCIe_RST_ {
+		compatible = "regulator-fixed";
+		regulator-name = "miniPCIe_RST_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+	
+	// X38
+	// m.2 and miniPCIe reset 
+	M2kB_PCIE_RSTn: M2kB_PCIE_RSTn {
+		compatible = "regulator-fixed";
+		regulator-name = "M2kB_PCIE_RSTn";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+
+	// D45 - mPCIE_m2_SEL // ВХОД! Рулится джампером X37
+
+	// Как это работает?
+	// D23 - M2kB_PCIE_CFG1 // Автовыбор
+	// D24 - M2kB_PCIE_CFG1 // Автовыбор
+
+};
+
+&pinctrl {
+	pcie {
+		//miniPCIe_RST_
+		minipcie_rst_pin: minipcie_rst_pin {
+			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		//PCIe_RST_
+		pcie_rst_pin: pcie_rst_pin {
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+
 //=============================================================================
-//  //PCIE SATA
+// PCIE SATA
 //============================================================================
 //-----------------------------------------------------------------------------
 //          PCIe20_0 muxing with SATA30_0
@@ -10,9 +118,11 @@
 &combphy0_ps {
 	status = "okay";
 };
+
 &pcie2x1l2 {
 	status = "disabled";
 };
+
 &sata0 {
 	status = "okay";
 };
@@ -108,18 +218,3 @@
 };
 
 
-//=============================================================================
-//  PINCTL
-//=============================================================================
-&pinctrl {
-	pcie {
-		//miniPCIe_RST_
-		minipcie_rst_pin: minipcie_rst_pin {
-			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-		//PCIe_RST_
-		pcie_rst_pin: pcie_rst_pin {
-			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-};
