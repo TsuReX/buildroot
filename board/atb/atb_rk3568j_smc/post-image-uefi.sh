@@ -75,7 +75,7 @@ echo "SPL_BIN_PATH ${SPL_BIN_PATH}"
 echo "TPL_BIN_PATH ${TPL_BIN_PATH}"
 echo "UART_TPL_BIN ${UART_TPL_BIN}"
 
-# 1. Create idblock.bin
+# 1. Create idbloader.img
 FLASHFILES="FlashHead.bin FlashData.bin FlashBoot.bin"
 MINIALL_INI=RK3568MINIALL.ini
 OUTPUT_INI=RK3568MINIALL_1056.ini
@@ -85,7 +85,7 @@ sed "s/rk356x_spl_v1.12.bin/${SPL_BIN}/g" ${RKBIN}/RKBOOT/_${OUTPUT_INI} > ${RKB
 
 ${RKBIN}/tools/boot_merger unpack -i ${RKBIN}/rk356x_spl_loader_*.bin -o ${IMAGES}/
 cd ${IMAGES}
-cat ${FLASHFILES} > idblock.bin
+cat ${FLASHFILES} > idbloader.img
 cd -
 
 
