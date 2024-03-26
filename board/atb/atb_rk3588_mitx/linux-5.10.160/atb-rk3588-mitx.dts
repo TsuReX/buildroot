@@ -86,72 +86,17 @@
 		regulator-name = "eMMC_MUX_ENA";
 		regulator-always-on;
 		regulator-boot-on;
-		//enable-active-low;    //FSPI
-		enable-active-high; //eMMC
+		// enable-active-low; // FSPI
+		enable-active-high; // eMMC
 		gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc3v3>;
 	};
 
-	// D16
-	//EN_USB2_0_PWR
-	usb2_0_vcc: usb2_0_vcc {
-		compatible = "regulator-fixed";
-		regulator-name = "en_usb2_0_vcc";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc5v0>;
-		status = "okay";
-	};
-
-	//D17
-	//EN_USB3_0_PWR
-	usb3_0_vcc: usb3_0_vcc {
-		compatible = "regulator-fixed";
-		regulator-name = "en_usb3_0_vcc";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc5v0>;
-		status = "okay";
-	};
-
-	//D18
-	//EN_USB3_1_PWR
-	usb3_1_vcc: usb3_1_vcc {
-		compatible = "regulator-fixed";
-		regulator-name = "en_usb3_1_vcc";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc5v0>;
-		status = "okay";
-	};
-
-	//D19 //D20
-	//USBHUB_RSTn
-	usbhub_rstn: usbhub_rstn {
-		compatible = "regulator-fixed";
-		regulator-name = "usbhub_rstn";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc_3v3>;
-		status = "okay";
-	};
-
-	//D21 USBHUB0_PWR //Always enable
-	//D22 USBHUB1_PWR //Always enable
-
-	//CHECK_IT //Как это работает?
+	//CHECK_IT // Как это работает?
 	//D23 M2kB_PCIE_CFG1 //Автовыбор
 	//D24 M2kB_PCIE_CFG1 //Автовыбор
 
-	//D25
+	// D25
 	miniPCIe_1_5v: miniPCIe_1_5v {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_miniPCIe_1_5v";
