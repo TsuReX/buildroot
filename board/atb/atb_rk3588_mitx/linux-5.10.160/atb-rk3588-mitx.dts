@@ -11,12 +11,15 @@
 #include "dt-bindings/usb/pd.h"
 #include "rockchip/rk3588.dtsi"
 
+#include "atb-rk3588-mitx-mux-config.dtsi"
+
 #include "atb-rk3588-mitx-codecs.dtsi"
 #include "atb-rk3588-mitx-ethernet.dtsi"
 #include "atb-rk3588-mitx-pci.dtsi"
 #include "atb-rk3588-mitx-power.dtsi"
 #include "atb-rk3588-mitx-usb.dtsi"
 #include "atb-rk3588-mitx-video.dtsi"
+#include "atb-rk3588-mitx-wirelles.dtsi"
 
 / {
 	model = "ATB RK3588 MITX";
@@ -120,18 +123,6 @@
 	// 		  "Headphones", "ROUT1";
 	// 	dais = <&i2s0_8ch_p0>;
 	// };
-	
-	sdio_pwrseq: sdio-pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		clocks = <&rtc_clock>; // <----------------------------------!!!
-		clock-names = "ext_clock"; // <----------------------------------!!!
-		pinctrl-names = "default";
-		pinctrl-0 = <&wlan_en_pin>;
-
-		//post-power-on-delay-ms = <200>;   //CHECK_IT
-		// SDMMC_PWREN_
-		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
-	};
 
 	// If hdmirx node is disabled, delete the reserved-memory node here. 
 	reserved-memory {
@@ -365,12 +356,6 @@
 			rockchip,pins = <4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-	
-	sdio-pwrseq {
-		wlan_en_pin: wlan-en-pin {
-			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
 };
 
 &rng {
@@ -505,37 +490,6 @@
 	};
 };
 
-
-//=============================================================================
-//  UART
-//=============================================================================
-
-&uart1 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
-};
-
-//=============================================================================
-//  UART
-//=============================================================================
-&uart1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
-	uart-has-rtscts;
-	status = "okay";
-
-	//A1    //8223A-SR
-	bluetooth {
-		compatible = "qcom,qca9377-bt";
-		clocks = <&rtc_clock>;
-		clock-names = "lpo";
-		//enable-gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_HIGH>; // BT_RST
-		max-speed = <2000000>;
-		//pinctrl-names = "default";
-		//pinctrl-0 = <&bt_en_pin>;
-	};
-};
 
 //FIQ Debugger
 //D33 //USB_UART //DBG_UART //RS232_1 (Не напаян)
