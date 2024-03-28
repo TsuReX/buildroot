@@ -83,19 +83,6 @@
 		};
 	};
 
-	// D13
-	eMMC_MUX_ENA: eMMC_MUX_ENA {
-		compatible = "regulator-fixed";
-		regulator-name = "eMMC_MUX_ENA";
-		regulator-always-on;
-		regulator-boot-on;
-		// enable-active-low; // FSPI
-		enable-active-high; // eMMC
-		gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc3v3>;
-	};
-
-
 	//D39 //D40
 	//CHECK_IT //TEST
 	/*
@@ -156,12 +143,18 @@
 	test-power {
 		status = "okay";
 	};
-	
+
 	fan0: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		cooling-levels = <72 94 117 139 162 184 207 229 255>;
-		pwms = <&pwm12 0 10000 0>;
+
+		pwms = <&pwm12 0 50000 0>;
+		cooling-levels = <0 150 200 255>;
+		rockchip,temp-trips = < 
+			50000	1 /* 50℃ -> duty = 150/255 (58.8%) */
+			60000	2 /* 60℃ -> duty = 200/255 (78.4%) */
+			70000	3 /* 70℃ -> duty = 255/255 (100%)  */
+		>;
 	};
 };
 
@@ -288,61 +281,6 @@
 	status = "okay";
 };
 
-//=============================================================================
-//  //SPI FLASH //Muxed with eMMC   //Control by D13 (TS3A27518ERTWR)
-//=============================================================================
-//eMMC_MUX_ENA
-/*
-&sfc {
-	status = "okay";
-	//max-freq = <50000000>;
-	max-freq = <20000000>;
-	#address-cells = <1>;
-	#size-cells = <0>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&fspim0_pins>;
-
-	//D12
-	spi_flash: spi-flash@0 {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		compatible = "jedec,spi-nor";
-		reg = <0x0>;
-		//spi-max-frequency = <50000000>;
-		spi-max-frequency = <20000000>;
-		spi-tx-bus-width = <1>;
-		//spi-rx-bus-width = <4>;
-		spi-rx-bus-width = <1>;
-		status = "okay";
-	};
-};
-*/
-//=============================================================================
-//  SDIO SD eMMC
-//=============================================================================
-// D11 - eMMC
-// eMMC_MUX_ENA
-&sdhci {
-	bus-width = <8>;
-	non-removable;
-	max-frequency = <200000000>;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
-	status = "okay";
-};
-
-// SD Card
-&sdmmc {
-	bus-width = <4>;
-	cap-sd-highspeed;
-	disable-wp;
-	sd-uhs-sdr50;
-	vmmc-supply = <&vcc_3v3>;
-	vqmmc-supply = <&vccio_sd_s0>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc_det>;
-	status = "okay";
-};
 
 //=============================================================================
 //  PINCTL
@@ -385,111 +323,16 @@
 //		regulator-suspend-microvolt = <1800000>;
 //	};
 //};
+
 &saradc {
 	status = "okay";
 	vref-supply = <&vcca_1v8_s0>;
 };
 
-
-//=============================================================================
-//  THERMAL
-//=============================================================================
-
-//thermal_zones
+// thermal_zones
 &tsadc {
 	status = "okay";
 };
-
-&soc_thermal {
-	polling-delay = <1000>;
-	polling-delay-passive = <2000>;
-	trips {
-		trip0: trip-point@0 {
-			temperature = <45000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip1: trip-point@1 {
-			temperature = <50000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip2: trip-point@2 {
-			temperature = <55000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip3: trip-point@3 {
-			temperature = <60000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip4: trip-point@4 {
-			temperature = <65000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip5: trip-point@5 {
-			temperature = <70000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		trip6: trip-point@6 {
-			temperature = <75000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		pcritical: trip-point@7 {
-			temperature = <80000>;
-			hysteresis = <1000>;
-			type = "active";
-		};
-	};
-	
-	cooling-maps {
-		map0 {
-			trip = <&trip0>;
-			cooling-device = <&fan0 0 1>;
-			contribution = <1024>;
-		};
-		map1 {
-			trip = <&trip1>;
-			cooling-device = <&fan0 1 2>;
-			contribution = <1024>;
-		};
-		map2 {
-			trip = <&trip2>;
-			cooling-device = <&fan0 2 3>;
-			contribution = <1024>;
-		};
-		map3 {
-			trip = <&trip3>;
-			cooling-device = <&fan0 3 4>;
-			contribution = <1024>;
-		};
-		map4 {
-			trip = <&trip4>;
-			cooling-device = <&fan0 4 5>;
-			contribution = <1024>;
-		};
-		map5 {
-			trip = <&trip5>;
-			cooling-device = <&fan0 5 6>;
-			contribution = <1024>;
-		};
-		map6 {
-			trip = <&trip6>;
-			cooling-device = <&fan0 6 7>;
-			contribution = <1024>;
-		};
-		map7 {
-			trip = <&pcritical>;
-			cooling-device = <&fan0 7 8>;
-			contribution = <1024>;
-		};
-	};
-};
-
 
 //FIQ Debugger
 //D33 //USB_UART //DBG_UART //RS232_1 (Не напаян)
@@ -526,12 +369,11 @@
 //  PWM
 //=============================================================================
 
-//Fan Speed Control
-//CPU_PWM
+// Fan Speed Control
+// CPU_PWM
 &pwm12 {
 	status = "okay";
 	pinctrl-0 = <&pwm12m1_pins>;
-	
 };
 
 //=============================================================================
