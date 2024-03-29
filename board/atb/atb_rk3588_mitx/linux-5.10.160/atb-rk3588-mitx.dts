@@ -31,7 +31,7 @@
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
 	};
-	
+
 	chosen: chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0";
 		stdout-path = "serial2:115200n8";
@@ -50,7 +50,7 @@
 		pinctrl-0 = <&uart2m0_xfer>;
 		status = "okay";
 	};
-	
+
 	cspmu: cspmu@fd10c000 {
 		compatible = "rockchip,cspmu";
 		reg = <0x0 0xfd10c000 0x0 0x1000>,
@@ -74,7 +74,7 @@
 			  <0x0 0xfd126000 0x0 0x1000>,
 			  <0x0 0xfd127000 0x0 0x1000>;
 	};
-	
+
 	firmware {
 		optee: optee {
 			compatible = "linaro,optee-tz";
@@ -99,7 +99,7 @@
 		status = "disabled";
 	};
 	*/
-	
+
 	// sound {
 	// 	compatible = "audio-graph-card";
 	// 	label = "rockchip,es8388-codec";
@@ -139,7 +139,7 @@
 			pmsg-size = <0x50000>;
 		};
 	};
-	
+
 	test-power {
 		status = "okay";
 	};
@@ -164,16 +164,7 @@
 	pinctrl-0 = <&i2c4m2_xfer>;
 	status = "okay";
 
-	//X20 (M.2 key B) SMBUS
-
-	//D37  //Serial AT24C02C-SSHM-T
-	//CHECK_IT //FIx addr
-	eeprom@50 {
-		compatible = "atmel,24c02";
-		reg = <0x52>;
-	};
-
-	//D38   //Temp Sensor TMP102
+	// D38 - Temp Sensor TMP102
 	tmp102: tmp102@48{
 		compatible = "ti,tmp102";
 		reg = <0x48>;
@@ -181,7 +172,7 @@
 		interrupts = <RK_PD3 IRQ_TYPE_LEVEL_LOW>;
 		#thermal-sensor-cells = <0>;
 	};
-	
+
 	// D43
 	hym8563: rtc@51 {
 		compatible = "haoyu,hym8563";
@@ -194,7 +185,13 @@
 			clock-frequency = <32768>;
 		};
 	};
-	
+
+	// D37
+	eeprom@50 {
+		compatible = "atmel,24c02";
+		reg = <0x50>;
+	};
+
 	// Optional
 	// X20 - m.2 Key B
 	// X38  - miniPCIe
@@ -269,21 +266,22 @@
 };
 
 //=============================================================================
-//  //LPDDR4
+// LPDDR4
 //=============================================================================
-//D9 D10    //LPDDR4
+// D9 D10
 &dmc {
 	status = "okay";
 	center-supply = <&vdd_ddr_s0>;
 	mem-supply = <&vdd_log_s0>;
 };
+
 &dfi {
 	status = "okay";
 };
 
 
 //=============================================================================
-//  PINCTL
+// PINCTL
 //=============================================================================
 &pinctrl {
 	watchdog{
@@ -384,7 +382,7 @@
 	status = "okay";
 };
 
-//CHECK_IT
+// CHECK_IT
 &rkcif {
 	status = "okay";
 };
