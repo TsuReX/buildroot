@@ -37,7 +37,7 @@
 		stdout-path = "serial2:115200n8";
 	};
 
-	//DEBUG ON UART2
+	// DEBUG ON UART2
 	fiq_debugger: fiq-debugger {
 		compatible = "rockchip,fiq-debugger";
 		rockchip,serial-id = <2>;
@@ -151,9 +151,9 @@
 		pwms = <&pwm12 0 50000 0>;
 		cooling-levels = <0 150 200 255>;
 		rockchip,temp-trips = < 
-			50000	1 /* 50℃ -> duty = 150/255 (58.8%) */
-			60000	2 /* 60℃ -> duty = 200/255 (78.4%) */
-			70000	3 /* 70℃ -> duty = 255/255 (100%)  */
+			30000	1 /* 30℃ -> duty = 150/255 (58.8%) */
+			40000	2 /* 40℃ -> duty = 200/255 (78.4%) */
+			50000	3 /* 50℃ -> duty = 255/255 (100%)  */
 		>;
 	};
 };
