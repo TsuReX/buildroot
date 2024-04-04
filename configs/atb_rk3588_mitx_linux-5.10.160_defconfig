@@ -20,6 +20,7 @@ BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/armbian/linux-rockchip"
 BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="linux-5.10-gen-rkr5.1"
+BR2_LINUX_KERNEL_PATCH="board/atb/atb_rk3588_mitx/linux-5.10.160/drm-rockchip-vop2.patch"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/atb/atb_rk3588_mitx/linux-5.10.160/atb_rk3588_mitx_linux-5.10.160_defconfig"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
