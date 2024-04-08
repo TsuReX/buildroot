@@ -4,8 +4,8 @@
 // * либо Wi-Fi
 
 /* SD cadr muxed with WIFI */
-// #define ATB_MUX_SDCARD
-#define ATB_MUX_WIFI
+#define ATB_MUX_SDCARD
+// #define ATB_MUX_WIFI
 
 //==============================================================================
 // Так же EMMC и FSPI находятся на одних пинах.
