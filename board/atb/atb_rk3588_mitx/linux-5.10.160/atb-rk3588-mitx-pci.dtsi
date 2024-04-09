@@ -1,3 +1,71 @@
+/*
+connector X18 - SATA_HDD
+	SATA30_0
+*/
+
+/*
+connector X21 - miniPCIe
+	PCIE20_2 vs SATA30_2
+	reset - GPIO4_C1
+*/
+
+/*
+connector X20 - M.2 Key B
+	multiplexed with
+connector X38 - miniPCIe
+
+	multiplexor D45
+		jumper X37 on: X38 - miniPCIe
+		jumper X37 off: X20 - M.2 Key B
+
+	PCIE20_1 vs SATA30_1
+	reset - GPIO1_A2
+*/
+
+/*
+connector X22 - PCIe x4
+	PCIE30_0
+	PCIE30_1
+	PCIE30_2
+	PCIE30_3
+	reset - GPIO1_B2
+*/
+
+//------------------------------------------------------------------------------
+
+// Rockchip RK3588 TRM V1.0-Part1-20220309.pdf
+// Chapter 16 Multiple Protocol PHY Subsystem
+// 16.2 Block Diagram
+
+/*
+Combo PIPE PHY0 - 0xFEE00000
+	combphy0_ps
+		pcie2x1l2 (PCIE20_0)
+		sata0 (SATA30_0)
+
+Combo PIPE PHY1 - 0xFEE10000
+	combphy1_ps:
+		pcie2x1l0 (PCIE20_1)
+		sata1 (SATA30_1)
+
+
+Combo PIPE PHY2 - 0xFEE20000
+	combphy2_psu:
+		pcie2x1l1 (PCIE20_2)
+		sata2 (SATA30_2)
+		usbhost3_0
+			usbhost_dwc3_0
+
+PCIe 3.0 (PHY 0 + PHY 1)
+	pcie30phy:
+		pcie3x2
+		pcie3x4
+*/
+
+//------------------------------------------------------------------------------
+
+#include "dt-bindings/phy/phy-snps-pcie3.h"
+
 / {
 	// D25
 	miniPCIe_1_5v: miniPCIe_1_5v {
@@ -45,76 +113,37 @@
 		vin-supply = <&vcc4v0_sys>;
 		status = "okay";
 	};
-	
-	// Pcie reset.
-	PCIe_RST_: PCIe-RST- {
-		compatible = "regulator-fixed";
-		regulator-name = "PCIe_RST_";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc4v0_sys>;
-		status = "okay";
-	};
-	
-	// X21
-	// m.2 and miniPCIe reset 
-	miniPCIe_RST_: miniPCIe_RST_ {
-		compatible = "regulator-fixed";
-		regulator-name = "miniPCIe_RST_";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc4v0_sys>;
-		status = "okay";
-	};
-	
-	// X38
-	// m.2 and miniPCIe reset 
-	M2kB_PCIE_RSTn: M2kB_PCIE_RSTn {
-		compatible = "regulator-fixed";
-		regulator-name = "M2kB_PCIE_RSTn";
-		regulator-boot-on;
-		regulator-always-on;
-		enable-active-high;
-		gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vcc4v0_sys>;
-		status = "okay";
-	};
-
-	// D45 - mPCIE_m2_SEL // ВХОД! Рулится джампером X37
-
-	// Как это работает?
-	// D23 - M2kB_PCIE_CFG1 // Автовыбор
-	// D24 - M2kB_PCIE_CFG1 // Автовыбор
-
 };
 
 &pinctrl {
 	pcie {
-		//miniPCIe_RST_
-		minipcie_rst_pin: minipcie_rst_pin {
+		// M2kB_PCIE_RSTn
+		pcie20_phy1_reset: pcie20-phy1-reset {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// miniPCIe_RST_
+		pcie20_phy2_reset: pcie20-phy2-reset {
 			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-		//PCIe_RST_
-		pcie_rst_pin: pcie_rst_pin {
+
+		// PCIe_RST_
+		pcie30_reset: pcie30-reset {
 			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
 
 
-//=============================================================================
-// PCIE SATA
-//============================================================================
-//-----------------------------------------------------------------------------
-//          PCIe20_0 muxing with SATA30_0
-//pcie2x1l2 is PCIe20_0
-//pcie2x1l2 can use COMBO_PHY_0_LANE0 only
+//==============================================================================
+// connector X18 - SATA_HDD
+//==============================================================================
 
-//SATA_0_
+// Combo PIPE PHY0 - 0xFEE00000
+// 	combphy0_ps
+// 		pcie2x1l2 (PCIE20_0)
+// 		sata0 (SATA30_0)
+
 &combphy0_ps {
 	status = "okay";
 };
@@ -126,95 +155,107 @@
 &sata0 {
 	status = "okay";
 };
-//-----------------------------------------------------------------------------
-//          PCIe20_1 muxing with SATA30_1
-//is PCIe20_1
-//pcie2x1l0 can use PCIE30_PORT0_LANE1 or COMBO_PHY_1_LANE0. Controlled by pcie30-phymode.
 
-//	This controller is phy for sata1 or pcie2x1l0 controllers
-&combphy1_ps {
-	status = "okay";
-};
-//SATA_1
-//X20   M.2 Key B SATA
-&sata1 {
-	//	If this controller is enabled, pcie2x1l0 must be disabled
-	status = "disabled";
-	//status = "okay";
-};
+//==============================================================================
+// connector X21 - miniPCIe
+//==============================================================================
 
-//PCIE
-//X38 miniPCIe on COMBO_PHY_1_LANE0
-//	If this controller is enabled, sata1 must be disabled
-&pcie2x1l0 {
-//M2kB_PCIE_RSTn
-	vpcie3v3-supply = <&vcc_3v3>;			
-	//status = "disabled";
-	status = "okay";
-};
+// Combo PIPE PHY2 - 0xFEE20000
+// 	combphy2_psu:
+// 		pcie2x1l1 (PCIE20_2)
+// 		sata2 (SATA30_2)
+// 		usbhost3_0
+// 			usbhost_dwc3_0
 
-//-----------------------------------------------------------------------------
-//          PCIe20_2 muxing with SATA30_2 and USB30_2 (usbhost3_0)
-//pcie2x1l1 is PCIe20_2
-//pcie2x1l1 can use PCIE30_PORT1_LANE1 or COMBO_PHY_2_LANE0. Controlled by pcie30-phymode.
-
-//PCIe20_2 is disabled now
 &combphy2_psu {
 	status = "okay";
 };
+
+// YOU SHOULD ENABLE ONLY ONE: SATA OR PCI
+
+&pcie2x1l1 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie20_phy2_reset>;
+	reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
+	// status = "okay";
+	status = "disabled";
+};
+
+&sata2 {
+	status = "okay";
+	// status = "disabled";
+};
+
+// disable unused USB on this ComboPHY
 &usbhost3_0 {
 	status = "disabled";
 };
+
 &usbhost_dwc3_0 {
 	status = "disabled";
 };
-&sata2 {
-	status = "disabled";
-};
 
-//PCIe20_2
-//OUT Lane D on PCIE30_PORT1_LANE1  
-//x21 MiniPCIe
-&pcie2x1l1 {
-	//miniPCIe_RST_
-	//reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
-	//pinctrl-names = "default";
-	//pinctrl-0 = <&minipcie_rst_pin>;
-	vpcie3v3-supply = <&vcc_3v3>;	
+//==============================================================================
+// connector X20 - M.2 Key B
+// 	multiplexed with
+// connector X38 - miniPCIe
+//==============================================================================
+
+// Combo PIPE PHY1 - 0xFEE10000
+// 	combphy1_ps:
+// 		pcie2x1l0 (PCIE20_1)
+// 		sata1 (SATA30_1)
+
+&combphy1_ps {
 	status = "okay";
 };
 
-//=============================================================================
-//  //PCIe3X4   //PCIE30_PORT0  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
+// YOU SHOULD ENABLE ONLY ONE: SATA OR PCI
+
+&pcie2x1l0 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie20_phy1_reset>;
+	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
+	// status = "okay";
+	status = "disabled";
+};
+
+&sata1 {
+	status = "okay";
+	// status = "disabled";
+};
+
+//==============================================================================
+// connector X22 - PCIe x4
+//==============================================================================
+
+// PCIe 3.0 (PHY 0 + PHY 1)
+// 	pcie30phy:
+// 		pcie3x2
+// 		pcie3x4
+
+
 &pcie30phy {
-//PHY_MODE_PCIE_AGGREGATION 4	/* PCIe3x4 */
-//PHY_MODE_PCIE_NANBNB	0	/* P1:PCIe3x2  +  P0:PCIe3x2 */
-//PHY_MODE_PCIE_NANBBI	1	/* P1:PCIe3x2  +  P0:PCIe3x1*2 */
-//PHY_MODE_PCIE_NABINB	2	/* P1:PCIe3x1*2 + P0:PCIe3x2 */
-//PHY_MODE_PCIE_NABIBI	3	/* P1:PCIe3x1*2 + P0:PCIe3x1*2 */
+// PHY_MODE_PCIE_AGGREGATION     PCIe3x4
+// PHY_MODE_PCIE_NANBNB          P1:PCIe3x2  +  P0:PCIe3x2
+// PHY_MODE_PCIE_NANBBI          P1:PCIe3x2  +  P0:PCIe3x1*2
+// PHY_MODE_PCIE_NABINB          P1:PCIe3x1*2 + P0:PCIe3x2
+// PHY_MODE_PCIE_NABIBI          P1:PCIe3x1*2 + P0:PCIe3x1*2
 	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;   
 	status = "okay";
 };
 
-//X22 pcie slot
 &pcie3x4 {
-	//CHECK_IT  //Set this
-	//PCIe_RST_
-	//reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-	//pinctrl-names = "default";
-	//pinctrl-0 = <&pcie_rst_pin>;
 	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie30_reset>;
+	reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
-//=============================================================================
-//  //PCIe3X2   //PCIE30_PORT1  //Subsystem Protocol Link Mapping
-//  //PCIe_RST_
-//=============================================================================
+
 &pcie3x2 {
 	vpcie3v3-supply = <&vcc_3v3>;
 	status = "disabled";
 };
-
-
