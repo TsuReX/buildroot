@@ -1,0 +1,72 @@
+
+/ {
+	es8388_sound: es8388-sound {
+		status = "okay";
+		compatible = "rockchip,multicodecs-card";
+		rockchip,card-name = "rockchip,es8388";
+		rockchip,format = "i2s";
+		rockchip,mclk-fs = <256>;
+		rockchip,cpu = <&i2s0_8ch>;
+		rockchip,codec = <&es8388>;
+		rockchip,audio-routing =
+			"Headphone", "LOUT1",
+			"Headphone", "ROUT1",
+			"Speaker", "LOUT2",
+			"Speaker", "ROUT2",
+			"Headphone", "Headphone Power",
+			"Headphone", "Headphone Power",
+			"Speaker", "Speaker Power",
+			"Speaker", "Speaker Power",
+			"LINPUT1", "Main Mic",
+			"LINPUT2", "Main Mic",
+			"RINPUT1", "Headset Mic",
+			"RINPUT2", "Headset Mic";
+	};
+};
+
+&i2c7 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c7m0_xfer_pullup>;
+	status = "okay";
+
+	// D41
+	es8388: es8388@11 {
+		reg = <0x11>;
+		#sound-dai-cells = <0>;
+		compatible = "everest,es8388";
+		DVDD-supply = <&vcc_1v8_s0>;
+		AVDD-supply = <&vcca_3v3_s0>;
+		PVDD-supply = <&vcc_1v8_s0>;
+		HPVDD-supply = <&vcca_3v3_s0>;
+		clocks = <&mclkout_i2s0>;
+		clock-names = "mclk";
+		assigned-clocks = <&mclkout_i2s0>;
+		assigned-clock-rates = <12288000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2s0_mclk>;
+		status = "okay";
+	};
+};
+
+&i2s0_8ch {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2s0_lrck
+				 &i2s0_sclk
+				 &i2s0_sdi0
+				 &i2s0_sdo0>;
+};
+
+&pinctrl {
+	i2c7 {
+		/omit-if-no-ref/
+		i2c7m0_xfer_pullup: i2c7m0-xfer-pullup {
+			rockchip,pins =
+				/* i2c7_scl_m0 */
+				<1 RK_PD0 9 &pcfg_pull_up_smt>,
+				/* i2c7_sda_m0 */
+				<1 RK_PD1 9 &pcfg_pull_up_smt>;
+		};
+	};
+};

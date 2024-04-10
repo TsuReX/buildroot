@@ -17,6 +17,7 @@
 #include "atb-rk3588-mitx-ethernet.dtsi"
 #include "atb-rk3588-mitx-pci.dtsi"
 #include "atb-rk3588-mitx-power.dtsi"
+#include "atb-rk3588-mitx-sound.dtsi"
 #include "atb-rk3588-mitx-usb.dtsi"
 #include "atb-rk3588-mitx-video.dtsi"
 #include "atb-rk3588-mitx-wirelles.dtsi"
@@ -100,17 +101,6 @@
 	};
 	*/
 
-	// sound {
-	// 	compatible = "audio-graph-card";
-	// 	label = "rockchip,es8388-codec";
-	// 	widgets = "Microphone", "Mic Jack",
-	// 		  "Headphone", "Headphones";
-	// 	routing = "LINPUT2", "Mic Jack",
-	// 		  "Headphones", "LOUT1",
-	// 		  "Headphones", "ROUT1";
-	// 	dais = <&i2s0_8ch_p0>;
-	// };
-
 	// If hdmirx node is disabled, delete the reserved-memory node here. 
 	reserved-memory {
 		#address-cells = <2>;
@@ -150,10 +140,10 @@
 
 		pwms = <&pwm12 0 50000 0>;
 		cooling-levels = <0 150 200 255>;
-		rockchip,temp-trips = < 
-			30000	1 /* 30℃ -> duty = 150/255 (58.8%) */
-			40000	2 /* 40℃ -> duty = 200/255 (78.4%) */
-			50000	3 /* 50℃ -> duty = 255/255 (100%)  */
+		rockchip,temp-trips = <
+			50000	1 /* 50℃ -> duty = 150/255 (58.8%) */
+			60000	2 /* 60℃ -> duty = 200/255 (78.4%) */
+			70000	3 /* 70℃ -> duty = 255/255 (100%)  */
 		>;
 	};
 };
@@ -194,57 +184,8 @@
 
 	// Optional
 	// X20 - m.2 Key B
-	// X38  - miniPCIe
+	// X38 - miniPCIe
 };
-
-// &i2c7 {
-// 	pinctrl-0 = <&i2c7m0_xfer>;
-// 	status = "okay";
-
-// 	//D41
-// 	es8388: audio-codec@11 {
-// 		compatible = "everest,es8388";
-// 		reg = <0x11>;
-// 		assigned-clock-rates = <12288000>;
-// 		assigned-clocks = <&cru I2S0_8CH_MCLKOUT>;
-// 		AVDD-supply = <&vcca_3v3_s0>;
-// 		clock-names = "mclk";
-// 		clocks = <&cru I2S0_8CH_MCLKOUT>;
-// 		DVDD-supply = <&vcc_1v8_s0>;
-// 		HPVDD-supply = <&vcca_3v3_s0>;
-// 		PVDD-supply = <&vcc_1v8_s0>;
-// 		#sound-dai-cells = <0>;
-
-// 		port {
-// 			es8388_p0_0: endpoint {
-// 				remote-endpoint = <&i2s0_8ch_p0_0>;
-// 			};
-// 		};
-// 	};
-// };
-
-//=============================================================================
-//  I2S
-//=============================================================================
-//I2S0
-//Typical digital audio I/O
-// &i2s0_8ch {
-// 	pinctrl-names = "default";
-// 	pinctrl-0 = <&i2s0_lrck
-// 			 &i2s0_mclk
-// 			 &i2s0_sclk
-// 			 &i2s0_sdi0
-// 			 &i2s0_sdo0>;
-// 	status = "okay";
-
-// 	i2s0_8ch_p0: port {
-// 		i2s0_8ch_p0_0: endpoint {
-// 			dai-format = "i2s";
-// 			mclk-fs = <256>;
-// 			remote-endpoint = <&es8388_p0_0>;
-// 		};
-// 	};
-// };
 
 //=============================================================================
 // CPU
