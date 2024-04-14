@@ -99,7 +99,7 @@
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
-			load = <0x00c00000>;
+			load = <0x00B00000>; // Для работы debug сборки может понадобится перенести дальше. Тогда по идее надо будет подправить gRk356xTokenSpaceGuid.PcdFdtBaseAddress|0x00B00000|UINT64|0x00000001 в edk2-rockchip/Platform/Rockchip/Rk356x/Rk356x.dec (не проверенно)
 			hash {
 				algo = "sha256";
 			};
