@@ -26,7 +26,7 @@ atb_rk3588_mitx_linux_5_10_160_build:
         - board/atb/atb_rk3588_mitx/linux-5.10.160/*
         - board/atb/atb_rk3588_mitx/uboot/*
         - board/atb/atb_rk3588_mitx/overlay/*
-        - board/atb/common/rk3588-post-image.sh
+        - board/atb/atb_rk3588_mitx/post-image.sh
 
 atb_rk3588_mitx_linux_5_10_160_upload_artifact:
   stage: upload_artifact

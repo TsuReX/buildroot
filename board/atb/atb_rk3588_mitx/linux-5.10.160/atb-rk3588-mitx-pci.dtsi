@@ -1,0 +1,261 @@
+/*
+connector X18 - SATA_HDD
+	SATA30_0
+*/
+
+/*
+connector X21 - miniPCIe
+	PCIE20_2 vs SATA30_2
+	reset - GPIO4_C1
+*/
+
+/*
+connector X20 - M.2 Key B
+	multiplexed with
+connector X38 - miniPCIe
+
+	multiplexor D45
+		jumper X37 on: X38 - miniPCIe
+		jumper X37 off: X20 - M.2 Key B
+
+	PCIE20_1 vs SATA30_1
+	reset - GPIO1_A2
+*/
+
+/*
+connector X22 - PCIe x4
+	PCIE30_0
+	PCIE30_1
+	PCIE30_2
+	PCIE30_3
+	reset - GPIO1_B2
+*/
+
+//------------------------------------------------------------------------------
+
+// Rockchip RK3588 TRM V1.0-Part1-20220309.pdf
+// Chapter 16 Multiple Protocol PHY Subsystem
+// 16.2 Block Diagram
+
+/*
+Combo PIPE PHY0 - 0xFEE00000
+	combphy0_ps
+		pcie2x1l2 (PCIE20_0)
+		sata0 (SATA30_0)
+
+Combo PIPE PHY1 - 0xFEE10000
+	combphy1_ps:
+		pcie2x1l0 (PCIE20_1)
+		sata1 (SATA30_1)
+
+
+Combo PIPE PHY2 - 0xFEE20000
+	combphy2_psu:
+		pcie2x1l1 (PCIE20_2)
+		sata2 (SATA30_2)
+		usbhost3_0
+			usbhost_dwc3_0
+
+PCIe 3.0 (PHY 0 + PHY 1)
+	pcie30phy:
+		pcie3x2
+		pcie3x4
+*/
+
+//------------------------------------------------------------------------------
+
+#include "dt-bindings/phy/phy-snps-pcie3.h"
+
+/ {
+	// D25
+	miniPCIe_1_5v: miniPCIe_1_5v {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_miniPCIe_1_5v";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <1500000>;
+		regulator-max-microvolt = <1500000>;
+		vin-supply = <&vcc3v3>;
+	};
+
+	// Pcie host power.
+	PCIE_EXT_PWREN_: PCIE_EXT_PWREN_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE_EXT_PWREN_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio1 RK_PB3 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+
+	// Pcie host clock.
+	PCIE_x4_CLK_ENA_: PCIE_x4_CLK_ENA_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE_x4_CLK_ENA_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+
+	// Pcie host clock.
+	PCIE30_CPU_CLK_ENA_: PCIE30_CPU_CLK_ENA_ {
+		compatible = "regulator-fixed";
+		regulator-name = "PCIE30_CPU_CLK_ENA_";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-low;
+		gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_LOW>;
+		vin-supply = <&vcc4v0_sys>;
+		status = "okay";
+	};
+};
+
+&pinctrl {
+	pcie {
+		// M2kB_PCIE_RSTn
+		pcie20_phy1_reset: pcie20-phy1-reset {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// miniPCIe_RST_
+		pcie20_phy2_reset: pcie20-phy2-reset {
+			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// PCIe_RST_
+		pcie30_reset: pcie30-reset {
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+
+//==============================================================================
+// connector X18 - SATA_HDD
+//==============================================================================
+
+// Combo PIPE PHY0 - 0xFEE00000
+// 	combphy0_ps
+// 		pcie2x1l2 (PCIE20_0)
+// 		sata0 (SATA30_0)
+
+&combphy0_ps {
+	status = "okay";
+};
+
+&pcie2x1l2 {
+	status = "disabled";
+};
+
+&sata0 {
+	status = "okay";
+};
+
+//==============================================================================
+// connector X21 - miniPCIe
+//==============================================================================
+
+// Combo PIPE PHY2 - 0xFEE20000
+// 	combphy2_psu:
+// 		pcie2x1l1 (PCIE20_2)
+// 		sata2 (SATA30_2)
+// 		usbhost3_0
+// 			usbhost_dwc3_0
+
+&combphy2_psu {
+	status = "okay";
+};
+
+// YOU SHOULD ENABLE ONLY ONE: SATA OR PCI
+
+&pcie2x1l1 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie20_phy2_reset>;
+	reset-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
+	// status = "okay";
+	status = "disabled";
+};
+
+&sata2 {
+	status = "okay";
+	// status = "disabled";
+};
+
+// disable unused USB on this ComboPHY
+&usbhost3_0 {
+	status = "disabled";
+};
+
+&usbhost_dwc3_0 {
+	status = "disabled";
+};
+
+//==============================================================================
+// connector X20 - M.2 Key B
+// 	multiplexed with
+// connector X38 - miniPCIe
+//==============================================================================
+
+// Combo PIPE PHY1 - 0xFEE10000
+// 	combphy1_ps:
+// 		pcie2x1l0 (PCIE20_1)
+// 		sata1 (SATA30_1)
+
+&combphy1_ps {
+	status = "okay";
+};
+
+// YOU SHOULD ENABLE ONLY ONE: SATA OR PCI
+
+&pcie2x1l0 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie20_phy1_reset>;
+	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
+	// status = "okay";
+	status = "disabled";
+};
+
+&sata1 {
+	status = "okay";
+	// status = "disabled";
+};
+
+//==============================================================================
+// connector X22 - PCIe x4
+//==============================================================================
+
+// PCIe 3.0 (PHY 0 + PHY 1)
+// 	pcie30phy:
+// 		pcie3x2
+// 		pcie3x4
+
+
+&pcie30phy {
+// PHY_MODE_PCIE_AGGREGATION     PCIe3x4
+// PHY_MODE_PCIE_NANBNB          P1:PCIe3x2  +  P0:PCIe3x2
+// PHY_MODE_PCIE_NANBBI          P1:PCIe3x2  +  P0:PCIe3x1*2
+// PHY_MODE_PCIE_NABINB          P1:PCIe3x1*2 + P0:PCIe3x2
+// PHY_MODE_PCIE_NABIBI          P1:PCIe3x1*2 + P0:PCIe3x1*2
+	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;   
+	status = "okay";
+};
+
+&pcie3x4 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie30_reset>;
+	reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&pcie3x2 {
+	vpcie3v3-supply = <&vcc_3v3>;
+	status = "disabled";
+};

@@ -1,0 +1,17 @@
+
+// WI-Fi находится в файле "atb-rk3588-mitx-mux-config.dtsi"
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+	uart-has-rtscts;
+	status = "okay";
+
+	// A1 - 8223A-SR
+	bluetooth {
+		compatible = "qcom,qca9377-bt";
+		max-speed = <2000000>;
+		clocks = <&rtc_clock>;
+		clock-names = "rtc_clock";
+	};
+};

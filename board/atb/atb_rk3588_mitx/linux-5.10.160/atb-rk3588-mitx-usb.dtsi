@@ -1,0 +1,149 @@
+/ {
+	// D16 - EN_USB2_0_PWR
+	usb2_0_vcc: usb2_0_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb2_0_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	// D17 - EN_USB3_0_PWR
+	usb3_0_vcc: usb3_0_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb3_0_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	// D18 - EN_USB3_1_PWR
+	usb3_1_vcc: usb3_1_vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "en_usb3_1_vcc";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0>;
+		status = "okay";
+	};
+
+	// D19, D20 - USBHUB_RSTn
+	usbhub_rstn: usbhub_rstn {
+		compatible = "regulator-fixed";
+		regulator-name = "usbhub_rstn";
+		regulator-boot-on;
+		regulator-always-on;
+		enable-active-high;
+		gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc_3v3>;
+		status = "okay";
+	};
+
+	// D21 - USBHUB0_PWR // Always enable
+	// D22 - USBHUB1_PWR // Always enable
+};
+
+//==============================================================================
+// USB 2.0
+//==============================================================================
+
+////USB20_HOST0
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy2_host {
+	status = "okay";
+};
+
+//USB20_HOST1
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&u2phy3_host {
+	status = "okay";
+};
+
+
+//==============================================================================
+// USB 3.0
+//==============================================================================
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usbdrd3_1{
+	status = "okay";
+};
+
+&usbdrd_dwc3_1{
+	status = "okay";
+};
+
+&usbdp_phy1 {
+	status = "okay";
+};
+
+&usbdp_phy1_u3 {
+	status = "okay";
+};
+
+//==============================================================================
+// USB 3.0
+//==============================================================================
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	rockchip,typec-vbus-det;
+	status = "okay";
+};
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&usbdp_phy0 {
+	status = "okay";
+};
+
+&usbdrd_dwc3_0 {
+	//dr_mode = "otg";
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbdp_phy0_u3 {
+	status = "okay";
+};

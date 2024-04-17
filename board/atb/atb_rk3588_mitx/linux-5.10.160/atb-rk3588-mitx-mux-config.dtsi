@@ -1,0 +1,161 @@
+//==============================================================================
+// На rk3588 один sdmmc. Поэтому на плате установлен мультиплексор:
+// * либо SD-карта
+// * либо Wi-Fi
+
+/* SD cadr muxed with WIFI */
+#define ATB_MUX_SDCARD
+// #define ATB_MUX_WIFI
+
+//==============================================================================
+// Так же EMMC и FSPI находятся на одних пинах.
+// * либо SD-карта
+// * либо Wi-Fi
+
+/* SPI flash muxed with eMMC */
+// #define ATB_MUX_SPIFLASH
+#define ATB_MUX_EMMC
+
+//==============================================================================
+// Check
+#if defined(ATB_MUX_SDCARD) && defined(ATB_MUX_WIFI)
+#error "Only one define allowed: ATB_MUX_SDCARD or ATB_MUX_WIFI"
+#endif
+
+#if defined(ATB_MUX_SPIFLASH) && defined(ATB_MUX_EMMC)
+#error "Only one define allowed: ATB_MUX_SPIFLASH or ATB_MUX_EMMC"
+#endif
+
+//==============================================================================
+// SPI Flash or EMMC
+#if defined(ATB_MUX_SPIFLASH)
+
+/{
+	// eMMC_MUX_ENA
+	mux_d13_spi_flash: mux-d13-spi-flash {
+		compatible = "regulator-fixed";
+		regulator-name = "mux_d13_spi_flash";
+		gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_LOW>;
+		enable-active-low;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+// QSPI
+&sfc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspim0_pins>;
+	status = "okay";
+
+	// D12
+	spi_flash: spi-flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0x0>;
+		spi-max-frequency = <100000000>;
+	};
+};
+
+#elif defined(ATB_MUX_EMMC)
+
+/{
+	mux_d13_emmc: mux-d13-emmc {
+		compatible = "regulator-fixed";
+		regulator-name = "mux_d13_emmc";
+		gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+// D11 - eMMC
+&sdhci {
+	bus-width = <8>;
+	non-removable;
+	max-frequency = <50000000>;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+#endif
+
+//==============================================================================
+// SD Card or Wi-Fi
+
+// Мультиплексором управляет SD_DETECT пин SD карты.
+// Когда SD карта вставлена - мультиплексор автоматически переключается на нее.
+// Когда SD карты нет - мультиплексор переключается на Wi-Fi.
+// При этом пин WIFI_ENABLE отключает питание SD карты
+
+#if defined(ATB_MUX_SDCARD)
+
+&sdmmc {
+	max-frequency = <50000000>;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr50;
+	vmmc-supply = <&vcc_3v3>;
+	vqmmc-supply = <&vccio_sd_s0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc_det>;
+	status = "okay";
+};
+
+#elif defined(ATB_MUX_WIFI)
+
+/{
+	wifi_pwrseq: wifi-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_pin>;
+
+		/* Toggle WIFI_ENABLE to reset the chip. */
+		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&pinctrl {
+	wireless {
+		wlan_en_pin: wlan-en-pin {
+			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&sdmmc {
+	// WiFi & BT combo module Fn-Link FG6233ASRB-01 / Fn-Link 8223A-SR
+	mmc-pwrseq = <&wifi_pwrseq>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd>;
+	vmmc-supply = <&vcc_3v3>;
+	vqmmc-supply = <&vccio_sd_s0>;
+
+	bus-width = <1>;
+	max-frequency = <50000000>;
+
+	cap-sd-highspeed;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	keep-power-in-suspend;
+	// enable-sdio-wakeup;
+	// cap-sdio-irq;
+	non-removable;
+	no-mmc;
+	no-sd;
+	no-1-8-v;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	qca_wifi: qca-wifi@1 {
+		reg = <1>;
+		compatible = "qcom,ath10k";
+	};
+};
+
+#endif
