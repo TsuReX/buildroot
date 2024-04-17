@@ -78,12 +78,14 @@ ${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3588" -T rksd -d ${CUSTOM_T
 UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 
 # Trusted Firmware-A (TF-A)
-# Rockchip SoCs expect TF-A’s BL31 (AARCH64) or BL32 (AARCH32)
-TFA_AARCH64=${RKBIN_DIR}/bin/rk35/rk3588_bl31_v1.42.elf
+BL31=${RKBIN_DIR}/bin/rk35/rk3588_bl31_v1.42.elf
+BL32=${RKBIN_DIR}/bin/rk35/rk3588_bl32_v1.14.bin
 
-check_file ${TFA_AARCH64}
+check_file ${BL31}
+check_file ${BL32}
 
-cp -f ${TFA_AARCH64} ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+cp -f ${BL31} ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+cp -f ${BL32} ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
 
 # The script make_fit_atf.sh requires working directory u-boot
 cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
