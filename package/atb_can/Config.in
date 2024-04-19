@@ -1,0 +1,16 @@
+config BR2_PACKAGE_ATB_CAN
+	bool "atb_can"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Build simple atb mcp2518 spi driver.
+
+if BR2_PACKAGE_ATB_CAN
+
+config BR2_PACKAGE_ATB_CAN_UTILS
+	bool "atb can utils utils"
+	help
+	  Build can utilites for atb can driver. (atb_cansend, atb_candump).
+endif
+
+comment "atb_can needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
