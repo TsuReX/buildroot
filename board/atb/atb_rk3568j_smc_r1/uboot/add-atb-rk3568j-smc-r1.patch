@@ -1,0 +1,750 @@
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 9d28a485be..4b8f9c9269 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -185,7 +185,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+ 	rk3568-nanopi-r5s.dtb \
+ 	rk3568-odroid-m1.dtb \
+ 	rk3568-radxa-e25.dtb \
+-	rk3568-rock-3a.dtb
++	rk3568-rock-3a.dtb \
++	atb-rk3568j-smc-r1.dtb
+ 
+ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
+ 	rk3588-edgeble-neu6a-io.dtb \
+diff --git a/arch/arm/dts/atb-rk3568j-smc-r1-ethernet.dtsi b/arch/arm/dts/atb-rk3568j-smc-r1-ethernet.dtsi
+new file mode 100644
+index 0000000000..4d9ea8902e
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568j-smc-r1-ethernet.dtsi
+@@ -0,0 +1,101 @@
++
++&gmac0 {
++	phy-mode = "rgmii";
++	clock_in_out = "input";
++
++	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
++	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac0_miim
++		     &gmac0_tx_bus2
++		     &gmac0_rx_bus2
++		     &gmac0_rgmii_clk
++		     &gmac0_rgmii_bus
++		     &gmac0_clkinout
++		     &gmac0_phy_reset>;
++/*
++	RGMII0_RST -> VT6(NMOS) -> RGMII0_RST_
++	0 -> 1
++	1 -> 0
++*/
++	snps,reset-gpio = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
++	snps,reset-active-high;
++
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
++
++	tx_delay = <0x3c>;
++	rx_delay = <0x2f>;
++
++	phy-handle = <&rgmii_phy0>;
++	status = "okay";
++};
++
++&gmac1 {
++	phy-mode = "rgmii";
++	clock_in_out = "input";
++
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac1m0_tx_bus2
++			&gmac1m0_rx_bus2
++			&gmac1m0_rgmii_clk
++			&gmac1m0_rgmii_bus
++			&gmac1m0_clkinout
++			&gmac1_phy_reset>;
++/*
++	RGMII1_RST -> VT7(NMOS) -> RGMII1_RST_
++	0 -> 1
++	1 -> 0
++*/
++	snps,reset-gpio = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
++	snps,reset-active-high;
++
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
++
++	tx_delay = <0x4f>;
++	rx_delay = <0x26>;
++
++	phy-handle = <&rgmii_phy1>;
++	status = "okay";
++};
++
++&mdio0 {
++	rgmii_phy0: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x1>;
++		led_status_value = <0x6940>;
++	};
++	
++    rgmii_phy1: ethernet-phy@2 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x2>;
++		led_status_value = <0x6940>;
++	};
++};
++
++&pinctrl {
++	ethernet {
++		gmac0_phy_reset: gmac0-phy-reset {
++/*
++			RGMII0_RST -> VT6(NMOS) -> RGMII0_RST_
++			0 -> 1
++			1 -> 0
++*/
++			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		gmac1_phy_reset: gmac1-phy-reset {
++/*
++			RGMII1_RST -> VT7(NMOS) -> RGMII1_RST_
++			0 -> 1
++			1 -> 0
++*/
++			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
+diff --git a/arch/arm/dts/atb-rk3568j-smc-r1-images.dtsi b/arch/arm/dts/atb-rk3568j-smc-r1-images.dtsi
+new file mode 100644
+index 0000000000..340985dc93
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568j-smc-r1-images.dtsi
+@@ -0,0 +1,123 @@
++
++#include <config.h>
++
++/ {
++	binman: binman {
++		multiple-images;
++	};
++};
++
++
++&binman {
++	simple-bin {
++		filename = "idblock_uboot_atf_tee.bin";
++		pad-byte = <0xff>;
++
++		mkimage {
++			filename = "idbloader.img";
++			args = "-n", CONFIG_SYS_SOC, "-T", "rksd";
++			multiple-data-files;
++
++
++			rockchip-tpl {
++			};
++
++/*			u-boot-tpl {
++			};
++*/
++			u-boot-spl {
++				atf-bl31-path = "123.bin";
++				filename = "my-spl.bin";
++			};
++		};
++
++		fit: fit {
++			description = "FIT image for U-Boot with bl31 (TF-A)";
++			#address-cells = <1>;
++			fit,fdt-list = "of-list";
++			filename = "u-boot.itb";
++			fit,external-offset = <CONFIG_FIT_EXTERNAL_OFFSET>;
++			fit,align = <512>;
++			offset = <CONFIG_SPL_PAD_TO>;
++			images {
++				u-boot {
++					description = "U-Boot";
++					type = "standalone";
++					os = "U-Boot";
++					arch = "arm64";
++					compression = "none";
++					load = <CONFIG_TEXT_BASE>;
++					entry = <CONFIG_TEXT_BASE>;
++					u-boot-nodtb {
++					};
++					hash {
++						algo = "sha256";
++					};
++				};
++
++				@atf-SEQ {
++					fit,operation = "split-elf";
++					description = "ARM Trusted Firmware";
++					type = "firmware";
++					arch = "arm64";
++					os = "arm-trusted-firmware";
++					compression = "none";
++					fit,load;
++					fit,entry;
++					fit,data;
++
++					atf-bl31 {
++						atf-bl31-path = "456.bin";
++						filename = "my-atf.bin";
++					};
++
++					hash {
++						algo = "sha256";
++					};
++
++				};
++				@tee-SEQ {
++					fit,operation = "split-elf";
++					description = "TEE";
++					type = "tee";
++					arch = "arm64";
++					os = "tee";
++					compression = "none";
++					fit,load;
++					fit,entry;
++					fit,data;
++
++					tee-os {
++						optional;
++					};
++					hash {
++						algo = "sha256";
++					};
++				};
++
++				@fdt-SEQ {
++					description = "fdt-NAME";
++					compression = "none";
++					type = "flat_dt";
++
++					hash {
++						algo = "sha256";
++					};
++
++				};
++			};
++
++			configurations {
++				default = "@config-DEFAULT-SEQ";
++				@config-SEQ {
++					description = "NAME.dtb";
++					fdt = "fdt-SEQ";
++
++					fit,firmware = "atf-1", "u-boot";
++
++					fit,loadables;
++				};
++			};
++		};
++	};
++};
+diff --git a/arch/arm/dts/atb-rk3568j-smc-r1-u-boot.dtsi b/arch/arm/dts/atb-rk3568j-smc-r1-u-boot.dtsi
+new file mode 100644
+index 0000000000..7ab7325146
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568j-smc-r1-u-boot.dtsi
+@@ -0,0 +1,182 @@
++
++#include "atb-rk3568j-smc-r1-images.dtsi"
++
++/ {
++
++	aliases {
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		mmc0 = &sdhci;
++		mmc1 = &sdmmc0;
++		mmc2 = &sdmmc1;
++		spi4 = &sfc;
++	};
++	
++	chosen {
++		stdout-path = &uart2;
++		u-boot,spl-boot-order = "same-as-spl", &sdmmc0, &sdhci;
++	};
++
++	dmc: dmc {
++		compatible = "rockchip,rk3568-dmc";
++		bootph-all;
++		status = "okay";
++	};
++
++	otp: nvmem@fe38c000 {
++		compatible = "rockchip,rk3568-otp";
++		reg = <0x0 0xfe38c000 0x0 0x4000>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		status = "okay";
++
++		cpu_id: id@a {
++			reg = <0x0a 0x10>;
++		};
++	};
++
++	dc_12v: dc-12v {
++		compatible = "regulator-fixed";
++		regulator-name = "dc_12v";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <12000000>;
++		regulator-max-microvolt = <12000000>;
++	};
++
++	vcc3v3_pcie: gpio-regulator {
++		bootph-all;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++//		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <5000>;
++		vin-supply = <&dc_12v>;
++	};
++};
++
++&sdhci {
++	bootph-pre-ram;
++	max-frequency = <100000000>;
++	status = "okay";
++};
++
++&gpio0 {
++	bootph-all;
++	status = "okay";
++};
++
++&sdmmc0 {
++	bootph-pre-ram;
++	status = "okay";
++};
++
++&sdmmc1 {
++	bootph-pre-ram;
++	status = "okay";
++};
++
++&uart2 {
++	clock-frequency = <24000000>;
++	bootph-pre-ram;
++	status = "okay";
++};
++
++&xin24m {
++	bootph-all;
++	status = "okay";
++};
++
++&cru {
++	bootph-all;
++	status = "okay";
++};
++
++&pmucru {
++	bootph-all;
++	status = "okay";
++};
++
++&grf {
++	bootph-all;
++	status = "okay";
++};
++
++&pmugrf {
++	bootph-all;
++	status = "okay";
++};
++
++&pinctrl {
++	bootph-all;
++};
++
++&pcfg_pull_none_smt {
++	bootph-all;
++};
++
++&pcfg_pull_none {
++	bootph-all;
++};
++
++&pcfg_pull_up_drv_level_2 {
++	bootph-all;
++};
++
++&pcfg_pull_up {
++	bootph-all;
++};
++
++&emmc_bus8 {
++	bootph-all;
++};
++
++&emmc_clk {
++	bootph-all;
++};
++
++&emmc_cmd {
++	bootph-all;
++};
++
++&emmc_datastrobe {
++	bootph-all;
++};
++
++&emmc_rstnout {
++	bootph-all;
++};
++
++&fspi_pins {
++	bootph-all;
++};
++
++&i2c0_xfer {
++	bootph-all;
++};
++
++&sdmmc0_bus4 {
++	bootph-all;
++};
++
++&sdmmc0_clk {
++	bootph-all;
++};
++
++&sdmmc0_cmd {
++	bootph-all;
++};
++
++&sdmmc0_det {
++	bootph-all;
++};
++
++&sdmmc0_pwren {
++	bootph-all;
++};
++
++&uart2m0_xfer {
++	bootph-all;
++};
+diff --git a/arch/arm/dts/atb-rk3568j-smc-r1-usb-sata-pcie.dtsi b/arch/arm/dts/atb-rk3568j-smc-r1-usb-sata-pcie.dtsi
+new file mode 100644
+index 0000000000..87b4edcdd8
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568j-smc-r1-usb-sata-pcie.dtsi
+@@ -0,0 +1,187 @@
++/{
++/*
++	This is dummy regulator.
++	It is used to have ability to activate PCIE clock source for RK3568J SoC
++	USB_DISR -> R86 -> USB_DIS -> VT1-4(NMOS) -> (USB1_OC_ - USB4_OC_)
++	USB_DIS is pulled to GND via R67
++*/
++	usb_en: usb-en {
++		compatible = "regulator-fixed";
++		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usb_en_pin>;
++		regulator-name = "usb_en_pin";
++		enable-active-low;
++		regulator-always-on;
++		regulator-boot-on;
++    };
++};
++
++/*
++	USB2_HOST2
++*/
++
++/*
++	This controller is connected to USB1 pins on SMARC connector
++*/
++&usb_host0_ehci {
++	status = "okay";
++};
++
++/*
++	This controller is connected to USB1 pins on SMARC connector
++*/
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb2phy0_host {
++	status = "okay";
++};
++
++&usb2phy0_otg {
++	status = "okay";
++};
++
++&usb2phy0 {
++	status = "okay";
++};
++
++/*
++	USB2_HOST3
++*/
++
++/*
++	This controller is connected to USB0 pins on SMARC connector
++*/
++&usb_host1_ehci {
++	status = "okay";
++};
++
++/*
++	This controller is connected to USB0 pins on SMARC connector
++*/
++&usb_host1_ohci {
++	status = "okay";
++};
++
++
++&usb2phy1_host {
++	status = "okay";
++};
++
++&usb2phy1_otg {
++	status = "okay";
++};
++
++&usb2phy1 {
++	status = "okay";
++};
++
++/*
++	USB3_OTG0 or SATA0
++*/
++
++/*
++	This controller is connected to USB3 pins on SMARC connector X1 (conga SMC1 lower X4)
++*/
++&usb_host0_xhci {
++	dr_mode = "host";
++	// If this controller is enabled, sata0 must be disabled
++	status = "okay";
++};
++
++&sata0 {
++	// If this controller is enabled, usbdrd_dwc3 must be disabled
++	status = "disabled";
++};
++
++
++// This controller is phy for usbdrd_dwc3 and sata0 controllers
++&combphy0 {
++	status = "okay";
++};
++
++/*
++	USB3_HOST1 or SATA1
++*/
++
++/*
++	This controller is connected to USB2 pins on SMARC connector X1 (conga SMC1 upper X4)
++*/
++&usb_host1_xhci {
++	// If this controller is enabled, sata1 must be disabled
++	status = "okay";
++};
++
++// This board doesn't use this controller
++&sata1 {
++	// If this controller is enabled, usb_host_xhci must be disabled
++	status = "disabled";
++};
++
++// This controller is phy for usb_host_xhci and sata1 controllers
++&combphy1 {
++	status = "okay";
++};
++
++/*
++	PCIE2x1 or SATA2
++*/
++
++// This board doesn't use this controller
++&pcie2x1 {
++	status = "disabled";
++};
++
++/*
++	SATA2 lines are connected to SATA pins on SMARC connector X1
++*/
++&sata2 {
++	status = "okay";
++};
++
++// This controller is phy for pcie2x1 and sata2 controllers
++&combphy2 {
++	status = "okay";
++};
++
++&pinctrl {
++	usb {
++		usb_en_pin: usb_en_pin {
++/*
++			USB_DISR -> R86 -> USB_DIS -> VT1-4(NMOS) -> (USB1_OC_ - USB4_OC_)
++			USB_DIS is pulled to GND via R67
++*/
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usb0_oc_pin: usb0_oc_pin {
++/*
++			USB0_OC_
++*/
++			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usb1_oc_pin: usb1_oc_pin {
++/*
++			USB1_OC_
++*/
++			rockchip,pins = <4 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usb2_oc_pin: usb2_oc_pin {
++/*
++			USB2_OC_
++*/
++			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usb3_oc_pin: usb3_oc_pin {
++/*
++			USB3_OC_
++*/
++			rockchip,pins = <4 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
+diff --git a/arch/arm/dts/atb-rk3568j-smc-r1.dts b/arch/arm/dts/atb-rk3568j-smc-r1.dts
+new file mode 100644
+index 0000000000..8d8a2767a9
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568j-smc-r1.dts
+@@ -0,0 +1,29 @@
++
++/dts-v1/;
++
++#include "rk3568.dtsi"
++
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/clock/rk3568-cru.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++#include <dt-bindings/soc/rockchip,boot-mode.h>
++#include <dt-bindings/phy/phy.h>
++#include <dt-bindings/power/rk3568-power.h>
++
++#include "atb-rk3568j-smc-r1-u-boot.dtsi"
++#include "atb-rk3568j-smc-r1-ethernet.dtsi"
++#include "atb-rk3568j-smc-r1-usb-sata-pcie.dtsi"
++
++/ {
++	compatible = "atb,atb-rk3568j-smc-r1", "rockchip,rk3568";
++
++	model = "ATB-RK3568J-SMC-R1";
++
++};
++
++&uart2 {
++	status = "okay";
++};
+diff --git a/arch/arm/mach-rockchip/rk3568/Kconfig b/arch/arm/mach-rockchip/rk3568/Kconfig
+index baa51349f4..d8dec05714 100644
+--- a/arch/arm/mach-rockchip/rk3568/Kconfig
++++ b/arch/arm/mach-rockchip/rk3568/Kconfig
+@@ -27,6 +27,11 @@ config TARGET_QUARTZ64_RK3566
+ 	help
+ 	  Pine64 Quartz64 single board computer with a RK3566 SoC.
+ 
++config TARGET_ATB_RK3568J_SMC_R1
++	bool "ATB_RK3568_SMC_R1"
++	help
++		ATB RK3568 SMC is a small board for communication system.
++
+ endchoice
+ 
+ config ROCKCHIP_BOOT_MODE_REG
+@@ -45,5 +50,6 @@ source "board/rockchip/evb_rk3568/Kconfig"
+ source "board/anbernic/rgxx3_rk3566/Kconfig"
+ source "board/hardkernel/odroid_m1/Kconfig"
+ source "board/pine64/quartz64_rk3566/Kconfig"
++source "board/atb/atb_rk3568j_smc_r1/Kconfig"
+ 
+ endif
+diff --git a/board/atb/atb_rk3568j_smc_r1/Kconfig b/board/atb/atb_rk3568j_smc_r1/Kconfig
+new file mode 100644
+index 0000000000..aaa3cbf8ee
+--- /dev/null
++++ b/board/atb/atb_rk3568j_smc_r1/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_ATB_RK3568J_SMC_R1
++
++config SYS_BOARD
++	default "atb_rk3568j_smc_r1"
++
++config SYS_VENDOR
++	default "atb"
++
++config SYS_CONFIG_NAME
++	default "atb_rk3568j_smc_r1"
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++
++endif
+diff --git a/board/atb/atb_rk3568j_smc_r1/Makefile b/board/atb/atb_rk3568j_smc_r1/Makefile
+new file mode 100644
+index 0000000000..f8cc4faa41
+--- /dev/null
++++ b/board/atb/atb_rk3568j_smc_r1/Makefile
+@@ -0,0 +1 @@
++obj-y   += atb_rk3568j_smc_r1.o
+diff --git a/board/atb/atb_rk3568j_smc_r1/atb_rk3568j_smc_r1.c b/board/atb/atb_rk3568j_smc_r1/atb_rk3568j_smc_r1.c
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/include/configs/atb_rk3568j_smc_r1.h b/include/configs/atb_rk3568j_smc_r1.h
+new file mode 100644
+index 0000000000..1903b2c806
+--- /dev/null
++++ b/include/configs/atb_rk3568j_smc_r1.h
+@@ -0,0 +1,24 @@
++
++#ifndef __CONFIGS_ATB_RK3568J_SMC_R1_H
++#define __CONFIGS_ATB_RK3568J_SMC_R1_H
++
++#include <configs/rk3568_common.h>
++
++#ifndef CONFIG_SPL_BUILD
++
++#undef ROCKCHIP_DEVICE_SETTINGS
++#define ROCKCHIP_DEVICE_SETTINGS \
++		"stdin=serial,usbkbd\0" \
++		"stdout=serial,vidconsole\0" \
++		"stderr=serial,vidconsole\0"
++
++#undef CONFIG_BOOTCOMMAND
++
++#undef CONFIG_EXTRA_ENV_SETTINGS
++#define CONFIG_EXTRA_ENV_SETTINGS		\
++		"fdt_addr_r=0x0a100000\0"		\
++		"eth1addr=fa:15:8f:ff:6b:a8\0"	\
++		"ethaddr=f6:15:8f:ff:6b:a9\0"
++
++#endif /* CONFIG_SPL_BUILD */
++#endif /* __CONFIGS_ATB_RK3568J_SMC_R1_H */
