@@ -1,0 +1,63 @@
+diff --git a/arch/arm/dts/atb-rk3568j-smc-u-boot.dtsi b/arch/arm/dts/atb-rk3568j-smc-u-boot.dtsi
+index 009e4d4980..5d508be3b1 100644
+--- a/arch/arm/dts/atb-rk3568j-smc-u-boot.dtsi
++++ b/arch/arm/dts/atb-rk3568j-smc-u-boot.dtsi
+@@ -137,12 +137,38 @@
+ 	#size-cells = <0>;
+ 
+ 	spi_nor: flash@0 {
+-		compatible = "spi-nor";
++		compatible = "jedec,spi-nor";
++		u-boot,dm-spl;
+ 		reg = <0>;
+-		spi-max-frequency = <80000000>;
++		spi-max-frequency = <100000000>;
+ 		spi-rx-bus-width = <4>;
+ 		spi-tx-bus-width = <1>;
+-		};
++		status = "okay";
++	};
++};
++
++// eMMC
++&sdhci {
++	u-boot,dm-spl;
++	bus-width = <8>;
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&emmc_bus8 {
++	u-boot,dm-spl;
++};
++
++&emmc_clk {
++	u-boot,dm-spl;
++};
++
++&emmc_cmd  {
++	u-boot,dm-spl;
++};
++
++&emmc_datastrobe {
++	u-boot,dm-spl;
+ };
+ 
+ &saradc {
+diff --git a/arch/arm/mach-rockchip/rk3568/rk3568.c b/arch/arm/mach-rockchip/rk3568/rk3568.c
+index ae7de304bf..5214476694 100644
+--- a/arch/arm/mach-rockchip/rk3568/rk3568.c
++++ b/arch/arm/mach-rockchip/rk3568/rk3568.c
+@@ -847,6 +847,12 @@ int arch_cpu_init(void)
+ 
+ #if defined(CONFIG_ROCKCHIP_SFC)
+ 	/* Set the fspi to secure */
++		/* emmc and sfc iomux */
++	writel((0x7777UL << 16) | (0x1111), GRF_BASE + GRF_GPIO1B_IOMUX_H);
++	writel((0x7777UL << 16) | (0x1111), GRF_BASE + GRF_GPIO1C_IOMUX_L);
++	writel((0x7777UL << 16) | (0x2111), GRF_BASE + GRF_GPIO1C_IOMUX_H);
++	writel((0x7777UL << 16) | (0x1111), GRF_BASE + GRF_GPIO1D_IOMUX_L);
++	writel(((7 << 0) << 16) | (1 << 0), GRF_BASE + GRF_GPIO1D_IOMUX_H);
+ 	writel(((0x1 << 14) << 16) | (0x0 << 14), SGRF_BASE + SGRF_SOC_CON3);
+ #endif
+ 
