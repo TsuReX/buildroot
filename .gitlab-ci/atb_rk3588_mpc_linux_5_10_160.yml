@@ -1,13 +1,8 @@
 atb_rk3588_mpc_linux_5_10_160_build:
   stage: build
   tags: [buildroot]
-  image: ubuntu:22.04
+  image: romanartemovich/atb-buildroot:r1
   timeout: 24h
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt update
-    - apt install -y make cmake git gcc g++ mtools genext2fs cpio rsync bc file
-    - apt install -y python2 python3 unzip wget bzip2 dosfstools
   script:
     - ln -s /buildroot/dl dl
     - make atb_rk3588_mpc_linux-5.10.160_defconfig
