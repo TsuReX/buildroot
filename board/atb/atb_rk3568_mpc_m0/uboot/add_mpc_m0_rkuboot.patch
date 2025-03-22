@@ -1,0 +1,694 @@
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 36b218c6cb..b1933308ce 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -57,7 +57,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
+ 	rk3399-puma-ddr1600.dtb \
+ 	rk3399-puma-ddr1866.dtb \
+ 	rk3568-firefly.dtb \
+-	rv1108-evb.dtb
++	rv1108-evb.dtb \
++	atb-rk3568-mpc-m0.dtb
+ dtb-$(CONFIG_ARCH_MESON) += \
+ 	meson-gxbb-odroidc2.dtb
+ dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
+diff --git a/arch/arm/dts/atb-rk3568-mpc-m0-ethernet.dtsi b/arch/arm/dts/atb-rk3568-mpc-m0-ethernet.dtsi
+new file mode 100644
+index 0000000000..162e76614c
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568-mpc-m0-ethernet.dtsi
+@@ -0,0 +1,143 @@
++
++&gmac0 {
++	phy-mode = "rgmii";
++	clock_in_out = "input";
++
++	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
++	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <	&gmac0_miim
++					&gmac0_tx_bus2
++					&gmac0_rx_bus2
++					&gmac0_rgmii_clk
++					&gmac0_rgmii_bus
++					&gmac0_clkinout
++					&rgmii_phy0_reset_pin>;
++
++	// PHY0_RSTn
++	// 0 -> 0
++	// 1 -> 1
++	snps,reset-gpio = <&gpio3 RK_PD4 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++
++	// Reset time is 20ms, 100ms for rtl8211f
++	snps,reset-delays-us = <0 20000 100000>;
++
++	tx_delay = <0x3c>;
++	rx_delay = <0x2f>;
++
++	phy-handle = <&rgmii_phy0>;
++	status = "okay";
++};
++
++&gmac0_clkinout{
++	u-boot,dm-pre-reloc;
++};
++
++&gmac0_miim {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac0_rx_bus2 {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac0_tx_bus2 {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac0_rgmii_clk {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac0_rgmii_bus {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac1 {
++	phy-mode = "rgmii";
++	clock_in_out = "input";
++
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <	&gmac1m0_tx_bus2
++					&gmac1m0_rx_bus2
++					&gmac1m0_rgmii_clk
++					&gmac1m0_rgmii_bus
++					&gmac1m0_clkinout
++					&rgmii_phy1_reset_pin>;
++
++	// PHY1_RSTn
++	// 0 -> 0
++	// 1 -> 1
++	snps,reset-gpio = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++
++	// Reset time is 20ms, 100ms for rtl8211f
++	snps,reset-delays-us = <0 20000 100000>;
++
++	tx_delay = <0x4f>;
++	rx_delay = <0x26>;
++
++	phy-handle = <&rgmii_phy1>;
++	status = "okay";
++};
++
++
++
++&gmac1m0_clkinout {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac1m0_rx_bus2 {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac1m0_tx_bus2 {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac1m0_rgmii_clk {
++	u-boot,dm-pre-reloc;
++};
++
++&gmac1m0_rgmii_bus {
++	u-boot,dm-pre-reloc;
++};
++
++&mdio0 {
++	rgmii_phy0: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x1>;
++	};
++
++	rgmii_phy1: ethernet-phy@2 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x2>;
++	};
++};
++
++&pinctrl {
++	rgmii_phy0_reset {
++		rgmii_phy0_reset_pin: rgmii-phy0-reset-pin {
++
++			// PHY0_RSTn
++			// 0 -> 0
++			// 1 -> 1
++			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	rgmii_phy1_reset {
++		rgmii_phy1_reset_pin: rgmii-phy1-reset-pin {
++
++			// PHY1_RSTn
++			// 0 -> 0
++			// 1 -> 1
++			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
+diff --git a/arch/arm/dts/atb-rk3568-mpc-m0-u-boot.dtsi b/arch/arm/dts/atb-rk3568-mpc-m0-u-boot.dtsi
+new file mode 100644
+index 0000000000..7b35de8c67
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568-mpc-m0-u-boot.dtsi
+@@ -0,0 +1,334 @@
++/*
++ * (C) Copyright 2020 Rockchip Electronics Co., Ltd
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++/ {
++	aliases {
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		mmc0 = &sdhci;
++		mmc1 = &sdmmc0;
++		mmc2 = &sdmmc1;
++	};
++
++	chosen {
++		stdout-path = &uart2;
++		u-boot,spl-boot-order = &sdmmc0, &sdhci, &nandc0, &spi_nand, &spi_nor;
++	};
++
++	dc_12v: dc-12v {
++		compatible = "regulator-fixed";
++		regulator-name = "dc_12v";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <12000000>;
++		regulator-max-microvolt = <12000000>;
++	};
++
++	vcc3v3_pcie: gpio-regulator {
++		u-boot,dm-pre-reloc;
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <5000>;
++		vin-supply = <&dc_12v>;
++	};
++};
++
++&psci {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&crypto {
++	u-boot,dm-pre-reloc;
++};
++
++&uart2 {
++	clock-frequency = <24000000>;
++	u-boot,dm-spl;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
++	status = "okay";
++};
++
++&grf {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pmugrf {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usb2phy0_grf {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usbdrd30 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usbhost30 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usbhost_dwc3 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&usb2phy0 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&u2phy0_otg {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&u2phy0_host {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&cru {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pmucru {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&rng {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&sfc {
++	u-boot,dm-spl;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
++	/delete-property/ assigned-clocks;
++	/delete-property/ assigned-clock-rates;
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++	spi_nand: flash@0 {
++		u-boot,dm-spl;
++		compatible = "spi-nand";
++		reg = <0>;
++		spi-tx-bus-width = <1>;
++		spi-rx-bus-width = <4>;
++		spi-max-frequency = <75000000>;
++	};
++
++	spi_nor: flash@1 {
++		u-boot,dm-spl;
++		compatible = "jedec,spi-nor";
++		label = "sfc_nor";
++		reg = <0>;
++		spi-tx-bus-width = <1>;
++		spi-rx-bus-width = <4>;
++		spi-max-frequency = <100000000>;
++	};
++};
++
++&saradc {
++	u-boot,dm-spl;
++	status = "okay";
++};
++
++&sdmmc0 {
++	u-boot,dm-spl;
++	status = "okay";
++};
++
++&sdmmc0_pins {
++	u-boot,dm-spl;
++};
++
++&sdmmc0_bus4 {
++	u-boot,dm-spl;
++};
++
++&sdmmc0_clk {
++	u-boot,dm-spl;
++};
++
++&sdmmc0_cmd {
++	u-boot,dm-spl;
++};
++
++&sdmmc0_det {
++	u-boot,dm-spl;
++};
++
++&sdmmc1 {
++	u-boot,dm-spl;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
++	status = "okay";
++};
++
++&sdhci {
++	bus-width = <8>;
++	u-boot,dm-spl;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&nandc0 {
++	u-boot,dm-spl;
++	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++	/delete-property/ pinctrl-names;
++	/delete-property/ pinctrl-0;
++
++	nand@0 {
++		u-boot,dm-spl;
++		reg = <0>;
++		nand-ecc-mode = "hw";
++		nand-ecc-strength = <16>;
++		nand-ecc-step-size = <1024>;
++	};
++};
++
++&pcie30_phy_grf {
++	u-boot,dm-pre-reloc;
++};
++
++&pcie30phy {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pcie3x2 {
++	u-boot,dm-pre-reloc;
++	vpcie3v3-supply = <&vcc3v3_pcie>;
++	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&pcie30phy {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pinctrl {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&gpio0 {
++	u-boot,dm-spl;
++};
++
++&gpio1 {
++	u-boot,dm-spl;
++};
++
++&gpio2 {
++	u-boot,dm-pre-reloc;
++};
++
++&pcfg_pull_none_drv_level_1 {
++	u-boot,dm-pre-reloc;
++};
++
++&pcfg_pull_none_drv_level_2 {
++	u-boot,dm-pre-reloc;
++};
++
++
++&pcfg_pull_up_drv_level_1 {
++	u-boot,dm-spl;
++};
++
++&pcfg_pull_up_drv_level_2 {
++	u-boot,dm-spl;
++};
++
++&pcfg_pull_up {
++	u-boot,dm-spl;
++};
++
++&pcfg_pull_none {
++	u-boot,dm-pre-reloc;
++};
++
++&secure_otp {
++	u-boot,dm-spl;
++};
++
++&wdt {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&sata1 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&combphy1_usq {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pipegrf {
++	u-boot,dm-pre-reloc;
++};
++
++&pipe_phy_grf1{
++	u-boot,dm-pre-reloc;
++};
++
++#if 0
++&i2c0 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&i2c0_xfer {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&i2c1 {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&i2c1_xfer {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++
++&pcfg_pull_none_smt {
++	u-boot,dm-pre-reloc;
++	status = "okay";
++};
++#endif
++
+diff --git a/arch/arm/dts/atb-rk3568-mpc-m0.dts b/arch/arm/dts/atb-rk3568-mpc-m0.dts
+new file mode 100644
+index 0000000000..7099d0e43d
+--- /dev/null
++++ b/arch/arm/dts/atb-rk3568-mpc-m0.dts
+@@ -0,0 +1,21 @@
++
++/dts-v1/;
++#include "rk3568.dtsi"
++#include "atb-rk3568-mpc-m0-u-boot.dtsi"
++#include "atb-rk3568-mpc-m0-ethernet.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "atb,atb-rk3568-mpc-m0", "rockchip,rk3568";
++
++	model = "ATB-RK3568-MPC-M0";
++
++};
++
++&crypto {
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
+diff --git a/arch/arm/mach-rockchip/decode_bl31.py b/arch/arm/mach-rockchip/decode_bl31.py
+index 301bd15375..37c7306661 100755
+--- a/arch/arm/mach-rockchip/decode_bl31.py
++++ b/arch/arm/mach-rockchip/decode_bl31.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python
+ #
+ # Copyright (C) 2020 Rockchip Electronics Co., Ltd
+ #
+diff --git a/arch/arm/mach-rockchip/make_fit_atf.py b/arch/arm/mach-rockchip/make_fit_atf.py
+index 27b6ef7597..0551d95ec1 100755
+--- a/arch/arm/mach-rockchip/make_fit_atf.py
++++ b/arch/arm/mach-rockchip/make_fit_atf.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python
+ """
+ A script to generate FIT image source for rockchip boards
+ with ARM Trusted Firmware
+diff --git a/arch/arm/mach-rockchip/rk3568/Kconfig b/arch/arm/mach-rockchip/rk3568/Kconfig
+index 7027e74aec..8390868a0b 100644
+--- a/arch/arm/mach-rockchip/rk3568/Kconfig
++++ b/arch/arm/mach-rockchip/rk3568/Kconfig
+@@ -1,11 +1,21 @@
+ if ROCKCHIP_RK3568
+ 
++choice
++	prompt "RK3568 board select"
++
+ config TARGET_EVB_RK3568
+ 	bool "EVB_RK3568"
+ 	select BOARD_LATE_INIT
+ 	help
+ 	  RK3568 EVB is a evaluation board for Rockchp RK3568.
+ 
++config TARGET_ATB_RK3568_MPC_M0
++	bool "ATB_RK3568_MPC_M0"
++	help
++	  ATB RK3568 MPC_M0 is a small board for communication system.
++
++endchoice
++
+ config SYS_SOC
+ 	default "rockchip"
+ 
+@@ -13,5 +23,6 @@ config SYS_MALLOC_F_LEN
+ 	default 0x400
+ 
+ source board/rockchip/evb_rk3568/Kconfig
++source board/atb/atb_rk3568_mpc_m0/Kconfig
+ 
+ endif
+diff --git a/board/atb/atb_rk3568_mpc_m0/Kconfig b/board/atb/atb_rk3568_mpc_m0/Kconfig
+new file mode 100644
+index 0000000000..7ff4e33f8e
+--- /dev/null
++++ b/board/atb/atb_rk3568_mpc_m0/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_ATB_RK3568_MPC_M0
++
++config SYS_BOARD
++	default "atb_rk3568_mpc_m0"
++
++config SYS_VENDOR
++	default "atb"
++
++config SYS_CONFIG_NAME
++	default "atb_rk3568_mpc_m0"
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++
++endif
+diff --git a/board/atb/atb_rk3568_mpc_m0/Makefile b/board/atb/atb_rk3568_mpc_m0/Makefile
+new file mode 100644
+index 0000000000..c3bc6b1f26
+--- /dev/null
++++ b/board/atb/atb_rk3568_mpc_m0/Makefile
+@@ -0,0 +1,2 @@
++
++obj-y	+= atb_rk3568_mpc_m0.o
+diff --git a/board/atb/atb_rk3568_mpc_m0/atb_rk3568_mpc_m0.c b/board/atb/atb_rk3568_mpc_m0/atb_rk3568_mpc_m0.c
+new file mode 100644
+index 0000000000..de846ccb8f
+--- /dev/null
++++ b/board/atb/atb_rk3568_mpc_m0/atb_rk3568_mpc_m0.c
+@@ -0,0 +1,33 @@
++/*
++ * SPDX-License-Identifier:     GPL-2.0+
++ *
++ * (C) Copyright 2020 Rockchip Electronics Co., Ltd
++ */
++
++#include <common.h>
++#include <dwc3-uboot.h>
++#include <usb.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#ifdef CONFIG_USB_DWC3
++static struct dwc3_device dwc3_device_data = {
++	.maximum_speed = USB_SPEED_HIGH,
++	.base = 0xfcc00000,
++	.dr_mode = USB_DR_MODE_PERIPHERAL,
++	.index = 0,
++	.dis_u2_susphy_quirk = 1,
++	.usb2_phyif_utmi_width = 16,
++};
++
++int usb_gadget_handle_interrupts(void)
++{
++	dwc3_uboot_handle_interrupt(0);
++	return 0;
++}
++
++int _board_usb_init(int index, enum usb_init_type init)
++{
++	return dwc3_uboot_init(&dwc3_device_data);
++}
++#endif
+diff --git a/drivers/mmc/rockchip_dw_mmc.c b/drivers/mmc/rockchip_dw_mmc.c
+index 1287551bf1..e4561a2240 100644
+--- a/drivers/mmc/rockchip_dw_mmc.c
++++ b/drivers/mmc/rockchip_dw_mmc.c
+@@ -42,7 +42,7 @@ int board_mmc_dm_reinit(struct udevice *dev)
+ {
+ 	struct rockchip_dwmmc_priv *priv = dev_get_priv(dev);
+ 
+-	if (!priv || !&priv->clk)
++	if (!priv )
+ 		return 0;
+ 
+ 	if (!memcmp(dev->name, "dwmmc", strlen("dwmmc")))
+diff --git a/include/configs/atb_rk3568_mpc_m0.h b/include/configs/atb_rk3568_mpc_m0.h
+new file mode 100644
+index 0000000000..89dbfe3713
+--- /dev/null
++++ b/include/configs/atb_rk3568_mpc_m0.h
+@@ -0,0 +1,24 @@
++
++#ifndef __CONFIGS_ATB_RK3568_MPC_M0_H
++#define __CONFIGS_ATB_RK3568_MPC_M0_H
++
++#include <configs/rk3568_common.h>
++
++#ifndef CONFIG_SPL_BUILD
++
++#undef ROCKCHIP_DEVICE_SETTINGS
++#define ROCKCHIP_DEVICE_SETTINGS \
++		"stdin=serial,usbkbd\0" \
++		"stdout=serial,vidconsole\0" \
++		"stderr=serial,vidconsole\0"
++
++#undef CONFIG_BOOTCOMMAND
++
++#undef CONFIG_EXTRA_ENV_SETTINGS
++#define CONFIG_EXTRA_ENV_SETTINGS		\
++		"fdt_addr_r=0x0a100000\0"		\
++		"eth1addr=fa:15:8f:ff:6b:a8\0"	\
++		"ethaddr=f6:15:8f:ff:6b:a9\0"
++
++#endif /* CONFIG_SPL_BUILD */
++#endif /* __CONFIGS_ATB_RK3568_MPC_M0_H */
