@@ -66,12 +66,14 @@ UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 check_file ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf
 check_file ${RKBIN_DIR}/bin/rk35/rk3568_bl32_v2.10.bin
 
-cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
-cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl32_v2.10.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
+#cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+#cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl32_v2.10.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
+cp -f /home/user/drive1/workspace/atf/build/rk3568/debug/bl31/bl31.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
 
 # The script make_fit_atf.sh requires working directory u-boot
 cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
 
-arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
-
+python arch/arm/mach-rockchip/decode_bl31.py
+##arch/arm/mach-rockchip/make_fit_atf.sh -t 0x08400000 > u-boot.its
+cp -f /home/user/drive1/workspace/imagen/buildroot/board/atb/common/u-boot.its u-boot.its
 tools/mkimage -f u-boot.its -E ${BINARIES_DIR}/u-boot.itb
