@@ -24,8 +24,17 @@ check_file()
 }
 
 # rkbin from github: https://github.com/rockchip-linux/rkbin.git
-tar -xf ${BR2_DL_DIR}/rkbin/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23.tar.gz -C ${BUILD_DIR}
-RKBIN_DIR=${BUILD_DIR}/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23
+cd ${BR2_DL_DIR}
+rm -rf rkbin
+git clone https://github.com/rockchip-linux/rkbin.git rkbin 
+cd rkbin
+git reset --hard b4558da0860ca48bf1a571dd33ccba580b9abe23
+cd ..
+cp -r rkbin ${BUILD_DIR}/rkbin
+cd ..
+#tar -xf ${BR2_DL_DIR}/rkbin/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23.tar.gz -C ${BUILD_DIR}
+#RKBIN_DIR=${BUILD_DIR}/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23
+RKBIN_DIR=${BUILD_DIR}/rkbin
 
 ################################################################################
 # 1. Create idbloader.img
