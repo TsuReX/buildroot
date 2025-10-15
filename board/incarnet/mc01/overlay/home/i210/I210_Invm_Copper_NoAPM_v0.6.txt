@@ -1,0 +1,122 @@
+;2013-04-07
+IMGVER	0.6
+IMGTYPE	6	; I210 Copper without APM
+
+;====================================================================================
+;		I N T E L   P R O P R I E T A R Y
+;COPYRIGHT (c) 1998 - 2012 BY INTEL CORPORATION.  ALL RIGHTS RESERVED.
+;NO PART OF THIS PROGRAM OR PUBLICATION MAY BE REPRODUCED, TRANSMITTED, TRANSCRIBED,
+;STORED IN A RETRIEVAL SYSTEM, OR TRANSLATED INTO ANY LANGUAGE OR COMPUTER LANGUAGE
+;IN ANY FORM OR BY ANY MEANS, ELECTRONIC, MECHANICAL, MAGNETIC, OPTICAL, CHEMICAL,
+;MANUAL, OR OTHERWISE, WITHOUT THE PRIOR WRITTEN PERMISSION OF:
+;INTEL CORPORATION
+;2200 MISSION COLLEGE BOULEVARD
+;SANTA CLARA, CALIFORNIA 95052-8119
+
+;Autoload commands configuration file for I210 flash-less.
+
+;SYNTAX:
+;=======
+; The following entries are allowed in file:
+
+; 	Single command record entry:
+;	============================
+; 		<Record type> <Address> = <Data> <Reset type> <Comment>
+
+;	Series of commands which must be applied in exact sequance
+;	===========================================================
+;		Ordered_Section_Start
+
+;		<Single record entry #1>
+;		.
+;		.
+;		<Single record entry #N>
+
+;		Ordered_Section_End
+
+;     	Pure comment line like the one you are looking at :-).
+;	======================================================
+
+;	Empty line with white characters only.
+;	======================================================
+
+; where:
+;	<Record type> 	- record type:
+;		WALD 	- autoload word record
+;		CSRALD 	- CSR autoload record
+;		PHYALD 	- PHY autoload record
+
+;	<Address> - address in hexadecimal format from range: 
+;		0x00 	- 0x2E 					in WALD records definition
+;		0x00000 - 0x1FFFC (4 bytes alignment required)	in CSRALD records definition
+;		0x00 	- 0x1F 					in PHYALD records definition
+
+;	<Data>  - Data to set in hexadecimal format:
+;		0x0000 		- 0xFFFF 	in WALD and PHYALD records definition
+;		0x00000000 	- 0xFFFFFFFF 	in CSRALD records definition
+
+;	<Reset type> - describes set of reset events for which particular record data setting is to be applied:
+;		LPG_RST  - LanPower Good Reset only
+;		PCIE_RST - PCIe asserted reset and all above
+;		SW_RST   - Host software asserted device reset and all above
+
+;	<Comment> - any sequence of printable characters (including space and tab) starting with ';'
+
+
+;	Duplicates (records with the same value of fields: <Record type> <Address> and <Reset type>) shouldn't 
+;	   be defined outside ordered section. If both are found outside ordered section then all but the first found
+;	   will be silently ignored by the commands parser. If one of them is defined in ordered section then its counterpart 
+;	   outside ordered section will be ignored as well.
+	 
+
+	CSRALD 	0x5ba0 	= 0x00001541 	LPG_RST 	; [Intel] Set GPAR_EN from CSR auto config.
+	CSRALD 	0x0E34 	= 0x0B403C21	LPG_RST 	; [Intel] Clear EE_SU.LPI_Clock_Stop.
+
+	WALD   	0x0a    = 0x402F     	PCIE_RST	; [Intel] Set GPAR_EN.
+	WALD 	0x1b 	= 0x3400 	PCIE_RST        ; [Intel] Default settings.
+	WALD 	0x28 	= 0x1C60 	PCIE_RST        ; [Intel] FLBAR_Size = 000
+	WALD 	0x0d 	= 0x157B 	PCIE_RST	; [Intel] I210 Copper flash-less Device ID
+	WALD 	0x21 	= 0x0584 	PCIE_RST	; [Intel] Default settings.
+	WALD 	0x24 	= 0x0280 	PCIE_RST	; [Intel] Default settings
+	WALD 	0x0F 	= 0x7343 	SW_RST 		; [Intel] Set TX_LPI_EN.
+
+; Common Customer Configurations
+; ==============================
+;   Disable PHY Link before the driver loads
+;	Default behavior is to establish a link when the device is in the D0 state.
+;	To prevent establishing a link until the driver loads, comment out the first line and uncomment the second line.
+	CSRALD 	0x0000 	= 0x08100241	SW_RST		; [Intel] Set CTRL.SLU.
+;	CSRALD	0x0E14	= 0x000000AD	SW_RST		; Set PHPM.Go_Link_Disconnect.
+;
+;   Subsystem Vendor ID and Subsystem ID - Uncomment the following lines and insert the values.
+;	WALD	0x0B	= 0x0000	PCIE_RST	; Subsystem ID
+;	WALD	0x0C	= 0x8086	PCIE_RST	; Susbsystem Vendor ID
+;
+;   Disable IO BAR - Uncomment the following line.
+;	WALD	0x19	= 0x3000	PCIE_RST	; Clear IO_Sup
+;
+;   Non-default LED Configuration - Uncomment the following lines and set the values for the LED configuration.
+;	WALD	0x1C	= 0x0784	PCIE_RST	; LED1 Config
+;	WALD	0x1F	= 0x0706	PCIE_RST	; LED0,2 Config
+;
+;   Enable Power-Down Modes - Uncomment the 1st line to enable power down with the DEV_OFF_N pin.
+;			      Uncomment the 2nd line to enable the dynamic power down mode.
+;			      Enabling both power down modes is not permitted.
+;	WALD	0x1E	= 0xB200	PCIE_RST	; Enable DEV_OFF Power Down
+;	WALD	0x1E	= 0x7200	PCIE_RST	; Power Down Settings
+;
+;   LAN Power Consumption - Uncomment the following line and insert power data to be provided in the PCIe config space.
+;	WALD	0x22	= 0x0000	PCIE_RST	; LAN Power Consumption
+;
+;   Watchdog Configuration - Uncomment the following line to enable the watchdog after reset.
+;	WALD	0x2E	= 0x9000	SW_RST		; Enable watchdog
+;
+
+
+Ordered_Section_Start
+	CSRALD 	0x5B44 	= 0x00FF00A8 	LPG_RST 	; [Intel] Set NFTS to 0xA8.
+	CSRALD 	0x5B40 	= 0x5E000090 	LPG_RST 	; [Intel]  cont.
+Ordered_Section_End
+
+
+
