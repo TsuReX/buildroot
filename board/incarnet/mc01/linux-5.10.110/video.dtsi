@@ -1,4 +1,3 @@
-
 #include <dt-bindings/display/rockchip_vop.h>
 
 &gpu {

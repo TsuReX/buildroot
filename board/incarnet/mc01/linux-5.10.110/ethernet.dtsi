@@ -8,12 +8,12 @@
 
 	pinctrl-names = "default";
 	pinctrl-0 = <	&gmac0_miim
-					&gmac0_tx_bus2
-					&gmac0_rx_bus2
-					&gmac0_rgmii_clk
-					&gmac0_rgmii_bus
-					&gmac0_clkinout
-					&rgmii_phy0_reset_pin>;
+			&gmac0_tx_bus2
+			&gmac0_rx_bus2
+			&gmac0_rgmii_clk
+			&gmac0_rgmii_bus
+			&gmac0_clkinout
+			&rgmii_phy0_reset_pin>;
 /*
 	RGMII0_RST -> VT5(NMOS) -> RGMII0_RST_
 	0 -> 1
