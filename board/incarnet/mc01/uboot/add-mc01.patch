@@ -1,17 +1,17 @@
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 9d28a485be..caa2b6b150 100644
+index 36b218c6cb..e23ce83624 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -185,7 +185,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
- 	rk3568-nanopi-r5s.dtb \
- 	rk3568-odroid-m1.dtb \
- 	rk3568-radxa-e25.dtb \
--	rk3568-rock-3a.dtb
-+	rk3568-rock-3a.dtb \
+@@ -57,7 +57,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
+ 	rk3399-puma-ddr1600.dtb \
+ 	rk3399-puma-ddr1866.dtb \
+ 	rk3568-firefly.dtb \
+-	rv1108-evb.dtb
++	rv1108-evb.dtb \
 +	atb-rk3568j-mpc.dtb
- 
- dtb-$(CONFIG_ROCKCHIP_RK3588) += \
- 	rk3588-edgeble-neu6a-io.dtb \
+ dtb-$(CONFIG_ARCH_MESON) += \
+ 	meson-gxbb-odroidc2.dtb
+ dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
 diff --git a/arch/arm/dts/atb-rk3568j-mpc-ethernet.dtsi b/arch/arm/dts/atb-rk3568j-mpc-ethernet.dtsi
 new file mode 100644
 index 0000000000..2b87bfe806
@@ -748,27 +748,36 @@ index 0000000000..3d5c9ae6fc
 +	status = "okay";
 +};
 diff --git a/arch/arm/mach-rockchip/rk3568/Kconfig b/arch/arm/mach-rockchip/rk3568/Kconfig
-index baa51349f4..6ca15b8256 100644
+index 7027e74aec..4863f54f41 100644
 --- a/arch/arm/mach-rockchip/rk3568/Kconfig
 +++ b/arch/arm/mach-rockchip/rk3568/Kconfig
-@@ -27,6 +27,11 @@ config TARGET_QUARTZ64_RK3566
+@@ -1,4 +1,6 @@
+ if ROCKCHIP_RK3568
++choice
++	prompt Targets
+ 
+ config TARGET_EVB_RK3568
+ 	bool "EVB_RK3568"
+@@ -6,6 +8,13 @@ config TARGET_EVB_RK3568
  	help
- 	  Pine64 Quartz64 single board computer with a RK3566 SoC.
+ 	  RK3568 EVB is a evaluation board for Rockchp RK3568.
  
 +config TARGET_ATB_RK3568J_MPC
 +	bool "ATB_RK3568_MPC"
 +	help
 +		ATB RK3568 MPC is a small board for communication system.
 +
- endchoice
++endchoice
++
+ config SYS_SOC
+ 	default "rockchip"
  
- config ROCKCHIP_BOOT_MODE_REG
-@@ -45,5 +50,6 @@ source "board/rockchip/evb_rk3568/Kconfig"
- source "board/anbernic/rgxx3_rk3566/Kconfig"
- source "board/hardkernel/odroid_m1/Kconfig"
- source "board/pine64/quartz64_rk3566/Kconfig"
+@@ -13,5 +22,5 @@ config SYS_MALLOC_F_LEN
+ 	default 0x400
+ 
+ source board/rockchip/evb_rk3568/Kconfig
+-
 +source "board/atb/atb_rk3568j_mpc/Kconfig"
- 
  endif
 diff --git a/board/atb/atb_rk3568j_mpc/Kconfig b/board/atb/atb_rk3568j_mpc/Kconfig
 new file mode 100644
@@ -801,6 +810,32 @@ index 0000000000..cc94ce887e
 diff --git a/board/atb/atb_rk3568j_mpc/atb_rk3568j_mpc.c b/board/atb/atb_rk3568j_mpc/atb_rk3568j_mpc.c
 new file mode 100644
 index 0000000000..e69de29bb2
+diff --git a/drivers/mmc/rockchip_dw_mmc.c b/drivers/mmc/rockchip_dw_mmc.c
+index 1287551bf1..e4561a2240 100644
+--- a/drivers/mmc/rockchip_dw_mmc.c
++++ b/drivers/mmc/rockchip_dw_mmc.c
+@@ -42,7 +42,7 @@ int board_mmc_dm_reinit(struct udevice *dev)
+ {
+ 	struct rockchip_dwmmc_priv *priv = dev_get_priv(dev);
+ 
+-	if (!priv || !&priv->clk)
++	if (!priv )
+ 		return 0;
+ 
+ 	if (!memcmp(dev->name, "dwmmc", strlen("dwmmc")))
+diff --git a/drivers/pci/pcie_dw_rockchip.c b/drivers/pci/pcie_dw_rockchip.c
+index 27312d1290..61d9010352 100644
+--- a/drivers/pci/pcie_dw_rockchip.c
++++ b/drivers/pci/pcie_dw_rockchip.c
+@@ -580,6 +580,8 @@ static int rockchip_pcie_init_port(struct udevice *dev)
+ 		}
+ 	}
+ 
++	msleep(200);
++
+ 	if (priv->is_bifurcation) {
+ 		phy_cfg.pcie.is_bifurcation = true;
+ 		ret = generic_phy_configure(&priv->phy, &phy_cfg);
 diff --git a/include/configs/atb_rk3568j_mpc.h b/include/configs/atb_rk3568j_mpc.h
 new file mode 100644
 index 0000000000..70106ab794
