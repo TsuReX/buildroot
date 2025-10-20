@@ -59,7 +59,7 @@ cp -f ${TPL_BIN_PATH} ${RKBIN_DIR}/bin/rk35/${UART_TPL_BIN}
 
 ${RKBIN_DIR}/tools/ddrbin_tool ${RKBIN_DIR}/tools/ddrbin_param_115200.txt ${RKBIN_DIR}/bin/rk35/${UART_TPL_BIN}
 
-TPL_BIN_PATH=${RKBIN_DIR}/bin/rk35/${UART_TPL_BIN}
+#TPL_BIN_PATH=${RKBIN_DIR}/bin/rk35/${UART_TPL_BIN}
 
 UBOOT_REPO=$(cat $BR2_CONFIG | grep BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION | awk -F= '{print $2}' | awk -F\" '{print $2}')
 
