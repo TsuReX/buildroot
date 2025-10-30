@@ -30,6 +30,7 @@ git clone https://github.com/rockchip-linux/rkbin.git rkbin
 cd rkbin
 git reset --hard b4558da0860ca48bf1a571dd33ccba580b9abe23
 cd ..
+rm -rf ${BUILD_DIR}/rkbin
 cp -r rkbin ${BUILD_DIR}/rkbin
 cd ..
 #tar -xf ${BR2_DL_DIR}/rkbin/rkbin-b4558da0860ca48bf1a571dd33ccba580b9abe23.tar.gz -C ${BUILD_DIR}
