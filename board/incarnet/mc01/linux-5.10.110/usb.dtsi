@@ -1,71 +1,77 @@
-/{
 
 /*
 	USB2_HOST2
+	USB2_HOST2_D_p/USB2_HOST2_D_n
 */
-
 /*
-	This controller is connected to X5 upper port
+	This USB 2.0 controller is connected to XS10.2 port
 */
 &usb_host0_ehci {
 	status = "okay";
 };
 
 /*
-	This controller is connected to X5 upper port
+	This USB 1.0/1.1 controller is connected to XS10.2 port
 */
 &usb_host0_ohci {
 	status = "okay";
 };
 
-&u2phy0_host {
+/*
+	USB 1.0/1.1/2.0 phy of USB2_HOST2 controller
+*/
+&u2phy1_otg {
 	status = "okay";
 };
 
-&u2phy0_otg {
-	status = "okay";
-};
-
-&usb2phy0 {
+/*
+	???
+*/
+&usb2phy1 {
 	status = "okay";
 };
 
 /*
 	USB2_HOST3
+	USB2_HOST3_D_p/USB2_HOST3_D_n
 */
 
 /*
-	This controller is connected to X5 lower port
+	This USB 2.0 controller is connected to XS9.2 port
 */
 &usb_host1_ehci {
 	status = "okay";
 };
 
 /*
-	This controller is connected to X5 lower port
+	This USB 1.0/1.1 controller is connected to XS9.2 port
 */
 &usb_host1_ohci {
 	status = "okay";
 };
 
-
+/*
+	USB 1.0/1.1/2.0 phy of USB2_HOST3 controller
+*/
 &u2phy1_host {
 	status = "okay";
 };
 
-
-&u2phy1_otg {
-	status = "okay";
-};
-
+/*
+	???
+*/
 &usb2phy1 {
 	status = "okay";
 };
 
 /*
 	USB3_OTG0 or SATA0
+	USB3_OTG_SSTX/USB3_OTG_SSRX
 */
-// X4
+
+/*
+	This USB 3.0/2.0/1.1/1.0 controllers are connected to XS6 port
+*/
 &usbdrd_dwc3 {
 	dr_mode = "host";
 	// If this controller is enabled, sata0 must be disabled
@@ -87,26 +93,37 @@
 };
 
 /*
-	USB3_HOST1 or SATA1
+	USB 1.0/1.1/2.0 phy of USB3_OTG0 controller
 */
+&u2phy0_otg {
+	status = "okay";
+};
 
 /*
-	Signals form usbhost_dwc3 and sata1 controllers controllers go through D12(switch)(EXT_SATA_EN) and D10(switch)(M2_USB3.0_EN) to X14(m.2B) or X16(SATA).
-	To supply X16(SATA) with signals from SATA1 it needs to set EXT_SATA_EN=1 (+3.3v) and disable usbhost_dwc3 controller.
-	To supply X14(m.2B) with signals from SATA1 it needs to set EXT_SATA_EN=0 (GND) and disable usbhost_dwc3 controller.
-	To supply X14(m.2B) with signals from USB3_HOS1 it needs to set EXT_SATA_EN=0 (GND), M2_USB3.0_EN=1 (+3.3v) and disable sata1 controller.
-	By defaults M2_USB3.0_EN signal is pulled down via R161 and EXT_SATA_EN signal is pulled down via R165 and can be pulled up via X17.
+	USB3_HOST1 or SATA1
+*/
+/*
+	USB 3.0 controller is not connected
+	USB 2.0/1.1/1.0 controllers are connected to DD10 USB HUB
+	DD10 is connected to XS7 and XS8
 */
 &usbhost_dwc3 {
 	// If this controller is enabled, sata1 must be disabled
-	status = "ok";
+	status = "okay";
 };
 
 &usbhost30 {
-	status = "ok";
+	status = "okay";
 };
 
 // This controller is phy for usbhost_dwc3 and sata1 controllers
 &combphy1_usq {
-	status = "okay";
+	status = "disabled";
+};
+
+/*
+  USB 1.0/1.1/2.0 phy of USB3_HOST1 controller
+*/
+&u2phy0_host {
+  status = "okay";
 };
