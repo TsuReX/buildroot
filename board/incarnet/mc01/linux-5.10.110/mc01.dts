@@ -403,16 +403,41 @@
 	};
 };
 
+/*
+	I2C1_SCL_PCIe0/I2C1_SDA_PCIe0 signals are not connected just pulled up.
+*/
 &i2c1 {
 	pinctrl-0 = <&i2c1_xfer>;
 	pinctrl-names = "default";
 	status = "okay";
 };
 
+/*
+	I2C3_SCL/I2C3_SDA
+*/
 &i2c3 {
 	pinctrl-0 = <&i2c3m0_xfer>;
 	pinctrl-names = "default";
 	status = "okay";
+
+	/*
+		DD5 (M24C32-RMN6TP RPROM)
+	*/ 
+	eeprom@50 {
+		compatible = "atmel,24c32";
+		reg = <0x50>;
+		pagesize = <32>;
+//		read-only;
+		size = <32768>;
+    };
+
+	/*
+		DA24 (TMP422AIDCNR Thermosensor)
+	*/
+	tmp422: tmp422@4C {
+		compatible = "ti,tmp422";
+		reg = <0x4C>;
+	};
 };
 
 &uart0 {
