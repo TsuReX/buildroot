@@ -1,7 +1,7 @@
 #include <dt-bindings/display/rockchip_vop.h>
 
 &gpu {
-	mali-supply = <&vdd_gpu>;
+	mali-supply = <&da8_0v9_vdd_gpu>;
 	status = "okay";
 	gpu_power_model: power-model {
 		compatible = "arm,simple-power-model";
