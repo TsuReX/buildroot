@@ -29,6 +29,11 @@ rm -rf rkbin
 git clone https://github.com/rockchip-linux/rkbin.git rkbin 
 cd rkbin
 git reset --hard b4558da0860ca48bf1a571dd33ccba580b9abe23
+# 05.06.2023
+#git reset --hard 1ea59cc63be187cec53fc167e729bd0c738f9637
+# 06.01.2022
+#git reset --hard 84d40c3fb8e93955061afce339b6d8226089c46a
+
 cd ..
 rm -rf ${BUILD_DIR}/rkbin
 cp -r rkbin ${BUILD_DIR}/rkbin
@@ -42,6 +47,10 @@ RKBIN_DIR=${BUILD_DIR}/rkbin
 
 SPL_BIN=u-boot-spl.bin
 TPL_BIN=rk3568_ddr_1560MHz_v1.18.bin
+# 05.06.2023
+#TPL_BIN=rk3568_ddr_1560MHz_v1.16.bin
+# 06.02.2022
+#TPL_BIN=rk3568_ddr_1560MHz_v1.11.bin
 
 # SPL being compiled from sources
 SPL_BIN_PATH=${BINARIES_DIR}/${SPL_BIN}
@@ -73,11 +82,20 @@ ${BUILD_DIR}/uboot-${UBOOT_REPO}/tools/mkimage -n "rk3568" -T rksd -d ${TPL_BIN_
 # 2. Create u-boot.itb
 UBOOT_BIN=${BUILD_DIR}/u-boot.bin
 
-check_file ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf
-check_file ${RKBIN_DIR}/bin/rk35/rk3568_bl32_v2.10.bin
+BL31=rk3568_bl31_v1.43.elf
+BL32=rk3568_bl32_v2.10.bin
+#05.06.2023
+#BL31=rk3568_bl31_v1.43.elf
+#BL32=rk3568_bl32_v2.09.bin
+#06.01.2022
+#BL31=rk3568_bl31_v1.32.elf
+#BL32=rk3568_bl32_v2.01.bin
 
-cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl31_v1.43.elf ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
-cp -f ${RKBIN_DIR}/bin/rk35/rk3568_bl32_v2.10.bin ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
+check_file ${RKBIN_DIR}/bin/rk35/$BL31
+check_file ${RKBIN_DIR}/bin/rk35/$BL32
+
+cp -f ${RKBIN_DIR}/bin/rk35/$BL31 ${BUILD_DIR}/uboot-${UBOOT_REPO}/bl31.elf
+cp -f ${RKBIN_DIR}/bin/rk35/$BL32 ${BUILD_DIR}/uboot-${UBOOT_REPO}/tee.bin
 
 # The script make_fit_atf.sh requires working directory u-boot
 cd ${BUILD_DIR}/uboot-${UBOOT_REPO}
