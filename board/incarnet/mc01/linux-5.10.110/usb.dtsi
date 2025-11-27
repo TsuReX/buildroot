@@ -27,7 +27,7 @@
 /*
 	???
 */
-&usb2phy1 {
+&usb2phy0 {
 	status = "okay";
 };
 
@@ -118,7 +118,7 @@
 
 // This controller is phy for usbhost_dwc3 and sata1 controllers
 &combphy1_usq {
-	status = "disabled";
+	status = "okay";
 };
 
 /*
