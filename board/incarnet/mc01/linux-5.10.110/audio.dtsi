@@ -21,7 +21,7 @@
 		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <128>;
 		simple-audio-card,name = "hdmi-audio";
-
+		// Internally (inside SoC) connected to HDMI
 		simple-audio-card,cpu {
 				sound-dai = <&i2s0_8ch>;
 		};
@@ -89,9 +89,7 @@
 			// I2S1_SDI
 			rockchip,pins = <1 RK_PB3 1 &pcfg_pull_none>;
 		};
-	};
 
-	audio {
 		pmic_audio_sclk:pmic_audio_sclk {
 			// I2S1_SCLK
 			rockchip,pins = <1 RK_PA3 1 &pcfg_pull_none>;
