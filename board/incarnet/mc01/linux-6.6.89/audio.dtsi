@@ -1,0 +1,115 @@
+
+/ {
+	rk809_sound: rk809-sound {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,name = "pmic-audio";
+		simple-audio-card,mclk-fs = <256>;
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s1_8ch>;
+		};
+		simple-audio-card,codec {
+			sound-dai = <&rk809_codec 0>;
+		};
+	};
+
+	hdmi_sound: hdmi-sound {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,mclk-fs = <128>;
+		simple-audio-card,name = "hdmi-audio";
+		// Internally (inside SoC) connected to HDMI
+		simple-audio-card,cpu {
+				sound-dai = <&i2s0_8ch>;
+		};
+		simple-audio-card,codec {
+				sound-dai = <&hdmi>;
+		};
+	};
+};
+
+&i2c0 {
+	rk809: pmic@20 {
+		rk809_codec: codec {
+			#sound-dai-cells = <1>;
+			compatible = "rockchip,rk809-codec", "rockchip,rk817-codec";
+			clocks = <&cru I2S1_MCLKOUT>;
+			clock-names = "mclk";
+			assigned-clocks = <&cru I2S1_MCLKOUT>, <&cru I2S1_MCLK_TX_IOE>;
+			assigned-clock-rates = <12288000>;
+			assigned-clock-parents = <&cru I2S1_MCLKOUT_TX>, <&cru I2S1_MCLKOUT_TX>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pmic_audio_mclk>;
+			hp-volume = <20>;
+			spk-volume = <3>;
+			mic-in-differential;
+			status = "okay";
+		};
+	};
+};
+
+&i2s0_8ch {
+	status = "okay";
+};
+
+&i2s1_8ch {
+	rockchip,no-dmaengine;
+	
+	rockchip,trcm-sync-tx-only;
+	pinctrl-0 = <	&pmic_audio_sclk
+					&pmic_audio_lrck
+					&pmic_audio_sdi
+					&pmic_audio_sdo>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
+
+&pinctrl {
+	pmic_audio {
+		pmic_audio_mclk:pmic_audio_mclk {
+			// I2S1_MCLK
+			rockchip,pins = <1 RK_PA2 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_lrck:pmic_audio_lrck {
+			// I2S1_LRCK
+			rockchip,pins = <1 RK_PA5 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdi:pmic_audio_sdi {
+			// I2S1_SDO0
+			rockchip,pins = <1 RK_PA7 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sdo:pmic_audio_sdo {
+			// I2S1_SDI
+			rockchip,pins = <1 RK_PB3 1 &pcfg_pull_none>;
+		};
+
+		pmic_audio_sclk:pmic_audio_sclk {
+			// I2S1_SCLK
+			rockchip,pins = <1 RK_PA3 1 &pcfg_pull_none>;
+		};
+	};
+
+	bt_audio {
+		bt_audio_sdi:bt_audio_sdi {
+			// I2S1_SDI2
+			rockchip,pins = <3 RK_PD4 4 &pcfg_pull_none>;
+		};
+
+		bt_audio_sdo:bt_audio_sdo {
+			// I2S1_SDO1
+			rockchip,pins = <1 RK_PB0 1 &pcfg_pull_none>;
+		};
+
+		bt_audio_lrck:bt_audio_lrck {
+			// I2S1_LRCK
+			rockchip,pins = <1 RK_PA5 1 &pcfg_pull_none>;
+		};
+	};
+};

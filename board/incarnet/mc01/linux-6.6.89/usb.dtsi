@@ -1,0 +1,129 @@
+
+/*
+	USB2_HOST2
+	USB2_HOST2_D_p/USB2_HOST2_D_n
+*/
+/*
+	This USB 2.0 controller is connected to XS10.2 port
+*/
+&usb_host0_ehci {
+	status = "okay";
+};
+
+/*
+	This USB 1.0/1.1 controller is connected to XS10.2 port
+*/
+&usb_host0_ohci {
+	status = "okay";
+};
+
+/*
+	USB 1.0/1.1/2.0 phy of USB2_HOST2 controller
+*/
+&u2phy1_otg {
+	status = "okay";
+};
+
+/*
+	???
+*/
+&usb2phy0 {
+	status = "okay";
+};
+
+/*
+	USB2_HOST3
+	USB2_HOST3_D_p/USB2_HOST3_D_n
+*/
+
+/*
+	This USB 2.0 controller is connected to XS9.2 port
+*/
+&usb_host1_ehci {
+	status = "okay";
+};
+
+/*
+	This USB 1.0/1.1 controller is connected to XS9.2 port
+*/
+&usb_host1_ohci {
+	status = "okay";
+};
+
+/*
+	USB 1.0/1.1/2.0 phy of USB2_HOST3 controller
+*/
+&u2phy1_host {
+	status = "okay";
+};
+
+/*
+	???
+*/
+&usb2phy1 {
+	status = "okay";
+};
+
+/*
+	USB3_OTG0 or SATA0
+	USB3_OTG_SSTX/USB3_OTG_SSRX
+*/
+
+/*
+	This USB 3.0/2.0/1.1/1.0 controllers are connected to XS6 port
+*/
+&usbdrd_dwc3 {
+	dr_mode = "host";
+	// If this controller is enabled, sata0 must be disabled
+	status = "okay";
+};
+
+&usbdrd30 {
+	status = "okay";
+};
+
+&sata0 {
+//	If this controller is enabled, usbdrd_dwc3 must be disabled
+	status = "disabled";
+};
+
+&combphy0_us {
+//	This controller is phy for usbdrd_dwc3 and sata0 controllers
+	status = "okay";
+};
+
+/*
+	USB 1.0/1.1/2.0 phy of USB3_OTG0 controller
+*/
+&u2phy0_otg {
+	status = "okay";
+};
+
+/*
+	USB3_HOST1 or SATA1
+*/
+/*
+	USB 3.0 controller is not connected
+	USB 2.0/1.1/1.0 controllers are connected to DD10 USB HUB
+	DD10 is connected to XS7 and XS8
+*/
+&usbhost_dwc3 {
+	// If this controller is enabled, sata1 must be disabled
+	status = "okay";
+};
+
+&usbhost30 {
+	status = "okay";
+};
+
+// This controller is phy for usbhost_dwc3 and sata1 controllers
+&combphy1_usq {
+	status = "okay";
+};
+
+/*
+  USB 1.0/1.1/2.0 phy of USB3_HOST1 controller
+*/
+&u2phy0_host {
+  status = "okay";
+};
