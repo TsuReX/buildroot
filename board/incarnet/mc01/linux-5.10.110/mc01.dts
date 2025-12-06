@@ -6,7 +6,7 @@
 
 #include "ethernet.dtsi"
 #include "usb.dtsi"
-//#include "wireless.dtsi"
+#include "wireless.dtsi"
 #include "audio.dtsi"
 #include "video.dtsi"
 
@@ -456,9 +456,9 @@
 	UART8_TX -> DD8
 	UART8_RX <- DD8
 */
-	pinctrl-0 = <&uart8m1_xfer>;
+	pinctrl-0 = <&uart8m0_xfer>;
 	pinctrl-names = "default";
-	status = "disabled";
+	status = "okay";
 };
 
 &uart9 {
