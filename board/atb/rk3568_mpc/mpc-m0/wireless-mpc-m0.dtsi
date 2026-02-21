@@ -1,0 +1,80 @@
+
+/ {
+	sdio_pwrseq: sdio-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		clocks = <&rtc_clock>;
+		clock-names = "ext_clock";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_pin>;
+
+		post-power-on-delay-ms = <200>; //CHECK_IT
+
+		// WL_EN
+		reset-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&sdmmc2 {
+	// WiFi & BT combo module Fn-Link FG6233ASRB-01 / Fn-Link 8223A-SR
+	mmc-pwrseq = <&sdio_pwrseq>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
+	vmmc-supply = <&vcc_3v3>;
+	vqmmc-supply = <&vcc_3v3>;
+
+	bus-width = <4>;
+	max-frequency = <20000000>;
+	drv-type = <2>;
+	cap-sd-highspeed;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+//	keep-power-in-suspend;
+//	enable-sdio-wakeup;
+	cap-sdio-irq;
+	non-removable;
+	no-mmc;
+	no-sd;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	rockchip,default-sample-phase = <90>;
+	status = "okay";
+
+//	qca_wifi: qca-wifi@1 {
+//		reg = <1>;
+//		compatible = "qcom,ath10k";
+//	};
+};
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+	uart-has-rtscts;
+	status = "okay";
+
+	bluetooth {
+		compatible = "qcom,qca9377-bt";
+
+		// BT_EN
+		enable-gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+		max-speed = <2000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_en_pin>;
+	};
+};
+
+&pinctrl {
+
+	wireless {
+
+		// WL_EN
+		wlan_en_pin: wlan-en-pin {
+			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		// BT_EN
+		bt_en_pin: bt-en-pin {
+			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
