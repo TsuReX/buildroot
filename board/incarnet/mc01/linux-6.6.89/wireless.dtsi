@@ -14,7 +14,7 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	bus-width = <4>;
-	clock-frequency = <150000000>;
+	clock-frequency = <10000000>;
 	cap-sdio-irq;
 	cap-sd-highspeed;
 	keep-power-in-suspend;
@@ -22,11 +22,9 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_clk &sdmmc2m0_cmd>;
 	sd-uhs-sdr104;
+	vmmc-supply = <&da5_3v3_wifi_vpa>;
+	vqmmc-supply = <&da8_1v8_vcc>;
+	no-sd;
+	no-mmc;
 	status = "okay";
-
-	// DD8
-	brcmf: wifi@0 {
-		compatible = "nxp,88w9098";
-		reg = <1>;
-	};
 };

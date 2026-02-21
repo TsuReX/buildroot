@@ -18,8 +18,9 @@
 	aliases {
 		ethernet0 = &gmac0;
 		ethernet1 = &gmac1;
-        mmc0 = &sdhci;
+    mmc0 = &sdhci;
 		mmc1 = &sdmmc0;
+		wifi = &sdmmc2;
 	};
 
 	chosen: chosen {
@@ -77,6 +78,31 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&da1_12v>;
 	};
+
+  // DA5
+  // +3.3V_WiFi_VPA
+  da5_3v3_wifi_vpa: da5_3v3_wifi_vpa {
+    compatible = "regulator-fixed";
+    regulator-name = "da5_3v3_wifi_vpa";
+    regulator-always-on;
+    regulator-boot-on;
+    regulator-min-microvolt = <3300000>;
+    regulator-max-microvolt = <3300000>;
+    vin-supply = <&da4_5v>;
+  };
+
+  leds {
+    compatible = "gpio-leds";
+    led-user {
+      label = "user-led";
+      pinctrl-names = "default";
+      pinctrl-0 = <&led_user_pin>; // Define this in pinctrl
+      gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>; // Adjust GPIO pin
+      linux,default-trigger = "heartbeat";
+      //default-state = "on";
+			function = LED_FUNCTION_HEARTBEAT;
+    };
+  };
 };
 
 &cpu0 {
@@ -483,4 +509,10 @@
 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
+
+  leds {
+    led_user_pin: led_user_pin {
+      rockchip,pins = <4 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>; // Configure pin as GPIO
+    };
+  };
 };
