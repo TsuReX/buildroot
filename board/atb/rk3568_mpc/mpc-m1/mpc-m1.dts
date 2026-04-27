@@ -4,13 +4,13 @@
 #include <dt-bindings/pinctrl/rockchip.h>
 #include "rk3568.dtsi"
 
-#include "ethernet-mpc-m.dtsi"
-#include "pcie3-mpc-m.dtsi"
-#include "usb-pcie2-mpc-m.dtsi"
-#include "wireless-mpc-m.dtsi"
-#include "video-mpc-m.dtsi"
-#include "gnss-mpc-m.dtsi"
-#include "spi-mpc-m.dtsi"
+#include "ethernet-mpc-m1.dtsi"
+#include "pcie3-mpc-m1.dtsi"
+#include "usb-pcie2-mpc-m1.dtsi"
+#include "wireless-mpc-m1.dtsi"
+#include "video-mpc-m1.dtsi"
+#include "gnss-mpc-m1.dtsi"
+#include "spi-mpc-m1.dtsi"
 
 / {
 	compatible = "atb,atb-rk3568-mpc-m", "rockchip,rk3568";

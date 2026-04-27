@@ -4,12 +4,12 @@
 #include <dt-bindings/pinctrl/rockchip.h>
 #include "rk3568.dtsi"
 
-#include "atb-rk3568-mpc-m2-ethernet.dtsi"
-#include "atb-rk3568-mpc-m2-pcie.dtsi"
-#include "atb-rk3568-mpc-m2-usb.dtsi"
-#include "atb-rk3568-mpc-m2-video.dtsi"
-#include "atb-rk3568-mpc-m2-wireless.dtsi"
-#include "atb-rk3568-mpc-m2-power.dtsi"
+#include "ethernet-mpc-m2.dtsi"
+#include "pcie-mpc-m2.dtsi"
+#include "usb-mpc-m2.dtsi"
+#include "video-mpc-m2.dtsi"
+#include "wireless-mpc-m2.dtsi"
+#include "power-mpc-m2.dtsi"
 
 / {
 	model = "ATB-RK3568 Board";

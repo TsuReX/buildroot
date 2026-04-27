@@ -23,11 +23,11 @@
 	vqmmc-supply = <&vcc_3v3>;
 
 	bus-width = <4>;
-	max-frequency = <20000000>;
-	drv-type = <2>;
-	cap-sd-highspeed;
-	sd-uhs-sdr50;
-	sd-uhs-sdr104;
+	max-frequency = <10000000>;
+//	drv-type = <2>;
+//	cap-sd-highspeed;
+//	sd-uhs-sdr50; // It's VITAL parameter
+//	sd-uhs-sdr104;
 //	keep-power-in-suspend;
 //	enable-sdio-wakeup;
 	cap-sdio-irq;
